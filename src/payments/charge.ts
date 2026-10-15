@@ -9,6 +9,7 @@ import {
 } from "@paypal/paypal-server-sdk";
 import { desc, eq } from "drizzle-orm";
 import type { Db } from "@/db/client";
+import { isMoney } from "@/lib/money";
 import { payments, type Payment, type PaymentStatus } from "@/db/schema";
 import { callPayPal, PayPalRequestError } from "@/paypal/errors";
 import { getActiveVaultToken } from "./mandate";
@@ -26,7 +27,6 @@ export const CHARGE_CURRENCY = "EUR";
 /** The 14-day return window shown on every purchase (D-008). */
 export const RETURN_WINDOW_DAYS = 14;
 
-const AMOUNT_PATTERN = /^(0|[1-9]\d{0,5})\.\d{2}$/;
 /** FraudNet session id: 32 lowercase hex characters (max length 32). */
 const CLIENT_METADATA_ID_PATTERN = /^[0-9a-f]{32}$/;
 
@@ -145,7 +145,7 @@ export async function chargeWithMandate(
 ): Promise<PaymentView> {
   const now = deps.now ?? (() => new Date());
 
-  if (!AMOUNT_PATTERN.test(input.amount) || Number(input.amount) <= 0) {
+  if (!isMoney(input.amount) || Number(input.amount) <= 0) {
     throw new ChargeError("INVALID_AMOUNT", "Amount must look like 5.00 and be above zero.");
   }
   if (input.initiator === "CUSTOMER" && !input.clientMetadataId) {
