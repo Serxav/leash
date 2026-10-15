@@ -293,3 +293,45 @@ project. Newest at the bottom.
   startup. The `mandates` table follows the brief's data model, plus a `PENDING` status for
   an approval in progress.
 - **Status:** accepted. The real UI replaces the lab in F4/F5.
+
+### D-018 · 2026-10-15 · Charging the mandate (Orders v2) with FraudNet risk data
+
+- **Decision:** `src/payments/charge.ts` charges the mandate with one Orders v2 order:
+  intent `CAPTURE`, `payment_source.paypal.vault_id`, EUR only. PayPal captures it
+  immediately.
+- **Idempotency:** each attempt is written to `payments` **before** calling PayPal, and
+  its id is used for three things:
+  - `PayPal-Request-Id`;
+  - `invoice_id`, which must be unique, so a second charge is rejected as
+    `DUPLICATE_INVOICE_ID`;
+  - `custom_id`.
+
+  If the outcome is unknown (network or timeout), the row stays `PENDING` and is never
+  assumed to be uncharged.
+- **Who initiates:** `payment_source.paypal.stored_credential.payment_initiator` is:
+  - `CUSTOMER` when the user is present (one-tap approval, the lab button);
+  - `MERCHANT` when the agent buys within the rules without the user.
+
+  `usage_pattern: IMMEDIATE` matches the mandate.
+- **Risk data (RDA):** PayPal requires it for customer-initiated payments with PayPal
+  payment tokens.
+  - Every page that can start one renders FraudNet (`src/components/fraudnet.tsx`) with a
+    new 32-character session id. `s` is `<PAYPAL_MERCHANT_ID>_<page_id>` and
+    `sandbox: true` is set.
+  - The same id is sent as `PayPal-Client-Metadata-Id`.
+  - A `CUSTOMER` charge without a valid id is refused before calling PayPal.
+  - `PAYPAL_MERCHANT_ID` is the public Merchant ID of the sandbox Business account (a new
+    optional variable, format-checked at startup). It was read from an unapproved,
+    never-charged order's `payee.merchant_id`.
+- **FraudNet loading:** `fb.js` is a plain `<script async>`, PayPal's documented
+  "option 1", not `next/script`. With `next/script` inside a `<Suspense>` boundary, the
+  script was only preloaded and never ran until that boundary hydrated. With a plain tag,
+  the browser runs it straight from the streamed HTML. Verified in the browser: `fb.js`
+  loads and sends data to `c.sandbox.paypal.com`.
+- **Return window:** COMPLETED payments get `withdrawal_deadline` = capture time + 14 days
+  (D-008).
+- **Status:** accepted. Verified in the sandbox on 2026-10-15:
+  - a €5.00 CUSTOMER charge, capture `1GM787476M628661F`. The Payments API confirms
+    COMPLETED, 5.00 EUR, payee = the Business merchant, €4.48 net, seller protection
+    ELIGIBLE;
+  - a €1.00 MERCHANT charge without risk data, also COMPLETED (sandbox test).

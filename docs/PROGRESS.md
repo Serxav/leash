@@ -106,3 +106,29 @@ One entry per session: date, what was done, what is left, blockers.
 - The approval must happen in the same browser tab Leash opened, logged in with the
   `…@personal.example.com` sandbox account. Typing any other email leads to PayPal's guest
   card form.
+
+## 2026-10-15 · Session 1 (cont.) – F1: vaulted charge
+
+**Done**
+- `feat/f1-vaulted-charge` (D-018):
+  - `payments` table;
+  - charge service (Orders v2 + `vault_id`, idempotent, `stored_credential`
+    CUSTOMER/MERCHANT);
+  - FraudNet component;
+  - lab "Charge €5" button;
+  - optional `PAYPAL_MERCHANT_ID`.
+- Found and fixed: `next/script` never ran FraudNet inside a `<Suspense>` boundary. Now a
+  plain async script.
+- **Verified in the sandbox:**
+  - €5.00 CUSTOMER charge COMPLETED in EUR to the Business account (€4.48 net), confirmed
+    through the Payments API;
+  - €1.00 MERCHANT charge COMPLETED (sandbox test).
+- Tests: 62 unit and 5 sandbox, all passing.
+- Sergi reset the sandbox account passwords: PayPal no longer shows them, and a new one
+  must differ from the old one.
+
+**Left**
+- `feat/f1-refund`, `feat/f1-declined-error`, then tag `v0.1.0`.
+
+**Note**
+- After adding a migration, restart `npm run dev`: migrations run once per server process.
