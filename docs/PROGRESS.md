@@ -49,8 +49,12 @@ One entry per session: date, what was done, what is left, blockers.
   - 15 unit tests.
 - Results: test, typecheck, lint and build pass; startup guard checked with `next start`.
 
+- `chore/setup-ci` (D-012): GitHub Actions CI with two jobs, checks and a gitleaks
+  history scan, plus the PR template. gitleaks 8.30.1 was run locally first: 4 commits
+  scanned, no leaks.
+
 **Left**
-- `chore/setup-ci`, the ruleset status check, `feat/f0-sandbox-connection`, and the Agent
+- The ruleset status check (after merging `chore/setup-ci`), `feat/f0-sandbox-connection`, and the Agent
   Toolkit and Channel3 spikes.
 
 **Blockers**

@@ -19,9 +19,9 @@ definition of done in `CLAUDE.md`. Tags close each phase.
         the selected AI provider are required
   - [x] `/api/health` endpoint
   - [x] Tests for env validation (refuses live mode, wrong API URL, missing keys)
-- [ ] `chore/setup-ci`:
-  - [ ] `.github/workflows/ci.yml`: `npm ci`, lint, typecheck, test, build, gitleaks
-  - [ ] `.github/pull_request_template.md`
+- [x] `chore/setup-ci`:
+  - [x] `.github/workflows/ci.yml`: `npm ci`, lint, typecheck, test, build, gitleaks
+  - [x] `.github/pull_request_template.md`
 - [ ] Add the CI check as a **required status check** in the `main` ruleset (after
       `chore/setup-ci` is merged)
 - [ ] `feat/f0-sandbox-connection`:
