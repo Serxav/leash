@@ -2,7 +2,7 @@
 
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { chargeWithMandate } from "@/payments/charge";
+import { chargeWithMandate, isSandboxMockIssue } from "@/payments/charge";
 import { startMandate } from "@/payments/mandate";
 import { refundPayment } from "@/payments/refund";
 import {
@@ -42,10 +42,12 @@ export async function connectPayPal(): Promise<void> {
 /**
  * Lab charge of €5 with the saved PayPal. The user clicks the button, so it
  * is customer-initiated and carries the page's FraudNet session id (RDA).
+ * The "simulate" button asks the sandbox for a declined payment instead.
  */
 export async function chargeFiveEuros(formData: FormData): Promise<void> {
   assertLabEnabled();
   const clientMetadataId = formData.get("clientMetadataId");
+  const simulate = formData.get("simulate");
 
   let destination: string;
   try {
@@ -56,8 +58,15 @@ export async function chargeFiveEuros(formData: FormData): Promise<void> {
       initiator: "CUSTOMER",
       clientMetadataId:
         typeof clientMetadataId === "string" ? clientMetadataId : undefined,
+      sandboxMockIssue: isSandboxMockIssue(simulate) ? simulate : undefined,
     });
-    const params = new URLSearchParams({ status: payment.status === "COMPLETED" ? "charged" : "error" });
+    const status =
+      payment.status === "COMPLETED"
+        ? "charged"
+        : payment.status === "DECLINED"
+          ? "declined"
+          : "error";
+    const params = new URLSearchParams({ status });
     if (payment.failureIssue) params.set("issue", payment.failureIssue);
     if (payment.debugId) params.set("debug", payment.debugId);
     destination = `${LAB_PATH}?${params}`;

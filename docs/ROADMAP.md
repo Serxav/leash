@@ -45,9 +45,9 @@ definition of done in `CLAUDE.md`. Tags close each phase.
 - [x] `feat/f1-vaulted-charge`: create and capture a €5 order with `vault_id`, with
       `PayPal-Request-Id` idempotency. Verify EUR on the ES sandbox accounts
 - [x] `feat/f1-refund`: refund a capture (Payments v2) (D-019)
-- [ ] `feat/f1-declined-error`: `INSTRUMENT_DECLINED` via `PayPal-Mock-Response`, branching
-      on `details[0].issue`, keeping the `debug_id`, with a clear user message
-- [ ] Minimal page that runs the whole flow. Tested with the Personal and Business accounts
+- [x] `feat/f1-declined-error`: `INSTRUMENT_DECLINED` via `PayPal-Mock-Response`, branching
+      on `details[0].issue`, keeping the `debug_id`, with a clear user message (D-020)
+- [x] Minimal page that runs the whole flow (`/lab/payments`, development only). Tested with the Personal and Business accounts
 
 ## F2 · Rules (Oct 22–25) → `v0.2.0`
 

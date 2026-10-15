@@ -6,6 +6,7 @@ import { stubPayPalClient, type StubReply, type StubRequest } from "@/paypal/tes
 import {
   ChargeError,
   chargeWithMandate,
+  isSandboxMockIssue,
   listPayments,
   newClientMetadataId,
   RETURN_WINDOW_DAYS,
@@ -166,6 +167,32 @@ describe("chargeWithMandate", () => {
     });
   });
 
+  it("asks the sandbox for a declined payment with PayPal-Mock-Response", async () => {
+    const { orders, requests } = setup(() => ({
+      status: 422,
+      body: {
+        name: "UNPROCESSABLE_ENTITY",
+        message: "x",
+        debug_id: "dbg-mock",
+        details: [{ issue: "INSTRUMENT_DECLINED" }],
+      },
+    }));
+    const payment = await chargeWithMandate(
+      { db, orders },
+      { ...customerCharge, sandboxMockIssue: "INSTRUMENT_DECLINED" },
+    );
+    expect(requests[0]?.headers["PayPal-Mock-Response"]).toBe(
+      '{"mock_application_codes":"INSTRUMENT_DECLINED"}',
+    );
+    expect(payment).toMatchObject({ status: "DECLINED", failureIssue: "INSTRUMENT_DECLINED" });
+  });
+
+  it("sends no PayPal-Mock-Response header on normal charges", async () => {
+    const { orders, requests } = setup(completedOrder);
+    await chargeWithMandate({ db, orders }, customerCharge);
+    expect(requests[0]?.headers["PayPal-Mock-Response"]).toBeUndefined();
+  });
+
   it("records other PayPal errors as FAILED", async () => {
     const { orders } = setup(() => ({
       status: 422,
@@ -209,5 +236,13 @@ describe("newClientMetadataId", () => {
     const a = newClientMetadataId();
     expect(a).toMatch(/^[0-9a-f]{32}$/);
     expect(newClientMetadataId()).not.toBe(a);
+  });
+});
+
+describe("isSandboxMockIssue", () => {
+  it("accepts only the supported negative-testing issues", () => {
+    expect(isSandboxMockIssue("INSTRUMENT_DECLINED")).toBe(true);
+    expect(isSandboxMockIssue("DUPLICATE_INVOICE_ID")).toBe(false);
+    expect(isSandboxMockIssue(null)).toBe(false);
   });
 });

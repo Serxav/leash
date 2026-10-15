@@ -6,6 +6,7 @@ import { getServerEnv } from "@/config/env";
 import { getDb } from "@/db/client";
 import { listPayments, newClientMetadataId } from "@/payments/charge";
 import { getMandateView } from "@/payments/mandate";
+import { paymentIssueMessage } from "@/payments/messages";
 import { chargeFiveEuros, connectPayPal, refundLabPayment } from "./actions";
 import { assertLabEnabled, LAB_USER_ID } from "./lab";
 
@@ -20,7 +21,8 @@ const STATUS_MESSAGES: Record<string, string> = {
   refunded: "Refunded in full to the payer's PayPal (sandbox).",
   "refund-pending": "Refund requested. PayPal is still processing it.",
   cancelled: "You cancelled on PayPal. Nothing was saved.",
-  error: "Something went wrong with PayPal. No money moved.",
+  declined: "Payment declined.",
+  error: "Something went wrong.",
 };
 
 function first(value: string | string[] | undefined): string | undefined {
@@ -75,12 +77,15 @@ async function LabState({
         <p
           role="status"
           className={`rounded-lg border p-4 text-sm ${
-            status === "error"
+            status === "error" || status === "declined"
               ? "border-red-300 text-red-800 dark:border-red-800 dark:text-red-300"
               : "border-zinc-300 text-zinc-800 dark:border-zinc-700 dark:text-zinc-200"
           }`}
         >
-          {STATUS_MESSAGES[status]}
+          <strong>{STATUS_MESSAGES[status]}</strong>
+          {(status === "error" || status === "declined") && (
+            <span className="mt-1 block">{paymentIssueMessage(issue)}</span>
+          )}
           {issue && (
             <span className="mt-1 block font-mono text-xs">Reason: {issue}</span>
           )}
@@ -143,7 +148,7 @@ async function LabState({
               merchantId={merchantId}
               pageId="checkout-page"
             />
-            <form action={chargeFiveEuros}>
+            <form action={chargeFiveEuros} className="flex flex-wrap gap-3">
               <input type="hidden" name="clientMetadataId" value={clientMetadataId} />
               <button
                 type="submit"
@@ -151,7 +156,20 @@ async function LabState({
               >
                 Charge €5.00 (sandbox)
               </button>
+              <button
+                type="submit"
+                name="simulate"
+                value="INSTRUMENT_DECLINED"
+                className="rounded-full border border-zinc-400 px-5 py-3 text-sm font-medium hover:bg-zinc-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 dark:border-zinc-600 dark:hover:bg-zinc-800"
+              >
+                Simulate a declined €5.00 charge
+              </button>
             </form>
+            <p className="text-xs text-zinc-600 dark:text-zinc-400">
+              The simulation uses PayPal sandbox negative testing
+              (PayPal-Mock-Response): PayPal answers INSTRUMENT_DECLINED and
+              nothing is charged.
+            </p>
           </>
         )}
 
@@ -174,6 +192,11 @@ async function LabState({
                 {payment.debugId && <> · debug {payment.debugId}</>}
                 {payment.status === "COMPLETED" && payment.withdrawalDeadline && (
                   <> · return window until {payment.withdrawalDeadline.toISOString().slice(0, 10)}</>
+                )}
+                {payment.failureIssue && (
+                  <span className="mt-1 block font-sans">
+                    {paymentIssueMessage(payment.failureIssue)}
+                  </span>
                 )}
                 {payment.status === "COMPLETED" && !payment.refundId && (
                   <form action={refundLabPayment} className="mt-2">
