@@ -154,3 +154,26 @@ project. Newest at the bottom.
 - **Status:** accepted. Tested with `next start`: sandbox config → `/api/health` 200;
   `PAYPAL_ENVIRONMENT=LIVE` → exit code 1; `AI_PROVIDER=anthropic` without a key → exit
   code 1.
+
+### D-012 · 2026-10-15 · CI design
+
+- **Decision:** one GitHub Actions workflow (`.github/workflows/ci.yml`) that runs on every
+  pull request and on every push to `main`. It has two jobs:
+  - **Lint, typecheck, test, build:** `npm ci` on the Node version read from `.nvmrc`.
+  - **Secret scan (gitleaks):** scans the whole git history with the gitleaks 8.30.1
+    binary. The binary is downloaded from the official release and checked against its
+    published SHA-256 before running. It is not the gitleaks GitHub Action.
+
+  Other choices:
+  - Third-party actions are pinned to full commit SHAs, with the version in a comment.
+  - The token is read-only (`contents: read`), and the checkout does not keep git
+    credentials.
+  - The CI has no secrets. Sandbox integration tests stay local
+    (`npm run test:sandbox`).
+- **Alternatives:** the gitleaks GitHub Action; actions pinned by tag only.
+- **Why:**
+  - The brief says to use the gitleaks binary if the action needs a licence. The binary
+    never does, and pinning plus a checksum makes the scan reproducible.
+  - Pinning actions by SHA protects against a compromised tag (supply-chain safety).
+  - Both job names become required status checks on `main`.
+- **Status:** accepted.
