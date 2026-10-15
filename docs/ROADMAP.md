@@ -38,11 +38,11 @@ definition of done in `CLAUDE.md`. Tags close each phase.
       endpoints and their doc pages before coding
 - [x] Decide between `@paypal/paypal-server-sdk` and direct REST, and check whether the SDK
       is APIMatic-generated (D-007). Record it in DECISIONS (D-016: SDK + APIMatic Context Plugin)
-- [ ] Plan Risk Data Acquisition (FraudNet/Magnes), which the vault docs say PayPal requires
-      (D-013). Check when `PayPal-Client-Metadata-Id` is needed on vaulted charges
+- [x] Plan Risk Data Acquisition (FraudNet/Magnes), which the vault docs say PayPal requires
+      (D-013). Check when `PayPal-Client-Metadata-Id` is needed on vaulted charges (D-018)
 - [x] `feat/f1-vault-mandate`: save PayPal (setup token → buyer approval → payment token,
       `usage_type` MERCHANT)
-- [ ] `feat/f1-vaulted-charge`: create and capture a €5 order with `vault_id`, with
+- [x] `feat/f1-vaulted-charge`: create and capture a €5 order with `vault_id`, with
       `PayPal-Request-Id` idempotency. Verify EUR on the ES sandbox accounts
 - [ ] `feat/f1-refund`: refund a capture (Payments v2)
 - [ ] `feat/f1-declined-error`: `INSTRUMENT_DECLINED` via `PayPal-Mock-Response`, branching

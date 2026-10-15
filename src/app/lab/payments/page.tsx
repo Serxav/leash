@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 import { connection } from "next/server";
 import { Suspense } from "react";
+import { FraudNet } from "@/components/fraudnet";
+import { getServerEnv } from "@/config/env";
 import { getDb } from "@/db/client";
+import { listPayments, newClientMetadataId } from "@/payments/charge";
 import { getMandateView } from "@/payments/mandate";
-import { connectPayPal } from "./actions";
+import { chargeFiveEuros, connectPayPal } from "./actions";
 import { assertLabEnabled, LAB_USER_ID } from "./lab";
 
 export const metadata: Metadata = {
@@ -13,6 +16,7 @@ export const metadata: Metadata = {
 
 const STATUS_MESSAGES: Record<string, string> = {
   connected: "PayPal is connected. Leash can now charge approved purchases.",
+  charged: "Charged €5.00 with your saved PayPal (sandbox).",
   cancelled: "You cancelled on PayPal. Nothing was saved.",
   error: "Something went wrong with PayPal. Nothing was charged.",
 };
@@ -56,7 +60,12 @@ async function LabState({
   const status = first(params.status);
   const issue = first(params.issue);
   const debug = first(params.debug);
-  const mandate = getMandateView(getDb(), LAB_USER_ID);
+  const db = getDb();
+  const mandate = getMandateView(db, LAB_USER_ID);
+  const history = listPayments(db, LAB_USER_ID);
+  const merchantId = getServerEnv().PAYPAL_MERCHANT_ID;
+  // One FraudNet session per page view, sent as PayPal-Client-Metadata-Id.
+  const clientMetadataId = newClientMetadataId();
 
   return (
     <>
@@ -107,6 +116,65 @@ async function LabState({
           account, then come back here. Leash only stores a PayPal payment token
           on the server.
         </p>
+      </section>
+
+      <section
+        aria-labelledby="charge-heading"
+        className="flex flex-col gap-4 rounded-lg border border-zinc-300 p-6 dark:border-zinc-700"
+      >
+        <h2 id="charge-heading" className="text-xl font-semibold">
+          2. Charge €5 with the saved PayPal
+        </h2>
+        {mandate.status !== "ACTIVE" ? (
+          <p className="text-sm text-zinc-700 dark:text-zinc-300">
+            Connect PayPal first.
+          </p>
+        ) : !merchantId ? (
+          <p role="alert" className="text-sm text-red-800 dark:text-red-300">
+            Set PAYPAL_MERCHANT_ID in .env.local (sandbox Business account) to
+            enable FraudNet risk data before charging.
+          </p>
+        ) : (
+          <>
+            <FraudNet
+              sessionId={clientMetadataId}
+              merchantId={merchantId}
+              pageId="checkout-page"
+            />
+            <form action={chargeFiveEuros}>
+              <input type="hidden" name="clientMetadataId" value={clientMetadataId} />
+              <button
+                type="submit"
+                className="rounded-full bg-zinc-900 px-5 py-3 text-sm font-medium text-white hover:bg-zinc-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
+              >
+                Charge €5.00 (sandbox)
+              </button>
+            </form>
+          </>
+        )}
+
+        <h3 className="text-base font-semibold">Payments</h3>
+        {history.length === 0 ? (
+          <p className="text-sm text-zinc-600 dark:text-zinc-400">No payments yet.</p>
+        ) : (
+          <ul className="flex flex-col gap-2 text-sm">
+            {history.map((payment) => (
+              <li
+                key={payment.id}
+                className="rounded border border-zinc-200 p-3 font-mono text-xs dark:border-zinc-800"
+              >
+                {payment.amount} {payment.currency} · <strong>{payment.status}</strong> ·{" "}
+                {payment.initiator}
+                {payment.captureId && <> · capture {payment.captureId}</>}
+                {payment.failureIssue && <> · {payment.failureIssue}</>}
+                {payment.debugId && <> · debug {payment.debugId}</>}
+                {payment.withdrawalDeadline && (
+                  <> · return window until {payment.withdrawalDeadline.toISOString().slice(0, 10)}</>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
     </>
   );

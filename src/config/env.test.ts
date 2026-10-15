@@ -142,3 +142,24 @@ describe("assertSandboxApiBase", () => {
     }
   });
 });
+
+describe("PAYPAL_MERCHANT_ID", () => {
+  it("is optional", () => {
+    expect(parseServerEnv(validGoogleEnv).PAYPAL_MERCHANT_ID).toBeUndefined();
+  });
+
+  it("accepts a PayPal Merchant ID", () => {
+    expect(
+      parseServerEnv({ ...validGoogleEnv, PAYPAL_MERCHANT_ID: "ABCDEFGH12345" })
+        .PAYPAL_MERCHANT_ID,
+    ).toBe("ABCDEFGH12345");
+  });
+
+  it("rejects values that are not a Merchant ID", () => {
+    expect(
+      problemsOf({ ...validGoogleEnv, PAYPAL_MERCHANT_ID: "sb-xyz@business.example.com" }),
+    ).toEqual([
+      "PAYPAL_MERCHANT_ID must be the PayPal Merchant ID (letters and digits)",
+    ]);
+  });
+});
