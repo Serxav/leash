@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { chargeWithMandate } from "@/payments/charge";
 import { startMandate } from "@/payments/mandate";
+import { refundPayment } from "@/payments/refund";
 import {
   assertLabEnabled,
   chargeDeps,
@@ -11,6 +12,7 @@ import {
   LAB_PATH,
   LAB_USER_ID,
   mandateDeps,
+  refundDeps,
 } from "./lab";
 
 /** US1 step 1: start saving PayPal and send the payer to PayPal sandbox. */
@@ -61,6 +63,25 @@ export async function chargeFiveEuros(formData: FormData): Promise<void> {
     destination = `${LAB_PATH}?${params}`;
   } catch (error) {
     console.error("[lab] chargeFiveEuros failed:", (error as Error).message);
+    destination = `${LAB_PATH}?${failureQuery(error)}`;
+  }
+  redirect(destination);
+}
+
+/** Full refund of one lab payment (Payments v2). */
+export async function refundLabPayment(formData: FormData): Promise<void> {
+  assertLabEnabled();
+  const paymentId = formData.get("paymentId");
+
+  let destination: string;
+  try {
+    const payment = await refundPayment(refundDeps(), {
+      userId: LAB_USER_ID,
+      paymentId: typeof paymentId === "string" ? paymentId : "",
+    });
+    destination = `${LAB_PATH}?status=${payment.status === "REFUNDED" ? "refunded" : "refund-pending"}`;
+  } catch (error) {
+    console.error("[lab] refundLabPayment failed:", (error as Error).message);
     destination = `${LAB_PATH}?${failureQuery(error)}`;
   }
   redirect(destination);

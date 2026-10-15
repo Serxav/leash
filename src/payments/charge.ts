@@ -61,6 +61,7 @@ export type PaymentView = Pick<
   | "status"
   | "paypalOrderId"
   | "captureId"
+  | "refundId"
   | "failureIssue"
   | "debugId"
   | "withdrawalDeadline"
@@ -84,11 +85,11 @@ export class ChargeError extends Error {
 export function toPaymentView(payment: Payment): PaymentView {
   const {
     id, amount, currency, initiator, status, paypalOrderId, captureId,
-    failureIssue, debugId, withdrawalDeadline, createdAt,
+    refundId, failureIssue, debugId, withdrawalDeadline, createdAt,
   } = payment;
   return {
     id, amount, currency, initiator, status, paypalOrderId, captureId,
-    failureIssue, debugId, withdrawalDeadline, createdAt,
+    refundId, failureIssue, debugId, withdrawalDeadline, createdAt,
   };
 }
 
