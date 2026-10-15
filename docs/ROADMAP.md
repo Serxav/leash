@@ -34,13 +34,13 @@ definition of done in `CLAUDE.md`. Tags close each phase.
 
 ## F1 · End-to-end payment (Oct 18–21) → `v0.1.0`
 
-- [ ] Read the sandbox guide and the Vault, Orders v2 and Payments v2 docs. List the
+- [x] Read the sandbox guide and the Vault, Orders v2 and Payments v2 docs. List the
       endpoints and their doc pages before coding
-- [ ] Decide between `@paypal/paypal-server-sdk` and direct REST, and check whether the SDK
-      is APIMatic-generated (D-007). Record it in DECISIONS
+- [x] Decide between `@paypal/paypal-server-sdk` and direct REST, and check whether the SDK
+      is APIMatic-generated (D-007). Record it in DECISIONS (D-016: SDK + APIMatic Context Plugin)
 - [ ] Plan Risk Data Acquisition (FraudNet/Magnes), which the vault docs say PayPal requires
       (D-013). Check when `PayPal-Client-Metadata-Id` is needed on vaulted charges
-- [ ] `feat/f1-vault-mandate`: save PayPal (setup token → buyer approval → payment token,
+- [x] `feat/f1-vault-mandate`: save PayPal (setup token → buyer approval → payment token,
       `usage_type` MERCHANT)
 - [ ] `feat/f1-vaulted-charge`: create and capture a €5 order with `vault_id`, with
       `PayPal-Request-Id` idempotency. Verify EUR on the ES sandbox accounts
@@ -107,6 +107,8 @@ definition of done in `CLAUDE.md`. Tags close each phase.
 - [ ] Instructions tested from scratch on a clean machine
 
 ## F6 · Submission (Nov 9–11) → `v1.0.0`
+
+- [ ] Claim the APIMatic free subscription (Sergi; the form is on the Devpost APIMatic page). Name the APIMatic Context Plugin on Devpost
 
 - [ ] Final `docs/DEMO_SCRIPT.md`, ≤ 2:45
 - [ ] Record the video on the real device, upload it to YouTube as **public**

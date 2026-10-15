@@ -75,3 +75,34 @@ One entry per session: date, what was done, what is left, blockers.
 
 **Blockers**
 - None.
+
+## 2026-10-15 · Session 1 (cont.) – F1 starts: vault mandate
+
+**Done**
+- Read the docs and listed every F1 endpoint with its doc page before coding. Plan approved.
+- APIMatic: its sponsor prize is for using the **APIMatic Context Plugin for PayPal**.
+  Installed it in Claude Code (pinned commit, telemetry off, skills only) and built with its
+  TypeScript skills (D-016).
+- Added `@paypal/paypal-server-sdk` 2.5.0 (pinned). Its Vault controller works for our
+  Spanish sandbox accounts, despite the README's "US only".
+- `feat/f1-vault-mandate`:
+  - SQLite + Drizzle `mandates` table and migrations;
+  - SDK client;
+  - PayPal error mapping (`details[0].issue`, `debug_id`);
+  - mandate service (start / complete / cancel);
+  - dev-only `/lab/payments` page (D-017).
+- Tests: 42 unit (17 new) and 4 sandbox, all passing.
+- **US1 verified end to end in the sandbox:** connect → approval with the Personal (ES)
+  account on www.sandbox.paypal.com → back to Leash → mandate `ACTIVE`, with the vault
+  token stored server-side only.
+
+**Left**
+- `feat/f1-vaulted-charge` (with RDA/FraudNet), `feat/f1-refund`, `feat/f1-declined-error`.
+
+**Blockers**
+- None.
+
+**Lesson**
+- The approval must happen in the same browser tab Leash opened, logged in with the
+  `…@personal.example.com` sandbox account. Typing any other email leads to PayPal's guest
+  card form.
