@@ -60,6 +60,7 @@ charges approved purchases (Orders v2) and refunds them (Payments v2).
 | AI from Nov 2, and always in the public demo, video and submission | `AI_PROVIDER=anthropic`: `claude-sonnet-5-5` for the agent, `claude-haiku-5-5` for rule conversion and summaries |
 | Validation | Zod for env vars, rules and every structured AI output |
 | Catalog | Channel3 TypeScript SDK (`@channel3/sdk`), with a cache. Spain + EUR only, never convert currencies. Local JSON fallback catalog, which includes the trap product |
+| PayPal SDK | `@paypal/paypal-server-sdk` (APIMatic), pinned. **Before writing SDK code, load the matching `paypal:typescript-*` skill** from the APIMatic Context Plugin (getting-started first). Client: `src/paypal/sdk.ts`; errors: `src/paypal/errors.ts` |
 | Payments | PayPal **sandbox only**: Vault (save PayPal, `usage_type` MERCHANT), Orders v2 (`payment_source.paypal.vault_id`, intent CAPTURE), Payments v2 refunds, `@paypal/agent-toolkit` (`sandbox: true`) behind "leashed tools" |
 | Data | SQLite + Drizzle ORM. The Render disk is wiped on restart, so demo data is re-seeded at boot |
 | Tests | Vitest. Sandbox integration tests run **locally only** (`npm run test:sandbox`) |
