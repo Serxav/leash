@@ -386,3 +386,37 @@ project. Newest at the bottom.
   declined €5.00 charge" button got `INSTRUMENT_DECLINED` from PayPal (debug ID
   `70c28ae654da`), recorded the payment as `DECLINED` and showed the message. The sandbox
   test does the same with a €1.00 merchant-initiated charge.
+
+### D-021 · 2026-10-15 · Spending rules schema (Zod)
+
+- **What:** `src/rules/schema.ts` defines the user's confirmed rules. Fields, all required:
+  - `formatVersion` (1) and `currency` (`EUR` only);
+  - `maxPerOrder` and `monthlyBudget`: hard limits, inclusive;
+  - `approvalThreshold`: orders **above** it need approval (an order of exactly this
+    amount does not: "ask me before anything over €15"); `null` means no approval step;
+  - `allowedCategories`: 1–20 catalog category slugs (Channel3 slugs, D-015);
+  - `blockedMerchants`: 0–50 hostnames;
+  - `maxUnitsPerItem`: 1–100, inclusive.
+- **Money:** euro amounts are strings with two decimals ("40.00"), the same format PayPal
+  uses, and every comparison is done in integer cents (`src/lib/money.ts`), never with
+  floats or text. The charge now uses the same helper.
+- **Security, because rules can come from an AI model:**
+  - strict object: unknown fields are rejected, so neither the model nor injected text can
+    add something like `allowEverything`;
+  - no silent defaults and no "no limit" value: every limit must be set, and amounts are
+    capped at €10,000.00;
+  - categories and merchants are closed formats (slugs and hostnames), never free text
+    that could carry instructions. Merchant URLs are normalised
+    (`https://www.Shop.example/x` → `shop.example`); anything else is rejected;
+  - consistency checks: `maxPerOrder` ≤ `monthlyBudget` and
+    `approvalThreshold` ≤ `maxPerOrder`;
+  - validation problems name the field and the reason, but never echo the rejected value
+    or unknown key names, which could be injected text;
+  - checked against oversized and ReDoS-style inputs (100,000 characters): under 2 ms.
+- **For the engine (next task):** blocked merchants also block their subdomains, and
+  catalog categories are compared after the same normalisation (trim + lowercase).
+- **For the rules builder:** the schema exports as a strict JSON Schema
+  (`additionalProperties: false`, all fields required), usable for structured AI output.
+- **Rule IDs:** `RULE_IDS` lists the stable IDs in the brief's evaluation order (state →
+  hard blocks → approval threshold). Decisions store them.
+- **Status:** accepted.

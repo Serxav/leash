@@ -51,7 +51,7 @@ definition of done in `CLAUDE.md`. Tags close each phase.
 
 ## F2 · Rules (Oct 22–25) → `v0.2.0`
 
-- [ ] `feat/f2-rules-schema`: Zod rules schema
+- [x] `feat/f2-rules-schema`: Zod rules schema (D-021)
 - [ ] `feat/f2-policy-engine`, tests first. Cases:
   - [ ] exact limit
   - [ ] budget used up
