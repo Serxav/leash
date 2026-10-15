@@ -203,3 +203,20 @@ One entry per session: date, what was done, what is left, blockers.
 
 **Left**
 - `feat/f2-ai-models`, `feat/f2-rules-builder`, `feat/f2-rules-confirmation`.
+
+## 2026-10-15 · Session 1 (cont.) – F2: AI models
+
+**Done**
+- `feat/f2-ai-models` (D-023): `src/ai/models.ts`, the single place for provider and model
+  choice; server-only, explicit keys from the validated env, no gateway routing.
+- AI SDK packages installed with exact versions at least a week old (supply-chain
+  precaution); `npm audit`: 0 vulnerabilities.
+- Found that `gemini-2.5-flash` (D-004) is no longer callable by new users. Sergi chose the
+  cheapest working model: `gemini-3.1-flash-lite` (free tier).
+- Tests: 246 unit (8 new) and a live provider check, all passing.
+
+**Left**
+- `feat/f2-rules-builder`, `feat/f2-rules-confirmation`, then tag `v0.2.0`.
+
+**Lesson**
+- A model in the provider's list is not proof it can be called: always try one real call.

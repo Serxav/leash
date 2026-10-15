@@ -62,7 +62,7 @@ definition of done in `CLAUDE.md`. Tags close each phase.
   - [x] approval threshold
   - [x] paused agent
   - [x] revoked mandate
-- [ ] `feat/f2-ai-models`: `src/ai/models.ts`, the single place for provider and model
+- [x] `feat/f2-ai-models` (D-023): `src/ai/models.ts`, the single place for provider and model
       choice
 - [ ] `feat/f2-rules-builder`: plain language → rules (structured output + Zod). It asks
       when a rule is ambiguous

@@ -53,7 +53,8 @@ PayPal** in Claude Code.
 
 The AI never receives a tool that moves money, never sees credentials or tokens, and treats
 product text as data, never as instructions. During early development, a free Gemini model
-is used with invented data only. The public demo always uses Claude.
+is used with invented data only. The public demo always uses Claude. The provider and models
+are chosen in one place: `src/ai/models.ts`.
 
 ## Sponsor tools
 
