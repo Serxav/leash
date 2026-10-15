@@ -63,7 +63,8 @@ charges approved purchases (Orders v2) and refunds them (Payments v2).
 | Payments | PayPal **sandbox only**: Vault (save PayPal, `usage_type` MERCHANT), Orders v2 (`payment_source.paypal.vault_id`, intent CAPTURE), Payments v2 refunds, `@paypal/agent-toolkit` (`sandbox: true`) behind "leashed tools" |
 | Data | SQLite + Drizzle ORM. The Render disk is wiped on restart, so demo data is re-seeded at boot |
 | Tests | Vitest. Sandbox integration tests run **locally only** (`npm run test:sandbox`) |
-| Node | Version pinned in `.nvmrc` and `engines` |
+| Node | 24 LTS, pinned in `.nvmrc` and `engines` (fnm switches to it automatically in this folder) |
+| Next.js | 16. **Before writing Next.js code, read the matching guide in `node_modules/next/dist/docs/`** (see `AGENTS.md`): APIs changed from older versions |
 
 ## Security and privacy (mandatory)
 

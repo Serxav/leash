@@ -39,12 +39,19 @@ One entry per session: date, what was done, what is left, blockers.
   - The cap is one grand prize or honorable mention, plus one sponsor prize.
 - Plan approved. Decisions D-002 to D-009 recorded.
 - `docs/f0-context-files`: `CLAUDE.md`, `docs/*`, README skeleton, `.gitignore`
-  additions.
+  additions. Merged in PR #1.
+- Installed Node 24.22 with fnm. It switches automatically by `.nvmrc`, and other projects
+  stay on Node 26.
+- `chore/f0-scaffold`, see D-010 and D-011:
+  - Next.js 16 + Tailwind + ESLint, plus Vitest, Zod, Drizzle and `better-sqlite3`;
+  - Zod env validation and the sandbox-only startup guard;
+  - `/api/health`;
+  - 15 unit tests.
+- Results: test, typecheck, lint and build pass; startup guard checked with `next start`.
 
 **Left**
-- Install Node 24 LTS (Sergi).
-- Then `chore/f0-scaffold`, `chore/setup-ci`, the ruleset status check,
-  `feat/f0-sandbox-connection`, and the Agent Toolkit and Channel3 spikes.
+- `chore/setup-ci`, the ruleset status check, `feat/f0-sandbox-connection`, and the Agent
+  Toolkit and Channel3 spikes.
 
 **Blockers**
 - None.
