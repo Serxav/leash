@@ -64,7 +64,7 @@ definition of done in `CLAUDE.md`. Tags close each phase.
   - [x] revoked mandate
 - [x] `feat/f2-ai-models` (D-023): `src/ai/models.ts`, the single place for provider and model
       choice
-- [ ] `feat/f2-rules-builder`: plain language → rules (structured output + Zod). It asks
+- [x] `feat/f2-rules-builder` (D-024): plain language → rules (structured output + Zod). It asks
       when a rule is ambiguous
 - [ ] `feat/f2-rules-confirmation`: confirmation screen with readable tags and policy
       versions
