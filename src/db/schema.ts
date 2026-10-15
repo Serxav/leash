@@ -25,3 +25,38 @@ export const mandates = sqliteTable("mandates", {
 
 export type Mandate = typeof mandates.$inferSelect;
 export type MandateStatus = Mandate["status"];
+
+/**
+ * One charge attempt against the user's mandate (PayPal Orders v2 with the
+ * vaulted payment token). The row is written before calling PayPal and its
+ * `id` is the PayPal-Request-Id, so a retried attempt can never charge twice.
+ *
+ * - CUSTOMER initiator: the user is present (e.g. one-tap approval).
+ * - MERCHANT initiator: the agent buys within the rules without the user.
+ */
+export const payments = sqliteTable("payments", {
+  id: text("id").primaryKey(),
+  userId: text("user_id").notNull(),
+  /** The purchase intent this pays for (F2/F3); null for lab charges. */
+  intentId: text("intent_id"),
+  /** Decimal string exactly as sent to PayPal, e.g. "5.00". */
+  amount: text("amount").notNull(),
+  currency: text("currency").notNull(),
+  initiator: text("initiator", { enum: ["CUSTOMER", "MERCHANT"] }).notNull(),
+  status: text("status", {
+    enum: ["PENDING", "COMPLETED", "DECLINED", "FAILED", "REFUNDED", "PARTIALLY_REFUNDED"],
+  }).notNull(),
+  paypalOrderId: text("paypal_order_id"),
+  captureId: text("capture_id"),
+  refundId: text("refund_id"),
+  /** details[0].issue of a failed attempt, e.g. INSTRUMENT_DECLINED. */
+  failureIssue: text("failure_issue"),
+  debugId: text("debug_id"),
+  /** End of the 14-day return window (D-008). */
+  withdrawalDeadline: integer("withdrawal_deadline", { mode: "timestamp_ms" }),
+  createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull(),
+});
+
+export type Payment = typeof payments.$inferSelect;
+export type PaymentStatus = Payment["status"];
