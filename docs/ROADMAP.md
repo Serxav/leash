@@ -7,18 +7,18 @@ definition of done in `CLAUDE.md`. Tags close each phase.
 
 - [x] Session 0: repo, `.claude/settings.json`, `.env.example`, `main` ruleset, squash-only
       merges, secret scanning, Dependabot, topics (Oct 15)
-- [ ] `docs/f0-context-files`: `CLAUDE.md`, `docs/*`, README skeleton, `.gitignore`
+- [x] `docs/f0-context-files`: `CLAUDE.md`, `docs/*`, README skeleton, `.gitignore`
       additions
-- [ ] Install Node 24 LTS locally (Sergi, D-003)
-- [ ] `chore/f0-scaffold`:
-  - [ ] Next.js App Router + TypeScript + Tailwind + ESLint, plus Vitest, Zod, Drizzle and
+- [x] Install Node 24 LTS locally with fnm (D-003)
+- [x] `chore/f0-scaffold`:
+  - [x] Next.js App Router + TypeScript + Tailwind + ESLint, plus Vitest, Zod, Drizzle and
         SQLite
-  - [ ] Scripts `dev`, `build`, `start`, `lint`, `typecheck`, `test`, `test:sandbox`;
+  - [x] Scripts `dev`, `build`, `start`, `lint`, `typecheck`, `test`, `test:sandbox`;
         `.nvmrc` and `engines`
-  - [ ] `src/config/env.ts`: Zod env validation and the sandbox-only guard; only the keys of
+  - [x] `src/config/env.ts`: Zod env validation and the sandbox-only guard; only the keys of
         the selected AI provider are required
-  - [ ] `/api/health` endpoint
-  - [ ] Tests for env validation (refuses live mode, wrong API URL, missing keys)
+  - [x] `/api/health` endpoint
+  - [x] Tests for env validation (refuses live mode, wrong API URL, missing keys)
 - [ ] `chore/setup-ci`:
   - [ ] `.github/workflows/ci.yml`: `npm ci`, lint, typecheck, test, build, gitleaks
   - [ ] `.github/pull_request_template.md`

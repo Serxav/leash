@@ -111,3 +111,46 @@ project. Newest at the bottom.
   indirect read, such as a script that opens the file itself. Reviewing each command is the
   real safeguard. CI also runs gitleaks.
 - **Status:** accepted.
+
+### D-010 · 2026-10-15 · Scaffold details (Next.js 16)
+
+- **Decision:**
+  - The app was generated with `create-next-app@16.4.1` in a separate folder, and only the
+    needed files were copied in. The template's Vercel/Next.js logos and links were
+    removed, because the UI must have no third-party brands.
+  - Next.js 16 defaults are kept (`cacheComponents`, Turbopack).
+  - `better-sqlite3` is pinned to an exact version (13.0.3). It is the only package whose
+    install script npm is allowed to run (`allowScripts` in `package.json`), because it
+    compiles a native module.
+  - `typecheck` runs `next typegen` before `tsc`, because Next.js 16 generates route types
+    such as `LayoutProps`.
+  - The Vitest configs are `.mts` files (ESM), as Vite recommends.
+- **Alternatives:**
+  - Generating into the repo directly. Refused, because it would overwrite our README and
+    `.gitignore`.
+  - Node's built-in `node:sqlite`, which needs no compile step. Drizzle 0.45 has no driver
+    for it.
+- **Why:** a clean, reproducible scaffold, with no brand assets and the smallest set of
+  install scripts.
+- **Known issue:** `npm audit` reports 5 high-severity findings (a `braces` DoS issue)
+  inside `eslint-config-next`. This is a lint-only dev dependency that is never shipped to
+  the server or the browser. npm's suggested "fix" downgrades to Next 14, which is wrong.
+  We will update when `eslint-config-next` publishes a fix (Dependabot will notify).
+- **Status:** accepted.
+
+### D-011 · 2026-10-15 · The server refuses to start on an unsafe configuration
+
+- **Decision:** `src/instrumentation.ts` validates the environment once at server start
+  (`src/config/env.ts`, Zod).
+  - If `PAYPAL_ENVIRONMENT` is not `SANDBOX`, or the selected AI provider's key is
+    missing, it logs the problem and **exits the process** with code 1.
+  - Error messages contain variable names, never values.
+  - `assertSandboxApiBase` only allows `https://api-m.sandbox.paypal.com`. The PayPal
+    client (F0 task 4) will call it before every request.
+  - `CHANNEL3_API_KEY` is optional, because the local catalog is the fallback.
+- **Alternatives:** throwing inside `register()` only. Tested: Next.js then keeps the
+  process alive and answers every request with HTTP 500, which is not "refusing to start".
+- **Why:** the brief requires that live PayPal can never be used, even by mistake.
+- **Status:** accepted. Tested with `next start`: sandbox config → `/api/health` 200;
+  `PAYPAL_ENVIRONMENT=LIVE` → exit code 1; `AI_PROVIDER=anthropic` without a key → exit
+  code 1.

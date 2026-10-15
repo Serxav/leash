@@ -158,3 +158,9 @@ vite.config.ts.timestamp-*
 
 # Personal study notes (Spanish, kept local)
 docs/LEARNING.md
+
+# Next.js extras (from create-next-app)
+/build
+next-env.d.ts
+.vercel
+*.pem
