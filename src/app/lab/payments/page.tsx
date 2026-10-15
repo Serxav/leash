@@ -6,7 +6,7 @@ import { getServerEnv } from "@/config/env";
 import { getDb } from "@/db/client";
 import { listPayments, newClientMetadataId } from "@/payments/charge";
 import { getMandateView } from "@/payments/mandate";
-import { chargeFiveEuros, connectPayPal } from "./actions";
+import { chargeFiveEuros, connectPayPal, refundLabPayment } from "./actions";
 import { assertLabEnabled, LAB_USER_ID } from "./lab";
 
 export const metadata: Metadata = {
@@ -17,8 +17,10 @@ export const metadata: Metadata = {
 const STATUS_MESSAGES: Record<string, string> = {
   connected: "PayPal is connected. Leash can now charge approved purchases.",
   charged: "Charged €5.00 with your saved PayPal (sandbox).",
+  refunded: "Refunded in full to the payer's PayPal (sandbox).",
+  "refund-pending": "Refund requested. PayPal is still processing it.",
   cancelled: "You cancelled on PayPal. Nothing was saved.",
-  error: "Something went wrong with PayPal. Nothing was charged.",
+  error: "Something went wrong with PayPal. No money moved.",
 };
 
 function first(value: string | string[] | undefined): string | undefined {
@@ -166,10 +168,24 @@ async function LabState({
                 {payment.amount} {payment.currency} · <strong>{payment.status}</strong> ·{" "}
                 {payment.initiator}
                 {payment.captureId && <> · capture {payment.captureId}</>}
+                {payment.refundId && <> · refund {payment.refundId}</>}
+                {payment.status === "COMPLETED" && payment.refundId && <> · refund pending</>}
                 {payment.failureIssue && <> · {payment.failureIssue}</>}
                 {payment.debugId && <> · debug {payment.debugId}</>}
-                {payment.withdrawalDeadline && (
+                {payment.status === "COMPLETED" && payment.withdrawalDeadline && (
                   <> · return window until {payment.withdrawalDeadline.toISOString().slice(0, 10)}</>
+                )}
+                {payment.status === "COMPLETED" && !payment.refundId && (
+                  <form action={refundLabPayment} className="mt-2">
+                    <input type="hidden" name="paymentId" value={payment.id} />
+                    <button
+                      type="submit"
+                      aria-label={`Refund ${payment.amount} ${payment.currency}`}
+                      className="rounded-full border border-zinc-400 px-4 py-2 font-sans text-xs font-medium hover:bg-zinc-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 dark:border-zinc-600 dark:hover:bg-zinc-800"
+                    >
+                      Refund in full
+                    </button>
+                  </form>
                 )}
               </li>
             ))}
