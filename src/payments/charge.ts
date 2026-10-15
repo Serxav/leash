@@ -30,6 +30,18 @@ const AMOUNT_PATTERN = /^(0|[1-9]\d{0,5})\.\d{2}$/;
 /** FraudNet session id: 32 lowercase hex characters (max length 32). */
 const CLIENT_METADATA_ID_PATTERN = /^[0-9a-f]{32}$/;
 
+/**
+ * PayPal sandbox negative testing: the PayPal-Mock-Response header makes the
+ * sandbox answer with this error instead of charging.
+ * Docs: https://developer.paypal.com/tools/sandbox/negative-testing/request-headers/
+ */
+export const SANDBOX_MOCK_ISSUES = ["INSTRUMENT_DECLINED"] as const;
+export type SandboxMockIssue = (typeof SANDBOX_MOCK_ISSUES)[number];
+
+export function isSandboxMockIssue(value: unknown): value is SandboxMockIssue {
+  return SANDBOX_MOCK_ISSUES.includes(value as SandboxMockIssue);
+}
+
 export type ChargeDeps = {
   db: Db;
   orders: Pick<OrdersController, "createOrder">;
@@ -49,6 +61,12 @@ export type ChargeInput = {
    */
   clientMetadataId?: string;
   intentId?: string;
+  /**
+   * Sandbox only: ask PayPal to fail with this issue (negative testing), to
+   * show how Leash handles a declined payment. Leash never runs outside the
+   * sandbox (startup guard), so this cannot affect real money.
+   */
+  sandboxMockIssue?: SandboxMockIssue;
 };
 
 /** What the UI may see about a payment. */
@@ -179,6 +197,9 @@ export async function chargeWithMandate(
       deps.orders.createOrder({
         paypalRequestId: paymentId,
         paypalClientMetadataId: input.clientMetadataId,
+        paypalMockResponse: input.sandboxMockIssue
+          ? JSON.stringify({ mock_application_codes: input.sandboxMockIssue })
+          : undefined,
         prefer: "return=representation",
         body: {
           intent: CheckoutPaymentIntent.Capture,

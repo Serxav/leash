@@ -27,4 +27,21 @@ describe("PayPal sandbox charge with the vaulted token", () => {
     expect(payment.currency).toBe("EUR");
     expect(payment.captureId).toBeTruthy();
   });
+
+  it.skipIf(!hasMandate)("records a declined payment (negative testing)", async () => {
+    const payment = await chargeWithMandate(
+      { db: db!, orders: new OrdersController(getPayPalClient()) },
+      {
+        userId: LAB_USER_ID,
+        amount: "1.00",
+        description: "Leash sandbox test (declined)",
+        initiator: "MERCHANT",
+        sandboxMockIssue: "INSTRUMENT_DECLINED",
+      },
+    );
+    expect(payment.status).toBe("DECLINED");
+    expect(payment.failureIssue).toBe("INSTRUMENT_DECLINED");
+    expect(payment.debugId).toBeTruthy();
+    expect(payment.captureId).toBeNull();
+  });
 });
