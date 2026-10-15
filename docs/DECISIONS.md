@@ -56,7 +56,8 @@ project. Newest at the bottom.
 - **Alternatives:** `gemini-flash-latest`.
 - **Why:** a `-latest` alias can change behaviour without notice and break tests. A pinned
   model gives reproducible results.
-- **Status:** accepted.
+- **Status:** superseded by D-023 (the model is listed, but Google no longer lets new users
+  call it).
 
 ### D-005 · 2026-10-15 · Project skeleton tooling
 
@@ -459,3 +460,37 @@ project. Newest at the bottom.
   approval time, because the budget may have changed since the purchase was proposed.
 - **Status:** accepted. 67 test cases cover every case in the ROADMAP, the edges and the
   attacks above.
+
+### D-023 · 2026-10-15 · AI models in one file, cheapest Gemini model for development
+
+- **What:** `src/ai/models.ts` is the only place that chooses the provider and the models
+  (`getModel("agent" | "rules")`, `describeModels()` for the transparency notice):
+  - `AI_PROVIDER=google` (until Nov 1): `gemini-3.1-flash-lite` for both roles;
+  - `AI_PROVIDER=anthropic` (from Nov 2, public demo, video, submission):
+    `claude-sonnet-5-5` for the agent and `claude-haiku-5-5` for rules and summaries.
+- **Why the Gemini model changed (replaces D-004):** a real call to `gemini-2.5-flash`
+  failed with "no longer available to new users" (it still appears in the model list,
+  which is why D-004 looked fine). One tiny call per model, with invented data:
+  - `gemini-2.5-flash`, `gemini-2.5-flash-lite`: not available to new users;
+  - `gemini-3.8-flash`: no answer within 25 s;
+  - `gemini-3.5-flash`: works (2.6 s);
+  - `gemini-3.1-flash-lite`: works (1.1 s).
+
+  Sergi asked for the cheapest available model, with no future bills.
+  `gemini-3.1-flash-lite` is the cheapest that works: free tier, and the lowest paid price
+  on Google's pricing page ($0.25 input / $1.50 output per 1M tokens). Still pinned, never a
+  `-latest` alias. No bill comes while the Google AI Studio project has no billing account
+  (free tier); Sergi keeps it that way.
+- **Packages** (pinned exactly, each published at least a week before install, as a
+  supply-chain precaution; none runs install scripts; `npm audit`: 0 vulnerabilities):
+  `ai` 7.0.132, `@ai-sdk/google` 4.0.91, `@ai-sdk/anthropic` 4.0.75, `server-only` 0.0.1.
+- **Security:**
+  - `import "server-only"`: importing the file from browser code fails the build, so the
+    keys can never reach the client;
+  - keys come from the validated env and are passed explicitly; the provider never falls
+    back to reading `process.env` itself, and a missing key throws;
+  - models are provider instances, never model-ID strings, which the AI SDK would route
+    through the Vercel AI Gateway;
+  - tests check that requests go straight to `generativelanguage.googleapis.com` or
+    `api.anthropic.com` with the right key, and never carry the other provider's key.
+- **Status:** accepted. Live check (`npm run test:sandbox`) passes with Gemini.

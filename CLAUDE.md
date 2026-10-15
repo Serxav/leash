@@ -56,7 +56,7 @@ charges approved purchases (Orders v2) and refunds them (Payments v2).
 | App | Next.js (App Router) + TypeScript, deployed on Render (Starter instance, never sleeps). Endpoint `/api/health` and per-visitor rate limit on agent routes |
 | UI | Tailwind CSS, mobile first, accessible (contrast, keyboard, form labels) |
 | AI | Vercel AI SDK. The provider and models are chosen **only** in `src/ai/models.ts` |
-| AI dev, until Nov 1 | `AI_PROVIDER=google`, model `gemini-2.5-flash` (free tier, invented data only) |
+| AI dev, until Nov 1 | `AI_PROVIDER=google`, model `gemini-3.1-flash-lite` (D-023: cheapest working model, free tier, invented data only) |
 | AI from Nov 2, and always in the public demo, video and submission | `AI_PROVIDER=anthropic`: `claude-sonnet-5-5` for the agent, `claude-haiku-5-5` for rule conversion and summaries |
 | Validation | Zod for env vars, rules and every structured AI output |
 | Catalog | Channel3 TypeScript SDK (`@channel3/sdk`), with a cache. Spain + EUR only, never convert currencies. Local JSON fallback catalog, which includes the trap product |
