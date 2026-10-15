@@ -35,6 +35,17 @@ const envSchema = z
     ANTHROPIC_API_KEY: optionalSecret,
     // Optional: without it, the app uses the local fallback catalog.
     CHANNEL3_API_KEY: optionalSecret,
+    // Public PayPal Merchant ID of the sandbox Business account (not a
+    // secret). Used for FraudNet's source id (s = <merchant_id>_<page_id>).
+    PAYPAL_MERCHANT_ID: z.preprocess(
+      blankToUndefined,
+      z
+        .string()
+        .regex(/^[A-Z0-9]{8,20}$/, {
+          error: "PAYPAL_MERCHANT_ID must be the PayPal Merchant ID (letters and digits)",
+        })
+        .optional(),
+    ),
   })
   .superRefine((env, ctx) => {
     // Only the keys of the selected AI provider are required.
