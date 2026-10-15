@@ -132,3 +132,21 @@ One entry per session: date, what was done, what is left, blockers.
 
 **Note**
 - After adding a migration, restart `npm run dev`: migrations run once per server process.
+
+## 2026-10-15 · Session 1 (cont.) – F1: refund
+
+**Done**
+- `feat/f1-refund` (D-019):
+  - refund service: full refund with Payments v2, idempotent `PayPal-Request-Id`
+    derived from the payment, owner and status checks;
+  - `CAPTURE_FULLY_REFUNDED` syncs the record; other errors keep the payment unchanged;
+  - lab "Refund in full" button per completed payment;
+  - the return window is only shown for completed payments.
+- **Verified in the sandbox:**
+  - the €5.00 lab payment refunded from the button (refund `72C560913E260084A`);
+  - sandbox test: €1.00 charge → refund → second refund rejected with
+    `CAPTURE_FULLY_REFUNDED`.
+- Tests: 73 unit and 6 sandbox, all passing.
+
+**Left**
+- `feat/f1-declined-error`, then tag `v0.1.0`.

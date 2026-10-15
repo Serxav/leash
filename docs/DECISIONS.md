@@ -335,3 +335,30 @@ project. Newest at the bottom.
     COMPLETED, 5.00 EUR, payee = the Business merchant, €4.48 net, seller protection
     ELIGIBLE;
   - a €1.00 MERCHANT charge without risk data, also COMPLETED (sandbox test).
+
+### D-019 · 2026-10-15 · Refunds (Payments v2)
+
+- **What:** `src/payments/refund.ts` refunds a completed payment in full with
+  `PaymentsController.refundCapturedPayment` (POST `/v2/payments/captures/{id}/refund`).
+  The body is empty, which PayPal documents as a full refund.
+- **Why only full refunds:** the user returns the whole purchase within the 14-day window
+  (D-008). Partial refunds add amount checks and states the MVP does not need.
+- **Idempotency:** the `PayPal-Request-Id` is `refund-<paymentId>`, derived from the
+  payment. A double click or a retry after a timeout gets the same refund back, never a
+  second one. A payment already `REFUNDED` in Leash is not sent to PayPal again.
+- **Who can refund:** only the payment's owner, only when it is `COMPLETED` and has a
+  capture. Anything else is refused before calling PayPal.
+- **PayPal answers** (issue names checked in the official Payments v2 spec):
+  - refund `COMPLETED` → payment `REFUNDED`, `refundId` saved;
+  - refund `PENDING` → payment stays `COMPLETED` with its `refundId`, shown as
+    "refund pending";
+  - `CAPTURE_FULLY_REFUNDED` (already refunded, for example from the PayPal dashboard) →
+    Leash marks the payment `REFUNDED` instead of failing;
+  - any other error (`REFUND_AMOUNT_EXCEEDED`, `REFUND_TIME_LIMIT_EXCEEDED`,
+    `TRANSACTION_DISPUTED`…) leaves the payment unchanged and shows the issue and
+    `debug_id`.
+- **Status:** accepted. Verified in the sandbox on 2026-10-15:
+  - the €5.00 capture `1GM787476M628661F` refunded from the lab button (refund
+    `72C560913E260084A`);
+  - sandbox test: €1.00 charge → refund → a second refund with a new request id is
+    rejected with `CAPTURE_FULLY_REFUNDED`.
