@@ -22,14 +22,14 @@ definition of done in `CLAUDE.md`. Tags close each phase.
 - [x] `chore/setup-ci`:
   - [x] `.github/workflows/ci.yml`: `npm ci`, lint, typecheck, test, build, gitleaks
   - [x] `.github/pull_request_template.md`
-- [ ] Add the CI check as a **required status check** in the `main` ruleset (after
+- [x] Add the CI check as a **required status check** in the `main` ruleset (after
       `chore/setup-ci` is merged)
-- [ ] `feat/f0-sandbox-connection`:
-  - [ ] Server-only PayPal OAuth client
-  - [ ] `npm run test:sandbox` proves the connection
-- [ ] Spike: check that `@paypal/agent-toolkit` is compatible with the current Vercel AI SDK
+- [x] `feat/f0-sandbox-connection`:
+  - [x] Server-only PayPal OAuth client
+  - [x] `npm run test:sandbox` proves the connection
+- [x] Spike: check that `@paypal/agent-toolkit` is compatible with the current Vercel AI SDK
       (`npm view` + compile-only check). Record it in DECISIONS
-- [ ] Spike: one Channel3 search with Spain + EUR, to confirm EUR offers exist (1 credit).
+- [x] Spike: one Channel3 search with Spain + EUR, to confirm EUR offers exist (1 credit).
       Record it in DECISIONS
 
 ## F1 · End-to-end payment (Oct 18–21) → `v0.1.0`
@@ -38,8 +38,8 @@ definition of done in `CLAUDE.md`. Tags close each phase.
       endpoints and their doc pages before coding
 - [ ] Decide between `@paypal/paypal-server-sdk` and direct REST, and check whether the SDK
       is APIMatic-generated (D-007). Record it in DECISIONS
-- [ ] Check when risk data (`PayPal-Client-Metadata-Id` / FraudNet) is required for vaulted
-      charges
+- [ ] Plan Risk Data Acquisition (FraudNet/Magnes), which the vault docs say PayPal requires
+      (D-013). Check when `PayPal-Client-Metadata-Id` is needed on vaulted charges
 - [ ] `feat/f1-vault-mandate`: save PayPal (setup token → buyer approval → payment token,
       `usage_type` MERCHANT)
 - [ ] `feat/f1-vaulted-charge`: create and capture a €5 order with `vault_id`, with

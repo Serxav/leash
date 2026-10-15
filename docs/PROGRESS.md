@@ -53,9 +53,25 @@ One entry per session: date, what was done, what is left, blockers.
   history scan, plus the PR template. gitleaks 8.30.1 was run locally first: 4 commits
   scanned, no leaks.
 
+- PR #3 merged with green CI. Both checks are now **required** in the `main` ruleset (strict:
+  the branch must be up to date).
+- `feat/f0-sandbox-connection`:
+  - server-only PayPal OAuth client (D-013) with 10 unit tests;
+  - `npm run test:sandbox` passes against the real sandbox: token received, vault and
+    reporting scopes present, 401 on wrong credentials.
+- Agent Toolkit spike (D-014): v1.11.0 needs `ai` v4 and `zod` v3, so leashed tools will
+  delegate to the toolkit's `execute`.
+- Channel3 spike (D-015): Spain + EUR works (9/9 offers in EUR, categories present).
+- F1 inputs found:
+  - the PayPal Server SDK is APIMatic-generated;
+  - its Vault controller is US-only, so the vault will use REST (Spain is supported by the
+    API);
+  - RDA (FraudNet/Magnes) is required.
+
 **Left**
-- The ruleset status check (after merging `chore/setup-ci`), `feat/f0-sandbox-connection`, and the Agent
-  Toolkit and Channel3 spikes.
+- F0 is complete once this PR merges.
+- Next is F1 (Oct 18–21): read the Vault, Orders v2 and Payments v2 docs, decide on the
+  SDK vs REST question and on APIMatic, and plan RDA.
 
 **Blockers**
 - None.

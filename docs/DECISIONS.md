@@ -177,3 +177,64 @@ project. Newest at the bottom.
   - Pinning actions by SHA protects against a compromised tag (supply-chain safety).
   - Both job names become required status checks on `main`.
 - **Status:** accepted.
+
+### D-013 · 2026-10-15 · Own server-side PayPal OAuth client (REST)
+
+- **Decision:** `src/paypal/auth.ts` gets OAuth tokens over plain REST
+  (`POST /v1/oauth2/token`, client credentials), following
+  https://developer.paypal.com/api/rest/authentication/.
+  - It refuses any host but the sandbox API **before** sending anything.
+  - It caches one token per process and renews it 60 s before expiry. Concurrent callers
+    share one request, and errors are not cached.
+  - Errors keep the HTTP status, PayPal's error code and the `paypal-debug-id`, never
+    credentials.
+- **Alternatives:** `@paypal/paypal-server-sdk`, which also handles OAuth.
+- **Why:** F0 findings that shape F1:
+  - The official PayPal Server SDK **is generated with APIMatic**: its dependencies are
+    `@apimatic/*`. Using it for Orders/Payments may count as using APIMatic tools (D-007).
+    Decide in F1.
+  - Its README says its **Vault controller is "Available in the US only"**. The Vault
+    *API* itself supports Spain: "Save PayPal for purchase later" lists Spain among the
+    supported countries. So vault calls (`/v3/vault/setup-tokens`,
+    `/v3/vault/payment-tokens`) will likely be direct REST, and they need our own token
+    anyway.
+  - The vault docs say PayPal **requires Risk Data Acquisition (RDA)** with the FraudNet
+    and Magnes libraries. This must be planned in F1.
+  - The vault docs show `usage_type` both as `PLATFORM` (step text) and as `MERCHANT`
+    (sample request). Leash is a single merchant, so we use `MERCHANT`. Confirm in F1.
+- **Status:** accepted. Sandbox test: a real token with the vault and reporting scopes, and
+  401 on wrong credentials.
+
+### D-014 · 2026-10-15 · Agent Toolkit vs Vercel AI SDK (spike result)
+
+- **Finding:** `@paypal/agent-toolkit` 1.11.0 (latest, published Sep 29, 2026) depends on
+  `ai ^4` and `zod ^3` as **hard dependencies**. Its `./ai-sdk` export builds AI SDK v4
+  tools. Our stack is `ai` 7 and `zod` 4, so its tools cannot be passed straight to the
+  model. It also pulls in `openai`, `@langchain/core`, `mathjs` and `@dotenvx/dotenvx`.
+- **Decision for F3:** define each leashed tool ourselves with `ai` v7 `tool()` and our own
+  Zod 4 schema and permission checks, and **delegate execution** to the toolkit tool's
+  `execute`. The toolkit still runs the real PayPal calls. Only the read-only tools (order
+  and transaction status) and refund-with-confirmation are exposed.
+- **Alternatives:**
+  - Downgrade `ai` to v4: too old for current Claude models.
+  - Run the toolkit as an in-process MCP server through the AI SDK MCP client: more moving
+    parts.
+- **Status:** accepted direction. Installing the toolkit (large dependency) will be asked
+  for in F3.
+
+### D-015 · 2026-10-15 · Channel3 works for Spain + EUR (spike result)
+
+- **Finding:** Channel3 documents `POST https://api.trychannel3.com/v1/search` with
+  `x-api-key`, and `config.country`/`config.currency` accept `ES` and `EUR`. Each offer has
+  `domain` and `price {price, currency}`. Pricing: `/search` costs 1 credit, `/products` is
+  free, and there are 1,000 free credits per month.
+- **Spike** (1 credit), query "A4 printer paper 80gsm 500 sheets" with `ES` + `EUR`:
+  - 9 products and 9 offers, **all in EUR** and all in stock;
+  - 8 different merchant domains;
+  - every product has a category (e.g. `stationery`);
+  - prices from €2 to €1,361.
+- **Decision:** keep Channel3 as the live catalog with `country: "ES"` and
+  `currency: "EUR"`, and drop non-EUR offers. Categories come from Channel3's category
+  slugs. Product titles and domains include real brands, so the no-brands-in-the-video
+  question stays open for F3 (D-007).
+- **Status:** accepted.
