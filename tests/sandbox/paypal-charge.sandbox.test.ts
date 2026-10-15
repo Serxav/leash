@@ -1,0 +1,30 @@
+import { existsSync } from "node:fs";
+import { OrdersController } from "@paypal/paypal-server-sdk";
+import { describe, expect, it } from "vitest";
+import { createDb, DEFAULT_DB_PATH } from "@/db/client";
+import { chargeWithMandate } from "@/payments/charge";
+import { getActiveVaultToken } from "@/payments/mandate";
+import { getPayPalClient } from "@/paypal/sdk";
+
+// Real €1.00 sandbox charge with the lab's saved PayPal (fake money).
+// Needs an ACTIVE mandate: connect PayPal once in /lab/payments first.
+const LAB_USER_ID = "lab-user";
+const db = existsSync(DEFAULT_DB_PATH) ? createDb(DEFAULT_DB_PATH) : undefined;
+const hasMandate = Boolean(db && getActiveVaultToken(db, LAB_USER_ID));
+
+describe("PayPal sandbox charge with the vaulted token", () => {
+  it.skipIf(!hasMandate)("captures a merchant-initiated EUR payment", async () => {
+    const payment = await chargeWithMandate(
+      { db: db!, orders: new OrdersController(getPayPalClient()) },
+      {
+        userId: LAB_USER_ID,
+        amount: "1.00",
+        description: "Leash sandbox test (merchant-initiated)",
+        initiator: "MERCHANT",
+      },
+    );
+    expect(payment.status).toBe("COMPLETED");
+    expect(payment.currency).toBe("EUR");
+    expect(payment.captureId).toBeTruthy();
+  });
+});
