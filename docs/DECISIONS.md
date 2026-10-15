@@ -494,3 +494,44 @@ project. Newest at the bottom.
   - tests check that requests go straight to `generativelanguage.googleapis.com` or
     `api.anthropic.com` with the right key, and never carry the other provider's key.
 - **Status:** accepted. Live check (`npm run test:sandbox`) passes with Gemini.
+
+### D-024 · 2026-10-15 · Rules builder: the AI extracts, the code decides
+
+- **What:** `buildRules({ model }, text)` in `src/rules/builder.ts` turns the user's plain
+  language into exact rules, or into questions. Nothing applies until the user confirms
+  the result (next task).
+- **Two steps:**
+  1. **The model extracts** a loose draft with structured output (`Output.object`):
+     amounts as written, `null` for anything not mentioned, `"none"` for "never ask me",
+     category slugs, domains, and questions about anything ambiguous.
+  2. **The code decides** (`completeDraft`, no AI): it reads amounts as people write them
+     (`40`, `40,5`, `€40`, `40 €` → `"40.00"`; anything else is asked again), turns
+     categories into slugs, sets `currency: "EUR"` and `formatVersion` itself, copies only
+     known fields, and validates the result with the strict rules schema (D-021).
+- **Asks instead of guessing (US2):** a missing or unreadable value becomes a fixed,
+  plain question from the code. The model's own questions about ambiguity (for example
+  "What is the website domain for Marketplace X?") are shown once nothing is missing, so
+  the user is never asked the same thing twice. Other currencies are refused (Leash never
+  converts). At most 5 questions, each cleaned and capped at 200 characters.
+- **Security review:**
+  - the model has no tools, runs at temperature 0 with a 30 s timeout, and only sees the
+    rule text (no user data);
+  - the user's text is capped at 1,000 characters and sent as delimited data after the
+    instructions; the user cannot close or reopen the data block;
+  - the model never writes the final rules: invented fields (`allowEverything`) and its
+    own `formatVersion` or currency are ignored, and everything goes through the strict
+    schema;
+  - problems never echo invalid values; provider error details are never shown (they can
+    carry request details);
+  - model questions are plain text, shown through React, which escapes them.
+- **Live check with `gemini-3.1-flash-lite`** (invented data): the brief's example gives
+  exactly the expected rules; a Spanish example ("nunca me preguntes", "papelería y
+  limpieza") gives `approvalThreshold: null` and `stationery`, `cleaning-supplies`; vague
+  text gives the four missing-value questions; an injection attempt gives questions, never
+  silent rules.
+- **For later:**
+  - F3: category slugs are free English slugs; the catalog's Channel3 categories must be
+    mapped to the same slugs, or the engine blocks them (it fails closed);
+  - F5: the rules builder calls a paid model in the public demo, so its route needs the
+    same per-visitor rate limit as the agent routes.
+- **Status:** accepted.

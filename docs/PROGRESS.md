@@ -220,3 +220,18 @@ One entry per session: date, what was done, what is left, blockers.
 
 **Lesson**
 - A model in the provider's list is not proof it can be called: always try one real call.
+
+## 2026-10-15 · Session 1 (cont.) – F2: rules builder
+
+**Done**
+- `feat/f2-rules-builder` (D-024): plain language → rules or questions. The model extracts
+  a loose draft; the code reads amounts, asks for missing values, sets currency and format
+  and validates with the strict schema.
+- Security review: no tools, temperature 0, timeout, capped and delimited user text, no
+  echo of invalid values or provider errors, model output never trusted.
+- Live check with Gemini: English and Spanish examples work; vague text and injection
+  attempts give questions.
+- Tests: 291 unit (45 new) and 3 live builder checks, all passing.
+
+**Left**
+- `feat/f2-rules-confirmation` (UI, minimal until the design pass), then tag `v0.2.0`.
