@@ -1,0 +1,68 @@
+# Leash – Spending rules for AI agents
+
+> **Give your AI agent a budget, not your wallet.** Plain-language spending rules, one-tap
+> human approval and PayPal checkout, designed for EU payment rules.
+
+Built for the [PayPal AI Hackathon](https://paypalaihackathon.devpost.com/) on Devpost.
+This is a web application for desktop and mobile, created from scratch during the
+submission period. It uses the **PayPal sandbox only**: no real money ever moves.
+
+> **Status: under active development (phase F0 – setup).** This README describes the planned
+> design. Each section will be updated as features land. See [docs/ROADMAP.md](docs/ROADMAP.md).
+
+## What it is
+
+People don't let AI agents pay because they can't control how much the agent spends or on
+what. In the EU, PSD2 also requires the person to authorise payments. Leash is a control
+layer between an AI shopping agent and the user's money:
+
+1. **Rules in plain language.** The user writes spending rules ("max €40 per order, €150 per
+   month, office supplies only, ask me above €15"). The AI turns them into exact JSON rules,
+   which the user confirms.
+2. **The AI proposes, the code decides.** The agent can only *propose* purchases. A
+   deterministic policy engine, plain TypeScript with no AI, decides `APPROVE`,
+   `NEEDS_APPROVAL` or `BLOCK`.
+3. **PayPal executes only what is approved.** The user saves PayPal once (the mandate).
+   Approved purchases are charged with the saved method, and refunds go back through PayPal.
+
+## Planned PayPal integration (sandbox)
+
+| PayPal API | Used for |
+|---|---|
+| Vault – save PayPal for purchase later | The user's mandate (payment token) |
+| Orders v2 | Charging approved purchases with the saved payment method |
+| Payments v2 – refunds | Refunds from the purchase history |
+| Agent Toolkit (`@paypal/agent-toolkit`) | Read-only tools for the agent (order and transaction status) and confirmed refunds, wrapped by Leash's permission layer ("leashed tools") |
+
+## Planned AI usage
+
+| Model | Used for |
+|---|---|
+| Claude `claude-sonnet-5-5` (Anthropic API) | Shopping agent: searches and compares products, proposes purchases |
+| Claude `claude-haiku-5-5` (Anthropic API) | Rule conversion (plain language → JSON) and summaries |
+
+The AI never receives a tool that moves money, never sees credentials or tokens, and treats
+product text as data, never as instructions. During early development, a free Gemini model
+is used with invented data only. The public demo always uses Claude.
+
+## Sponsor tools
+
+- **Channel3:** product catalog search for the agent.
+- **Render:** hosting for the public demo.
+
+## Setup
+
+_Coming in phase F0/F5:_ requirements, environment variables (see
+[`.env.example`](.env.example)), installation, running locally, sandbox test credentials,
+and how to test each user story.
+
+## Project docs
+
+- [docs/PROJECT_BRIEF.md](docs/PROJECT_BRIEF.md): full product specification
+- [docs/ROADMAP.md](docs/ROADMAP.md): phases and tasks
+- [docs/DECISIONS.md](docs/DECISIONS.md): technical decisions and why
+- [docs/HACKATHON_RULES.md](docs/HACKATHON_RULES.md): official rules and compliance checklist
+
+## License
+
+[MIT](LICENSE)

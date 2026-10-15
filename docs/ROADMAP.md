@@ -1,0 +1,120 @@
+# Roadmap
+
+One task = one branch = one pull request. Tick a box only when the task meets the
+definition of done in `CLAUDE.md`. Tags close each phase.
+
+## F0 · Setup (Oct 15–17)
+
+- [x] Session 0: repo, `.claude/settings.json`, `.env.example`, `main` ruleset, squash-only
+      merges, secret scanning, Dependabot, topics (Oct 15)
+- [ ] `docs/f0-context-files`: `CLAUDE.md`, `docs/*`, README skeleton, `.gitignore`
+      additions
+- [ ] Install Node 24 LTS locally (Sergi, D-003)
+- [ ] `chore/f0-scaffold`:
+  - [ ] Next.js App Router + TypeScript + Tailwind + ESLint, plus Vitest, Zod, Drizzle and
+        SQLite
+  - [ ] Scripts `dev`, `build`, `start`, `lint`, `typecheck`, `test`, `test:sandbox`;
+        `.nvmrc` and `engines`
+  - [ ] `src/config/env.ts`: Zod env validation and the sandbox-only guard; only the keys of
+        the selected AI provider are required
+  - [ ] `/api/health` endpoint
+  - [ ] Tests for env validation (refuses live mode, wrong API URL, missing keys)
+- [ ] `chore/setup-ci`:
+  - [ ] `.github/workflows/ci.yml`: `npm ci`, lint, typecheck, test, build, gitleaks
+  - [ ] `.github/pull_request_template.md`
+- [ ] Add the CI check as a **required status check** in the `main` ruleset (after
+      `chore/setup-ci` is merged)
+- [ ] `feat/f0-sandbox-connection`:
+  - [ ] Server-only PayPal OAuth client
+  - [ ] `npm run test:sandbox` proves the connection
+- [ ] Spike: check that `@paypal/agent-toolkit` is compatible with the current Vercel AI SDK
+      (`npm view` + compile-only check). Record it in DECISIONS
+- [ ] Spike: one Channel3 search with Spain + EUR, to confirm EUR offers exist (1 credit).
+      Record it in DECISIONS
+
+## F1 · End-to-end payment (Oct 18–21) → `v0.1.0`
+
+- [ ] Read the sandbox guide and the Vault, Orders v2 and Payments v2 docs. List the
+      endpoints and their doc pages before coding
+- [ ] Decide between `@paypal/paypal-server-sdk` and direct REST, and check whether the SDK
+      is APIMatic-generated (D-007). Record it in DECISIONS
+- [ ] Check when risk data (`PayPal-Client-Metadata-Id` / FraudNet) is required for vaulted
+      charges
+- [ ] `feat/f1-vault-mandate`: save PayPal (setup token → buyer approval → payment token,
+      `usage_type` MERCHANT)
+- [ ] `feat/f1-vaulted-charge`: create and capture a €5 order with `vault_id`, with
+      `PayPal-Request-Id` idempotency. Verify EUR on the ES sandbox accounts
+- [ ] `feat/f1-refund`: refund a capture (Payments v2)
+- [ ] `feat/f1-declined-error`: `INSTRUMENT_DECLINED` via `PayPal-Mock-Response`, branching
+      on `details[0].issue`, keeping the `debug_id`, with a clear user message
+- [ ] Minimal page that runs the whole flow. Tested with the Personal and Business accounts
+
+## F2 · Rules (Oct 22–25) → `v0.2.0`
+
+- [ ] `feat/f2-rules-schema`: Zod rules schema
+- [ ] `feat/f2-policy-engine`, tests first. Cases:
+  - [ ] exact limit
+  - [ ] budget used up
+  - [ ] month change in Europe/Madrid
+  - [ ] category not allowed
+  - [ ] blocked merchant
+  - [ ] too many units
+  - [ ] approval threshold
+  - [ ] paused agent
+  - [ ] revoked mandate
+- [ ] `feat/f2-ai-models`: `src/ai/models.ts`, the single place for provider and model
+      choice
+- [ ] `feat/f2-rules-builder`: plain language → rules (structured output + Zod). It asks
+      when a rule is ambiguous
+- [ ] `feat/f2-rules-confirmation`: confirmation screen with readable tags and policy
+      versions
+- [ ] *(Can move earlier, D-006)* UI shells for the approval inbox and history
+
+## F3 · Agent (Oct 26–Nov 1, low pace) → `v0.3.0`
+
+- [ ] `feat/f3-channel3-catalog`: Channel3 SDK with a cache, Spain + EUR only, local JSON
+      fallback catalog with the trap product
+- [ ] `feat/f3-shopping-agent`: agent (Gemini via `src/ai/models.ts`) whose only purchase
+      tool is `propose_purchase`; the server re-reads price, merchant and category
+- [ ] `feat/f3-leashed-tools`: Agent Toolkit tools wrapped by the Leash permission layer
+- [ ] `test/f3-prompt-injection`: the trap product is blocked and logged
+- [ ] Decide how Channel3 results are shown without third-party brands in the video
+      (generic queries, no product images or neutral images). Record it in DECISIONS
+- [ ] Anthropic: workspace "leash", spending limit, `leash-dev` key (Sergi, end of
+      October). Run the rules-conversion tests with both providers
+
+## F4 · Control (Nov 2–5) → `v0.4.0`
+
+- [ ] `chore/f4-switch-to-claude`: `AI_PROVIDER=anthropic`, pass the rules and agent tests,
+      tune the prompts
+- [ ] `feat/f4-approval-inbox`: one-tap approve/reject, where approving triggers the charge
+- [ ] `feat/f4-history`: status, amount, rule, PayPal reference, "14-day return window"
+      countdown (D-008), refund button
+- [ ] `feat/f4-permissions-panel`: pause the agent, revoke the mandate (deletes the vault
+      token), delete the account and data
+- [ ] Everything works on mobile
+- [ ] *(Optional sponsor, D-007)* AG Grid for the history/audit table on desktop
+
+## F5 · Polish (Nov 6–8) → `v0.9.0` · feature freeze on Nov 8
+
+- [ ] Design and accessibility pass (contrast, keyboard, labels)
+- [ ] Deploy on Render Starter: sandbox env vars, `AI_PROVIDER=anthropic`, `/api/health`,
+      rate limit, demo data re-seeded at boot, anonymous per-session demo users, "Reset
+      demo"
+- [ ] Dedicated sandbox Personal account for judges, plus a backup account
+- [ ] README for judges: what it is, AI used, PayPal APIs and folders, requirements,
+      variables, install, run, sandbox credentials, how to test each user story
+- [ ] Instructions tested from scratch on a clean machine
+
+## F6 · Submission (Nov 9–11) → `v1.0.0`
+
+- [ ] Final `docs/DEMO_SCRIPT.md`, ≤ 2:45
+- [ ] Record the video on the real device, upload it to YouTube as **public**
+- [ ] `docs/SUBMISSION.md`: Devpost texts in English
+- [ ] Go through the compliance checklist in `docs/HACKATHON_RULES.md`
+- [ ] Release `v1.0.0`; `main` frozen until Dec 15; new work on `next`
+- [ ] **Submit on Devpost on Nov 11** (it closes Nov 12, 21:00 Madrid)
+
+## Dec 1–15 · Judging
+
+- [ ] Check daily that the demo is alive (`/api/health`) and that the sandbox accounts work
