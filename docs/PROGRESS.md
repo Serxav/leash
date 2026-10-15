@@ -150,3 +150,25 @@ One entry per session: date, what was done, what is left, blockers.
 
 **Left**
 - `feat/f1-declined-error`, then tag `v0.1.0`.
+
+## 2026-10-15 · Session 1 (cont.) – F1: declined payment
+
+**Done**
+- `feat/f1-declined-error` (D-020):
+  - sandbox negative testing on create order (`PayPal-Mock-Response`), allowlisted to
+    `INSTRUMENT_DECLINED`;
+  - plain user messages for every known issue, with a safe fallback that never claims no
+    money moved;
+  - lab "Simulate a declined €5.00 charge" button; failed payments show the message.
+- **Verified in the sandbox:** PayPal answered `INSTRUMENT_DECLINED` (debug ID
+  `70c28ae654da`), the payment was recorded as `DECLINED` and the message shown.
+- Tests: 85 unit and 7 sandbox, all passing.
+- The whole F1 flow now runs from `/lab/payments`: connect PayPal (Personal account) →
+  charge (received by the Business account) → refund → declined payment.
+
+**Left**
+- Tag `v0.1.0` after this PR is merged. Then F2 (rules) from Oct 22.
+
+**Lesson**
+- If the dev browser tab keeps reloading after restarting `npm run dev`, close the tab and
+  open a new one: the old tab's hot reload was stuck on the previous server.

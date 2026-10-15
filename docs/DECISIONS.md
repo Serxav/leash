@@ -362,3 +362,27 @@ project. Newest at the bottom.
     `72C560913E260084A`);
   - sandbox test: €1.00 charge → refund → a second refund with a new request id is
     rejected with `CAPTURE_FULLY_REFUNDED`.
+
+### D-020 · 2026-10-15 · Declined payments and user messages
+
+- **How a decline is reproduced:** PayPal sandbox negative testing. The charge accepts an
+  optional `sandboxMockIssue`; when set, Leash sends the `PayPal-Mock-Response` header
+  `{"mock_application_codes":"INSTRUMENT_DECLINED"}` on create order, and the sandbox
+  answers with that error instead of charging.
+  Docs: https://developer.paypal.com/tools/sandbox/negative-testing/request-headers/
+- **Why an allowlist:** only `INSTRUMENT_DECLINED` is accepted (`SANDBOX_MOCK_ISSUES`), so a
+  form field can never inject an arbitrary header value. Leash never runs outside the
+  sandbox (startup guard), so the option cannot touch real money.
+- **Handling** (already in D-018): Leash branches on `details[0].issue`. `INSTRUMENT_DECLINED`
+  → payment `DECLINED`; anything else → `FAILED`. The issue and `debug_id` are kept.
+- **User messages:** `src/payments/messages.ts` turns each issue into one plain sentence:
+  what happened, whether money moved and what to do. The issue code and debug ID are shown
+  below it, for support.
+  - An unknown issue, a network error or a timeout never says "nothing was charged": the
+    outcome may still be unknown. It says to check the payment history before retrying.
+  - Only the module's own keys are read (`Object.hasOwn`), because the issue can come from
+    a URL.
+- **Status:** accepted. Verified in the sandbox on 2026-10-15: the lab's "Simulate a
+  declined €5.00 charge" button got `INSTRUMENT_DECLINED` from PayPal (debug ID
+  `70c28ae654da`), recorded the payment as `DECLINED` and showed the message. The sandbox
+  test does the same with a €1.00 merchant-initiated charge.
