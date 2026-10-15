@@ -172,3 +172,18 @@ One entry per session: date, what was done, what is left, blockers.
 **Lesson**
 - If the dev browser tab keeps reloading after restarting `npm run dev`, close the tab and
   open a new one: the old tab's hot reload was stuck on the previous server.
+
+## 2026-10-15 · Session 1 (cont.) – F1 closed, F2 started
+
+**Done**
+- Tag `v0.1.0`: F1 (end-to-end payment) closed.
+- `feat/f2-rules-schema` (D-021): strict Zod rules schema, money helper in integer cents,
+  stable rule IDs. Security review: unknown fields rejected, required capped limits,
+  closed formats for categories and merchants, no echo of untrusted values, no ReDoS.
+- Tests: 171 unit (86 new), all passing.
+
+**Left**
+- `feat/f2-policy-engine` (tests first), then AI models, rules builder and confirmation.
+
+**Note**
+- Sergi plans a big design pass later: keep UI work functional and minimal until then.
