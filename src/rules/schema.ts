@@ -28,6 +28,7 @@ export const MAX_BLOCKED_MERCHANTS = 50;
  * Decisions store these IDs to say which rule applied.
  */
 export const RULE_IDS = [
+  "valid_request",
   "mandate_active",
   "agent_active",
   "allowed_categories",
@@ -48,13 +49,44 @@ const amount = z
     error: "must be at most 10000.00",
   });
 
+const CATEGORY_PATTERN = /^[a-z0-9]+(?:[-_][a-z0-9]+)*$/;
+const DOMAIN_PATTERN =
+  /^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+(?:[a-z]{2,63}|xn--[a-z0-9-]{1,59})$/;
+
+/**
+ * " Office-Supplies " → "office-supplies", or null if it is not a category
+ * slug. Rules and catalog products go through the same function, so they
+ * always compare the same way.
+ */
+export function normalizeCategory(value: string): string | null {
+  const category = value.trim().toLowerCase();
+  return category.length <= 64 && CATEGORY_PATTERN.test(category) ? category : null;
+}
+
+/**
+ * "https://www.Shop.example/x" → "shop.example", or null if it is not a
+ * hostname. Non-ASCII domains must be written in punycode (xn--…).
+ */
+export function normalizeMerchantDomain(value: string): string | null {
+  const domain = stripUrl(value.trim().toLowerCase());
+  return domain.length <= 253 && DOMAIN_PATTERN.test(domain) ? domain : null;
+}
+
+function stripUrl(value: string): string {
+  return value
+    .replace(/^https?:\/\//, "")
+    .replace(/[/?#].*$/, "")
+    .replace(/\.$/, "")
+    .replace(/^www\./, "");
+}
+
 /** A catalog category slug, e.g. "stationery" or "office-supplies". */
 const categorySlug = z
   .string()
   .trim()
   .toLowerCase()
   .max(64)
-  .regex(/^[a-z0-9]+(?:[-_][a-z0-9]+)*$/, {
+  .regex(CATEGORY_PATTERN, {
     error: "must be a category slug like office-supplies",
   });
 
@@ -67,15 +99,9 @@ const merchantDomain = z
   .string()
   .trim()
   .toLowerCase()
-  .overwrite((value) =>
-    value
-      .replace(/^https?:\/\//, "")
-      .replace(/[/?#].*$/, "")
-      .replace(/\.$/, "")
-      .replace(/^www\./, ""),
-  )
+  .overwrite(stripUrl)
   .max(253)
-  .regex(/^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+(?:[a-z]{2,63}|xn--[a-z0-9-]{1,59})$/, {
+  .regex(DOMAIN_PATTERN, {
     error: "must be a website domain like shop.example",
   });
 

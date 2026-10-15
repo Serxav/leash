@@ -52,16 +52,16 @@ definition of done in `CLAUDE.md`. Tags close each phase.
 ## F2 · Rules (Oct 22–25) → `v0.2.0`
 
 - [x] `feat/f2-rules-schema`: Zod rules schema (D-021)
-- [ ] `feat/f2-policy-engine`, tests first. Cases:
-  - [ ] exact limit
-  - [ ] budget used up
-  - [ ] month change in Europe/Madrid
-  - [ ] category not allowed
-  - [ ] blocked merchant
-  - [ ] too many units
-  - [ ] approval threshold
-  - [ ] paused agent
-  - [ ] revoked mandate
+- [x] `feat/f2-policy-engine`, tests first (D-022). Cases:
+  - [x] exact limit
+  - [x] budget used up
+  - [x] month change in Europe/Madrid
+  - [x] category not allowed
+  - [x] blocked merchant
+  - [x] too many units
+  - [x] approval threshold
+  - [x] paused agent
+  - [x] revoked mandate
 - [ ] `feat/f2-ai-models`: `src/ai/models.ts`, the single place for provider and model
       choice
 - [ ] `feat/f2-rules-builder`: plain language → rules (structured output + Zod). It asks

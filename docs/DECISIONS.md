@@ -420,3 +420,42 @@ project. Newest at the bottom.
 - **Rule IDs:** `RULE_IDS` lists the stable IDs in the brief's evaluation order (state →
   hard blocks → approval threshold). Decisions store them.
 - **Status:** accepted.
+
+### D-022 · 2026-10-15 · The policy engine
+
+- **What:** `decide(rules, request, state)` in `src/rules/engine.ts` returns `APPROVE`,
+  `NEEDS_APPROVAL` or `BLOCK`, the IDs of the rules that decided it, a one-sentence
+  explanation and the order total. It is plain TypeScript: no AI, no network, no clock of
+  its own (the caller passes `now`), so the same input always gives the same decision.
+- **Order** (brief §4):
+  1. input check (`valid_request`);
+  2. state: an `ACTIVE` mandate (`mandate_active`) and an agent that is not paused
+     (`agent_active`). These stop the check: nothing else matters;
+  3. hard blocks, all collected in order: category, merchant, units, limit per order,
+     monthly budget. The explanation gives the first one and how many more;
+  4. approval threshold: strictly above it → `NEEDS_APPROVAL`;
+  5. approve.
+- **Semantics:** every limit is inclusive (an order of exactly €40.00 with a €40.00 limit
+  is allowed; exactly the threshold does not ask). Blocked merchants also block their
+  subdomains, but never look-alikes (`notshop.example`, `shop.example.evil.example`).
+  Categories match exactly after the same normalisation as the rules.
+- **Monthly budget:** the caller passes the purchases that count (`countsTowardBudget`:
+  `COMPLETED`, `PENDING`, `PARTIALLY_REFUNDED`; `PENDING` counts because the money may
+  have moved). The engine keeps those in the current calendar month in Europe/Madrid
+  (`Intl` with the `Europe/Madrid` time zone, so summer and winter time are handled).
+  All sums are in integer cents.
+- **Fails closed (security review):**
+  - the rules are validated again (they may come from the database); invalid or tampered
+    rules block everything;
+  - each input is read once and its real type is checked, with no coercion: an object
+    cannot pass a check and turn into another value later;
+  - a malformed request, history entry or clock blocks with `valid_request`, and the
+    explanation never echoes the invalid text;
+  - any pause state other than an explicit `false`, and any mandate state other than
+    `ACTIVE`, blocks;
+  - absurd quantities are blocked before computing a total; sums are checked to stay safe
+    integers.
+- **For later (F4):** approving a `NEEDS_APPROVAL` purchase must run the engine again at
+  approval time, because the budget may have changed since the purchase was proposed.
+- **Status:** accepted. 67 test cases cover every case in the ROADMAP, the edges and the
+  attacks above.

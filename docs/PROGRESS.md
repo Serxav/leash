@@ -187,3 +187,19 @@ One entry per session: date, what was done, what is left, blockers.
 
 **Note**
 - Sergi plans a big design pass later: keep UI work functional and minimal until then.
+
+## 2026-10-15 · Session 1 (cont.) – F2: policy engine
+
+**Done**
+- Demo for Sergi: €5 charge, refund and declined payment live in the sandbox lab, plus
+  the rules schema rejecting injected fields and text.
+- `feat/f2-policy-engine` (D-022), tests first:
+  - `decide()`: state → hard blocks → approval threshold → approve, with rule IDs and a
+    one-sentence explanation;
+  - monthly budget per calendar month in Europe/Madrid, in integer cents;
+  - security review: fails closed on invalid rules, inputs, history or clock; no type
+    coercion; no echo of invalid text; look-alike merchants are not confused.
+- Tests: 238 unit (67 new), all passing.
+
+**Left**
+- `feat/f2-ai-models`, `feat/f2-rules-builder`, `feat/f2-rules-confirmation`.
