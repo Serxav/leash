@@ -25,6 +25,12 @@ export default function Home() {
           className="inline-block rounded-full bg-zinc-900 px-5 py-3 text-sm font-medium text-white hover:bg-zinc-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
         >
           Set your spending rules
+        </Link>{" "}
+        <Link
+          href="/agent"
+          className="inline-block rounded-full border border-zinc-400 px-5 py-3 text-sm font-medium hover:bg-zinc-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 dark:border-zinc-600 dark:hover:bg-zinc-800"
+        >
+          Ask the shopping agent
         </Link>
       </p>
       <p className="text-sm text-zinc-600 dark:text-zinc-400">
