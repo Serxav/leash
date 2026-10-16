@@ -8,9 +8,13 @@ import { getLocalProduct, isLocalProductId, searchLocal } from "./local";
 import { catalogProductSchema, cleanText, type CatalogProduct } from "./product";
 
 /**
- * The catalog the agent searches (D-028). Channel3 when possible, the local
- * catalog otherwise, and it never breaks: no key, an error, or the monthly
- * cap all fall back to the local catalog.
+ * The catalog the agent searches (D-028, D-029). Every search returns real
+ * Channel3 offers (when available) plus matches from Leash's demo catalog
+ * of invented shops; each product says where it comes from. Channel3's
+ * Spanish catalog has few everyday office supplies and its titles carry
+ * brands, so the demo catalog keeps the demo reliable and brand-free. It
+ * never breaks: no key, an error or the monthly cap just mean no Channel3
+ * results.
  *
  * No bills: Leash counts its Channel3 searches per Madrid month and stops
  * at CHANNEL3_MONTHLY_SEARCH_CAP, far below the 1,000 free credits. A search
@@ -23,9 +27,10 @@ export const CHANNEL3_MONTHLY_SEARCH_CAP = 300;
 export const SEARCH_CACHE_TTL_MS = 6 * 60 * 60 * 1000;
 export const MAX_QUERY_LENGTH = 200;
 export const SEARCH_LIMIT = 10;
+export const DEMO_SEARCH_LIMIT = 5;
 
 export type SearchResult = {
-  source: "channel3" | "local";
+  /** Channel3 products first, then demo ones; see each product's `source`. */
   products: CatalogProduct[];
 };
 
@@ -60,9 +65,6 @@ export function createCatalog(deps: {
 }): Catalog {
   const now = deps.now ?? (() => new Date());
 
-  function local(query: string): SearchResult {
-    return { source: "local", products: searchLocal(query, SEARCH_LIMIT) };
-  }
 
   function readCache(queryKey: string, at: Date): CatalogProduct[] | null {
     const row = deps.db
@@ -112,32 +114,33 @@ export function createCatalog(deps: {
     });
   }
 
+  /** Channel3 results, or none without a key, at the cap or on errors. */
+  async function searchChannel3(queryKey: string): Promise<CatalogProduct[]> {
+    if (!deps.channel3) return [];
+    const at = now();
+    const cached = readCache(queryKey, at);
+    if (cached) return cached;
+    if (!takeSearchCredit(at)) {
+      console.warn("[catalog] monthly Channel3 search cap reached; demo catalog only");
+      return [];
+    }
+    try {
+      const products = (await deps.channel3.search(queryKey, SEARCH_LIMIT)).slice(0, SEARCH_LIMIT);
+      writeCache(queryKey, products, at);
+      return products;
+    } catch (error) {
+      const reason = error instanceof Channel3Error ? error.message : "unexpected error";
+      console.warn(`[catalog] Channel3 search failed (${reason}); demo catalog only`);
+      return [];
+    }
+  }
+
   return {
     async search(query) {
       const queryKey = normalizeQuery(query);
       if (!queryKey) throw new CatalogError("EMPTY_QUERY");
-      if (!deps.channel3) return local(queryKey);
-
-      const at = now();
-      const cached = readCache(queryKey, at);
-      if (cached) return { source: "channel3", products: cached };
-
-      if (!takeSearchCredit(at)) {
-        console.warn("[catalog] monthly Channel3 search cap reached; using the local catalog");
-        return local(queryKey);
-      }
-      try {
-        const products = (await deps.channel3.search(queryKey, SEARCH_LIMIT)).slice(
-          0,
-          SEARCH_LIMIT,
-        );
-        writeCache(queryKey, products, at);
-        return { source: "channel3", products };
-      } catch (error) {
-        const reason = error instanceof Channel3Error ? error.message : "unexpected error";
-        console.warn(`[catalog] Channel3 search failed (${reason}); using the local catalog`);
-        return local(queryKey);
-      }
+      const demo = searchLocal(queryKey, DEMO_SEARCH_LIMIT);
+      return { products: [...(await searchChannel3(queryKey)), ...demo] };
     },
 
     async getProduct(id) {
