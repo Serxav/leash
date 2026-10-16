@@ -56,7 +56,7 @@ const INSTRUCTIONS = `You convert a user's spending rules for an AI shopping age
 - Extract only what the user wrote. Never invent or assume a value: use null, or an empty list, when something is not mentioned.
 - Amounts: copy the number as written, e.g. "40" or "12.50". Set currency to the currency the user used (EUR, USD, ...), or null if none.
 - approvalThreshold: the amount above which the user wants to be asked first; "none" if the user says never to ask; null if not mentioned.
-- allowedCategories: short English kebab-case category slugs, e.g. office-supplies, stationery, cleaning-supplies.
+- allowedCategories: short kebab-case category slugs, always in English even when the user writes in another language, e.g. office-supplies, stationery, cleaning-supplies.
 - blockedMerchants: website domains the user never wants to buy from, e.g. shop.example. If the user names a shop without its domain, ask for the domain.
 - maxUnitsPerItem: the most units of the same item in one order, as a whole number.
 - questions: if something the user wrote is ambiguous or contradictory, ask a short question in English instead of guessing (at most 3). Do not ask about values that are simply not mentioned: leave them null and the app will ask. Otherwise an empty list.

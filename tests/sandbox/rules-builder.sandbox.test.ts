@@ -22,6 +22,21 @@ describe("rules builder with the real model", () => {
     expect(result.rules.allowedCategories.join(" ")).toMatch(/office/);
   });
 
+  it("reads Spanish rules and keeps English category slugs", async () => {
+    const result = await build(
+      "Máximo 30 € por pedido, 120 € al mes, solo material de oficina, nunca me preguntes, máximo 3 unidades del mismo producto.",
+    );
+    expect(result.kind).toBe("rules");
+    if (result.kind !== "rules") return;
+    expect(result.rules).toMatchObject({
+      maxPerOrder: "30.00",
+      monthlyBudget: "120.00",
+      approvalThreshold: null,
+      maxUnitsPerItem: 3,
+    });
+    expect(result.rules.allowedCategories.join(" ")).toMatch(/office/);
+  });
+
   it("asks instead of guessing when values are missing", async () => {
     const result = await build("Buy office supplies for me, but don't spend too much.");
     expect(result.kind).toBe("questions");
