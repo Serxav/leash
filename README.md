@@ -27,6 +27,9 @@ layer between an AI shopping agent and the user's money:
    (`src/rules/schema.ts`), the policy engine (`src/rules/engine.ts`), the plain-language
    rules builder (`src/rules/builder.ts`) and the `/rules` page, where the user checks the
    rules as readable tags and confirms them as a new version (`src/rules/policies.ts`).
+   **Implemented:** the shopping agent (`src/agent/agent.ts`, page `/agent`). Its only tools
+   are a catalog search and `propose_purchase`; the server re-reads price, shop and category,
+   runs the engine and charges only approved purchases (`src/purchases/propose.ts`).
 3. **PayPal executes only what is approved.** The user saves PayPal once (the mandate).
    Approved purchases are charged with the saved method, and refunds go back through PayPal.
 
@@ -64,8 +67,9 @@ are chosen in one place: `src/ai/models.ts`.
 ## Sponsor tools
 
 - **Channel3:** product catalog search for the agent, through its REST API (Spain + EUR).
-  **Implemented:** `src/catalog/` (search, free price re-read, cache, monthly cap and a local
-  fallback catalog with invented shops).
+  **Implemented:** `src/catalog/` (search, free price re-read, cache and monthly cap). Every
+  search also includes a small Leash demo catalog with invented shops and no brands, because
+  Channel3's Spanish catalog has few everyday office supplies (D-029).
 - **Render:** hosting for the public demo.
 - **APIMatic:** the PayPal Server SDK, built with the APIMatic Context Plugin for PayPal.
 

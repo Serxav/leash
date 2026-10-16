@@ -74,8 +74,8 @@ definition of done in `CLAUDE.md`. Tags close each phase.
 
 - [x] `feat/f3-channel3-catalog` (D-028): Channel3 REST API with a cache and a monthly cap,
       Spain + EUR only, local JSON fallback catalog with the trap product
-- [ ] `feat/f3-shopping-agent`: agent (Gemini via `src/ai/models.ts`) whose only purchase
-      tool is `propose_purchase`; the server re-reads price, merchant and category
+- [x] `feat/f3-shopping-agent` (D-029): agent (Gemini via `src/ai/models.ts`) whose only
+      purchase tool is `propose_purchase`; the server re-reads price, merchant and category
 - [ ] `feat/f3-leashed-tools`: Agent Toolkit tools wrapped by the Leash permission layer
 - [ ] `test/f3-prompt-injection`: the trap product is blocked and logged
 - [ ] Decide how Channel3 results are shown without third-party brands in the video

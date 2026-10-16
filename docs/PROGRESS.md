@@ -325,3 +325,24 @@ One entry per session: date, what was done, what is left, blockers.
 - `feat/f3-shopping-agent`, then `test/f3-prompt-injection`.
 - Sergi: check that the Channel3 dashboard has no payment method.
 
+## 2026-10-16 · Session 3 (cont.) – shopping agent
+
+**Done**
+- Merged PR #17 (Channel3 catalog).
+- `feat/f3-shopping-agent` (D-029):
+  - `src/agent/agent.ts`: the agent, with only `search_catalog` and `propose_purchase`;
+  - `src/purchases/propose.ts`: re-read → engine → store intent and decision → charge only
+    APPROVE; one proposal at a time per user;
+  - tables `purchase_intents` and `decisions` (migration `0004`);
+  - `/agent` page: rules, request form, agent's summary and latest proposals with decisions;
+  - the search mixes Channel3 results with the demo catalog (Sergi's choice);
+  - the payments lab uses the same demo user (local mandate moved, backup in `data/`).
+- Tried in the PayPal sandbox: two purchases approved and charged, a toner that needs
+  approval (not charged), the blocked shop avoided, and an AI error that bought nothing.
+- Lint, typecheck, unit tests and build pass; the browser output has no prompt or keys.
+
+**Left**
+- `test/f3-prompt-injection`: the trap product must be blocked and logged even if the agent
+  proposes it (today only the agent's judgement and the unit limit stop it).
+- Channel3 credits used today: about 12 of 1,000 (6 counted by the app, 6 by live checks).
+

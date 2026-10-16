@@ -51,16 +51,20 @@ beforeEach(() => {
 const catalogWith = (channel3: Channel3Client | null) => createCatalog({ db, channel3, now: () => now });
 
 describe("catalog search", () => {
-  it("uses the local catalog without a Channel3 key", async () => {
+  it("uses only the demo catalog without a Channel3 key", async () => {
     const result = await catalogWith(null).search("printer paper");
-    expect(result.source).toBe("local");
     expect(result.products[0].id).toBe("local-printer-paper");
+    expect(result.products.every((product) => product.source === "local")).toBe(true);
     expect(searchesThisMonth(db, NOW)).toBe(0);
   });
 
-  it("searches Channel3 and counts one credit", async () => {
+  it("returns Channel3 results first, then demo matches, and counts one credit (D-029)", async () => {
     const { client, calls } = fakeChannel3();
-    expect(await catalogWith(client).search("A4  Printer PAPER")).toEqual({ source: "channel3", products: [remote] });
+    const { products } = await catalogWith(client).search("A4  Printer PAPER");
+    expect(products[0]).toEqual(remote);
+    expect(products.length).toBeGreaterThan(1);
+    expect(products.slice(1).every((product) => product.source === "local")).toBe(true);
+    expect(products[1].id).toBe("local-printer-paper");
     expect(calls.search).toBe(1);
     expect(searchesThisMonth(db, NOW)).toBe(1);
   });
@@ -70,7 +74,7 @@ describe("catalog search", () => {
     const catalog = catalogWith(client);
     await catalog.search("printer paper");
     now = new Date(NOW.getTime() + SEARCH_CACHE_TTL_MS - 1000);
-    expect((await catalog.search("  PRINTER paper ")).products).toEqual([remote]);
+    expect((await catalog.search("  PRINTER paper ")).products[0]).toEqual(remote);
     expect(calls.search).toBe(1);
     expect(searchesThisMonth(db, NOW)).toBe(1);
   });
@@ -98,7 +102,7 @@ describe("catalog search", () => {
       await catalog.search(`query ${i}`);
     }
     const result = await catalog.search("printer paper");
-    expect(result.source).toBe("local");
+    expect(result.products.every((product) => product.source === "local")).toBe(true);
     expect(calls.search).toBe(CHANNEL3_MONTHLY_SEARCH_CAP);
     expect(searchesThisMonth(db, NOW)).toBe(CHANNEL3_MONTHLY_SEARCH_CAP);
   });
@@ -114,15 +118,15 @@ describe("catalog search", () => {
     expect(searchesThisMonth(db, now)).toBe(1);
   });
 
-  it("falls back to the local catalog when Channel3 fails, and still counts the credit", async () => {
+  it("still returns demo results when Channel3 fails, and counts the credit", async () => {
     const { client } = fakeChannel3({
       search: async () => {
         throw new Channel3Error("UNAVAILABLE", 500);
       },
     });
     const result = await catalogWith(client).search("printer paper");
-    expect(result.source).toBe("local");
     expect(result.products.length).toBeGreaterThan(0);
+    expect(result.products.every((product) => product.source === "local")).toBe(true);
     expect(searchesThisMonth(db, NOW)).toBe(1);
   });
 

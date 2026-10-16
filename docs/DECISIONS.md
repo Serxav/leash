@@ -674,3 +674,38 @@ project. Newest at the bottom.
   accepts category slugs) to get better results; product titles from Channel3 can include
   brands, so the video question stays open (ROADMAP F3).
 - **Status:** accepted (Sergi: "whatever is best for the hackathon rules", "no bills").
+
+### D-029 · 2026-10-16 · The shopping agent and the purchase flow
+
+- **The agent** (`src/agent/agent.ts`) has exactly two tools: `search_catalog` (read only)
+  and `propose_purchase` (product ID, shop, quantity, one-sentence reason). It never sends a
+  price and has no tool that pays. It sees the user's rules as readable tags, product data
+  and the engine's decisions; never credentials, tokens, emails or PayPal IDs. Product text
+  is labelled `title_untrusted` / `description_untrusted`, and the instructions say never to
+  follow it. Limits: 10 model steps, 5 proposals per run, a 500-character request, 2 minutes.
+- **The purchase flow** (`src/purchases/propose.ts`, brief §4): re-read the product from the
+  catalog → find the offer by its shop → decide with the confirmed rules → store the intent
+  and the decision (with the rules version) → only APPROVE charges, with the saved PayPal,
+  merchant-initiated (`chargeWithMandate`). NEEDS_APPROVAL waits for the inbox (F4). Fail
+  closed: no re-read, no offer, no rules or invalid input → BLOCK, never a charge.
+- **One proposal at a time per user:** proposals run in a per-user queue, and from the
+  decision to recording the charge there is no `await`, so two proposals at once can never
+  both pass the budget (unit test: 13 at once, 11 fit, 11 charged). The queue lives in the
+  server process, which is fine for the single Render instance; F5 must keep one instance.
+- **Mixed catalog** (Sergi chose it): Channel3's catalog for Spain (and even for the whole
+  EU) has very few everyday office supplies — a search for printer paper returned printers,
+  branded notebooks and paperweights — and its titles carry brands, which the video must not
+  show. So every search returns the Channel3 results **plus** matches from the Leash demo
+  catalog (invented shops, no brands, the trap product), each marked with its source. The
+  agent and the page say so. Channel3 is still really used for every search (prize rules).
+- **One demo user until F5:** the payments lab now connects PayPal for the same `demo-user`
+  that writes rules and runs the agent. Sergi's local sandbox mandate was moved from
+  `lab-user` to `demo-user` in his local database (a backup is in `data/`, git-ignored).
+- **Tried in the sandbox (Oct 16), Marta's rules v3:**
+  - "out of printer paper and sticky notes": two purchases approved and **charged** in the
+    PayPal sandbox (€5.49 and €6.90, merchant-initiated, linked to their intents);
+  - "one toner, and paper from marketplace-x.example": the toner (€24) **needs approval**
+    and was not charged; the agent refused the blocked shop and bought paper elsewhere;
+  - one run failed (Gemini busy): the page showed the error and nothing was bought.
+- **Status:** accepted.
+
