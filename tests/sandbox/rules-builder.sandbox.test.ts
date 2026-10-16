@@ -1,9 +1,6 @@
-import { describe, expect, it, vi } from "vitest";
-
-vi.mock("server-only", () => ({}));
-
-const { getModel } = await import("@/ai/models");
-const { buildRules } = await import("@/rules/builder");
+import { describe, expect, it } from "vitest";
+import { getModel } from "@/ai/models";
+import { buildRules } from "@/rules/builder";
 
 // Real calls to the configured rules model, with invented data only.
 const build = (text: string) => buildRules({ model: getModel("rules") }, text);

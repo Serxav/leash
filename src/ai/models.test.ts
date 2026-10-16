@@ -1,10 +1,6 @@
 import { generateText, type LanguageModel } from "ai";
-import { describe, expect, it, vi } from "vitest";
-
-// "server-only" throws outside Next.js server code; tests are server code.
-vi.mock("server-only", () => ({}));
-
-const { createModels, MODEL_IDS } = await import("./models");
+import { describe, expect, it } from "vitest";
+import { createModels, MODEL_IDS } from "./models";
 
 const FAKE_GOOGLE_KEY = "test-google-key";
 const FAKE_ANTHROPIC_KEY = "test-anthropic-key";
