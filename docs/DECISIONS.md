@@ -24,8 +24,8 @@ project. Newest at the bottom.
 - **Why:** the hackathon rejects leaked secrets and broken demos, and every change should
   pass CI before reaching `main`. Rulesets are GitHub's current mechanism and also block
   admins.
-- **Status:** accepted. Follow-up: add the CI check as a required status check once
-  `chore/setup-ci` is merged.
+- **Status:** accepted. Follow-up done: both CI checks ("Lint, typecheck, test, build" and
+  "Secret scan (gitleaks)") are required status checks, with the strict policy.
 
 ### D-002 · 2026-10-15 · All repository docs in English
 
@@ -137,6 +137,10 @@ project. Newest at the bottom.
   inside `eslint-config-next`. This is a lint-only dev dependency that is never shipped to
   the server or the browser. npm's suggested "fix" downgrades to Next 14, which is wrong.
   We will update when `eslint-config-next` publishes a fix (Dependabot will notify).
+  Since F2, `npm audit` also reports moderate findings in `esbuild` 0.18 inside
+  `drizzle-kit` (the database migration tool). The issue only affects esbuild's own
+  development server, which Leash never runs, and `drizzle-kit` is a dev dependency.
+  `npm audit --omit=dev` (what ships) reports 0 vulnerabilities (checked on Oct 16).
 - **Status:** accepted.
 
 ### D-011 · 2026-10-15 · The server refuses to start on an unsafe configuration
