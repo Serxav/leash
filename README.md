@@ -24,8 +24,9 @@ layer between an AI shopping agent and the user's money:
 2. **The AI proposes, the code decides.** The agent can only *propose* purchases. A
    deterministic policy engine, plain TypeScript with no AI, decides `APPROVE`,
    `NEEDS_APPROVAL` or `BLOCK`. **Implemented:** the strict rules schema
-   (`src/rules/schema.ts`), the policy engine (`src/rules/engine.ts`) and the plain-language
-   rules builder (`src/rules/builder.ts`).
+   (`src/rules/schema.ts`), the policy engine (`src/rules/engine.ts`), the plain-language
+   rules builder (`src/rules/builder.ts`) and the `/rules` page, where the user checks the
+   rules as readable tags and confirms them as a new version (`src/rules/policies.ts`).
 3. **PayPal executes only what is approved.** The user saves PayPal once (the mandate).
    Approved purchases are charged with the saved method, and refunds go back through PayPal.
 

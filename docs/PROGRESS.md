@@ -274,3 +274,31 @@ One entry per session: date, what was done, what is left, blockers.
 
 **Left**
 - `feat/f2-rules-confirmation`, then tag `v0.2.0`. Repeat the browser scan before F6.
+
+## 2026-10-16 · Session 3 – rules confirmation
+
+**Done**
+- `feat/f2-rules-confirmation` (D-026): the `/rules` page. The user writes rules, sees the
+  AI's questions or the exact rules as readable tags, and confirms them. Each confirmation
+  is a new policy version; nothing applies before it.
+  - `policies` table (migration `0002`): drafts and confirmed versions;
+  - `src/rules/policies.ts`: save, discard and confirm drafts, active policy, version list;
+    fails closed if the stored rules cannot be read;
+  - `src/rules/describe.ts`: readable tags, written by code, not by the AI;
+  - home page links to `/rules`.
+- Security: the browser never sends rules back, only a random draft ID; a draft can be
+  confirmed once, only by its user, and only if it is the last one shown. The browser
+  output was scanned again: no prompt, key names or key patterns.
+- Lint, typecheck, unit tests and build pass.
+- Tried in the browser with the real model (Gemini): Marta's rules became the right tags
+  and were confirmed as version 1; new rules became version 2, with version 1 listed
+  under "Earlier versions". When the AI failed, version 1 stayed in use and the text was
+  kept.
+- Gemini fix (D-027): `gemini-3.1-flash-lite` answered "high demand" (503) to every call
+  for about 15 minutes. Development now uses `gemini-3.5-flash-lite`, and a busy answer
+  (503/429) sends the same call to `gemini-3.1-flash-lite`. Both free tier, no billing.
+  The prompt now asks for English category slugs. Live tests pass, with a new Spanish case.
+
+**Left**
+- Tag `v0.2.0` after merging (F2 done, except the optional UI shells).
+- F3: the agent. F5: per-visitor users and rate limit before deploying.

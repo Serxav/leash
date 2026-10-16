@@ -497,7 +497,8 @@ project. Newest at the bottom.
     through the Vercel AI Gateway;
   - tests check that requests go straight to `generativelanguage.googleapis.com` or
     `api.anthropic.com` with the right key, and never carry the other provider's key.
-- **Status:** accepted. Live check (`npm run test:sandbox`) passes with Gemini.
+- **Status:** accepted. Live check (`npm run test:sandbox`) passes with Gemini. The
+  development Gemini model was changed by D-027 (the rest still applies).
 
 ### D-024 · 2026-10-15 · Rules builder: the AI extracts, the code decides
 
@@ -570,3 +571,64 @@ project. Newest at the bottom.
 - **Tests:** Vitest maps `server-only` to an empty stub (`tests/stubs/server-only.ts`), so
   unit and sandbox tests import the guarded files normally.
 - **Status:** accepted. Repeat the browser-output scan before the submission (F6).
+
+### D-026 · 2026-10-16 · Rules confirmation: server-side drafts and versioned policies
+
+- **What:** the `/rules` page (US2). The user writes rules, the AI turns them into exact
+  rules or questions (D-024), the page shows them as readable tags, and nothing applies
+  until the user presses "Confirm these rules". Each confirmation is a new version.
+- **How it is stored:** one `policies` table (brief §6: id, userId, version, sourceText,
+  rulesJson, confirmedAt, plus createdAt).
+  - A **draft** is a row with no version. A user has at most one, and every new attempt
+    drops it first, so only the last rules shown can ever be confirmed.
+  - **Confirming** gives the draft the next version number (1, 2, 3…) in one
+    transaction. A unique index on (user, version) stops two versions with the same number.
+  - Confirmed versions are never edited. The **active policy** is the newest version.
+- **Why the draft stays on the server:** the browser only gets readable tags and a random
+  draft ID (a UUID). It never sends rules back, so nobody can confirm rules different from
+  the ones shown. Confirming checks that the draft belongs to the same user and is still a
+  draft, so it cannot be confirmed twice or by someone else.
+- **Fail closed:** the rules are validated with the strict schema when saved and again on
+  every read. If the newest version cannot be read, there are no rules (the engine blocks
+  every purchase); Leash never falls back to an older version silently.
+- **Readable tags come from code** (`src/rules/describe.ts`), not from the AI: the user
+  confirms exactly what the engine will check.
+- **The browser:** this is the first client component. `MAX_RULES_TEXT_LENGTH` moved to
+  `src/rules/limits.ts` so the form does not bundle the AI prompt or SDK. The browser
+  output was scanned again (D-025): no prompt, key names or key patterns.
+- **For now:** one fixed demo user (`src/lib/demo-user.ts`). F5 adds anonymous
+  per-visitor users and a per-visitor rate limit **before** anything is deployed.
+- **When the AI is busy:** the page shows "The AI could not read your rules right now",
+  keeps the text and changes nothing. On Oct 16 Gemini was busy for a long time, which led
+  to D-027.
+- **Status:** accepted.
+
+### D-027 · 2026-10-16 · Busy Gemini: gemini-3.5-flash-lite, with an automatic fallback
+
+- **Problem:** on Oct 16, `gemini-3.1-flash-lite` (D-023) answered 503 "This model is
+  currently experiencing high demand" to every call for about 15 minutes, so the rules page
+  could not read any rules. Google gives free-tier calls the lowest priority when a model
+  is busy. It was Google's side, not our code: the page showed its friendly error and
+  changed nothing.
+- **Check** (4 tiny calls per model, invented data, only names and status codes printed):
+  - `gemini-3.1-flash-lite` and `gemini-3.1-flash-lite-preview`: 4 of 4 busy (503);
+  - `gemini-3.5-flash-lite`: 3 of 4 answered;
+  - `gemini-flash-lite-latest`: 4 of 4 answered, but it is an alias that Google can move to
+    another model without notice, so it is not used (D-023: pinned models only);
+  - `gemini-2.5-flash-lite`: no longer available (404).
+  `gemini-3.5-flash-lite` then turned Marta's rules, a vague text, Spanish rules and a
+  prompt-injection attempt into the right results.
+- **What:**
+  - `gemini-3.5-flash-lite` is now the development model for both roles;
+  - if Google answers busy (503) or over the free rate limit (429), the **same call** goes
+    once to `gemini-3.1-flash-lite`. It is done with the AI SDK's official middleware
+    (`wrapLanguageModel`) in `src/ai/models.ts`. Other errors are not hidden behind the
+    fallback. The normal retry (`maxRetries: 1`) still applies on top;
+  - the rules prompt now asks for English category slugs even when the user writes in
+    another language (Gemini 3.5 returned `material-de-oficina` once).
+- **Bills:** both models are on the free tier. Google cannot charge anything while the AI
+  Studio project has no billing account, which Sergi keeps that way (D-023).
+- **Later:** from Nov 2 the app uses Claude (D-023), where this fallback does not apply.
+- **Tests:** unit tests with a fake Google API (503 and 429 go to the fallback, 400 does
+  not); live tests with Gemini pass, including a new Spanish case.
+- **Status:** accepted (Sergi: "whatever is most convenient, as long as no bill comes").

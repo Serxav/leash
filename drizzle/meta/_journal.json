@@ -15,6 +15,13 @@
       "when": 1792052125703,
       "tag": "0001_create_payments",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1792171874956,
+      "tag": "0002_create_policies",
+      "breakpoints": true
     }
   ]
 }

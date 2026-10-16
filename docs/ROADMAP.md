@@ -66,7 +66,7 @@ definition of done in `CLAUDE.md`. Tags close each phase.
       choice
 - [x] `feat/f2-rules-builder` (D-024): plain language → rules (structured output + Zod). It asks
       when a rule is ambiguous
-- [ ] `feat/f2-rules-confirmation`: confirmation screen with readable tags and policy
+- [x] `feat/f2-rules-confirmation` (D-026): confirmation screen with readable tags and policy
       versions
 - [ ] *(Can move earlier, D-006)* UI shells for the approval inbox and history
 
