@@ -148,12 +148,17 @@ vite.config.ts.timestamp-*
 # Turbo Repo
 .turbo
 
-# Local SQLite database
+# Local SQLite database. The WAL/SHM side files hold the same data as the
+# database, including vault payment tokens: never commit any of them.
+data/
 *.db
 *.db-journal
 *.db-wal
 *.db-shm
 *.sqlite
+*.sqlite-journal
+*.sqlite-wal
+*.sqlite-shm
 *.sqlite3
 
 # Personal study notes (Spanish, kept local)
