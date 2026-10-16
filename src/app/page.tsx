@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Home() {
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col justify-center gap-6 px-6 py-16">
@@ -16,6 +18,14 @@ export default function Home() {
         Purchases in Leash are proposed by an AI agent. Every purchase is
         checked against your rules by code, not by the AI, before PayPal
         charges anything.
+      </p>
+      <p>
+        <Link
+          href="/rules"
+          className="inline-block rounded-full bg-zinc-900 px-5 py-3 text-sm font-medium text-white hover:bg-zinc-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
+        >
+          Set your spending rules
+        </Link>
       </p>
       <p className="text-sm text-zinc-600 dark:text-zinc-400">
         Under construction for the PayPal AI Hackathon.

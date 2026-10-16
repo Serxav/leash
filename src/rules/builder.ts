@@ -1,5 +1,6 @@
 import { generateText, Output, type LanguageModel } from "ai";
 import { z } from "zod";
+import { MAX_RULES_TEXT_LENGTH } from "./limits";
 import { MAX_ALLOWED_CATEGORIES, MAX_BLOCKED_MERCHANTS, parseRules, RULES_FORMAT_VERSION, type SpendingRules } from "./schema";
 
 /**
@@ -13,7 +14,7 @@ import { MAX_ALLOWED_CATEGORIES, MAX_BLOCKED_MERCHANTS, parseRules, RULES_FORMAT
  * nothing applies until the user confirms the result.
  */
 
-export const MAX_RULES_TEXT_LENGTH = 1000;
+export { MAX_RULES_TEXT_LENGTH };
 const MAX_QUESTIONS = 5;
 const MAX_QUESTION_LENGTH = 200;
 

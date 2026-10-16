@@ -1,4 +1,4 @@
-import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
 
 /**
  * A user's spending mandate: their PayPal account saved in the PayPal vault.
@@ -60,3 +60,29 @@ export const payments = sqliteTable("payments", {
 
 export type Payment = typeof payments.$inferSelect;
 export type PaymentStatus = Payment["status"];
+
+/**
+ * The user's spending rules, versioned (US2). A row starts as a draft
+ * (`version` and `confirmedAt` are null) holding what the AI turned the
+ * user's text into. Nothing applies until the user confirms it: then it
+ * gets the next version number and becomes the active policy. Confirmed
+ * versions are never edited; a change is a new version.
+ */
+export const policies = sqliteTable(
+  "policies",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id").notNull(),
+    /** 1, 2, 3… per user once confirmed; null while it is a draft. */
+    version: integer("version"),
+    /** What the user wrote, kept so they can see where the rules came from. */
+    sourceText: text("source_text").notNull(),
+    /** The exact rules (validated JSON, see src/rules/schema.ts). */
+    rulesJson: text("rules_json").notNull(),
+    createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
+    confirmedAt: integer("confirmed_at", { mode: "timestamp_ms" }),
+  },
+  (table) => [uniqueIndex("policies_user_version").on(table.userId, table.version)],
+);
+
+export type Policy = typeof policies.$inferSelect;
