@@ -36,8 +36,9 @@ charges approved purchases (Orders v2) and refunds them (Payments v2).
   approval first. Record every important decision in `docs/DECISIONS.md` in plain words:
   Sergi must be able to explain every part of the project if the project wins.
 - **Check the rules when unsure.** Read the official rules at
-  https://paypalaihackathon.devpost.com/rules. Devpost blocks simple fetches, so use the
-  built-in browser.
+  https://paypalaihackathon.devpost.com/rules, and the sponsor detail pages
+  (`/details/channel3`, `/details/apimatic`) and the FAQ (`/details/faqs`), summarised in
+  `docs/HACKATHON_RULES.md`. Devpost blocks simple fetches, so use the built-in browser.
 - **End of session.** Update `docs/PROGRESS.md` and tick the boxes in `docs/ROADMAP.md`.
 
 ## Session prompts
@@ -118,12 +119,15 @@ charges approved purchases (Orders v2) and refunds them (Payments v2).
   push, never rewrite history.
 - **One ROADMAP task = one branch = one pull request.** Branch names use
   `feat/ fix/ test/ docs/ chore/ refactor/` + phase + short description (for example
-  `feat/f1-vault-mandate`).
+  `feat/f1-vault-mandate`). A fix found in the middle of a task that is not part of it (for
+  example a model change) gets its own branch and pull request.
 - **Commits.** Conventional Commits, in English, imperative mood, subject of 72 characters
-  at most. The body explains why and how it was tested. One logical change per commit. Never
+  at most. **PR titles are 66 characters at most:** the squash merge adds ` (#NN)` and the
+  result becomes the commit subject on `main`. The body explains why and how it was tested. One logical change per commit. Never
   "update", "fix stuff" or "wip".
 - **Before every commit:** lint, typecheck, tests and build pass. Show Sergi `git status` and
-  a diff summary. Stage files by name, never `git add .` or `git add -A`.
+  a diff summary **in the chat, before committing**. Stage files by name, never `git add .`,
+  `git add -A` or `git add -N .` (not even to scan a diff).
 - **Ask before every push, PR creation and merge.** Create PRs with `gh pr create`, filling
   in the template. Merge only with **squash and merge** and only with green CI.
 - **Phase tags.** v0.1.0 (F1), v0.2.0 (F2), v0.3.0 (F3), v0.4.0 (F4), v0.9.0 (F5). The

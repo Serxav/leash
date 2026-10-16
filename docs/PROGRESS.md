@@ -346,3 +346,22 @@ One entry per session: date, what was done, what is left, blockers.
   proposes it (today only the agent's judgement and the unit limit stop it).
 - Channel3 credits used today: about 12 of 1,000 (6 counted by the app, 6 by live checks).
 
+## 2026-10-16 · Session 3 (cont.) – rules and process audit
+
+**Done**
+- Merged PR #18 (shopping agent).
+- `docs/f3-rules-audit` (D-030): read the official rules, the sponsor detail pages, the FAQ
+  and the updates; audited git history, PRs, code, dependency licences, personal data,
+  brands and secrets.
+  - Channel3 through the REST API qualifies for its prize; the demo must show real
+    Channel3 offers to compete for "Best Use of Channel3".
+  - `docs/HACKATHON_RULES.md` now summarises the sponsor detail pages (Channel3 promo code
+    for 20,000 free credits, APIMatic claim) and the FAQ.
+  - `CLAUDE.md`: PR titles of 66 characters at most, a mid-task fix gets its own PR, show
+    `git status` and the diff in the chat before committing, never `git add -N .`.
+  - ROADMAP: Channel3 visibility in the demo, and Sergi's tasks (promo code, Business
+    account check, Discord question about brands).
+
+**Left**
+- `test/f3-prompt-injection`, then `feat/f3-leashed-tools`.
+

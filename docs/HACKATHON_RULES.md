@@ -98,7 +98,36 @@ The other listed sponsor tools (Astropods, Elastic, KERNEL, Postman, Zapier) can
 have **no prize of their own**.
 
 **Multiple prizes.** A project can win at most **one Grand Prize + one Sponsor Prize**, or
-**one Honorable Mention + one Sponsor Prize**.
+**one Honorable Mention + one Sponsor Prize**. The FAQ adds that a project using several
+sponsor tools is considered for each of their prizes, but still wins at most one.
+
+## Sponsor detail pages (read on Oct 16, 2026)
+
+Each sponsor has its own page on the hackathon site. They add requirements and perks that
+are not in the official rules, so read them before using a sponsor tool.
+
+**Channel3** (https://paypalaihackathon.devpost.com/details/channel3):
+- "Your project may use the Channel3 API or our MCP server as a meaningful part of the
+  product experience — search, product enrichment or recommendations." Projects that only
+  mention Channel3 without calling it do not qualify. **Leash calls the REST API on every
+  agent search and re-reads every Channel3 product before deciding (D-028, D-029), so it
+  qualifies.** The SDK is not required.
+- The prize is "Best Use of Channel3", and a Channel3 founding engineer is a judge: the
+  demo and video should show real Channel3 offers, not only the demo catalog.
+- A hackathon key gets **20,000 free credits** with promo code `PAYPAL-HACKATHON-2026`, no
+  credit card required. If credits run out, the key stays active and the Channel3 team tops
+  it up on Discord (#channel3).
+
+**APIMatic** (https://paypalaihackathon.devpost.com/details/apimatic):
+- Participants who used the APIMatic Context Plugin to build their PayPal integration can
+  claim 1 month of APIMatic Basic for free; winners that used it get 6 months of Business.
+  Leash built its PayPal code with the plugin (D-016). The claim form is linked on that page
+  (ROADMAP F6).
+- The page names Claude Code as a coding tool the plugin is made for: AI coding assistants
+  are expected in this hackathon. Sergi must still be able to explain every part
+  (winner verification), which is why `docs/DECISIONS.md` exists.
+
+**FAQ** (https://paypalaihackathon.devpost.com/details/faqs): nothing else that affects Leash.
 
 ## Rule-compliance checklist (tick on Nov 11)
 
@@ -123,7 +152,8 @@ have **no prize of their own**.
 - [ ] Devpost text in English: features and how it works, states it is a web app, and that
       it was built from scratch during the submission period
 - [ ] Sponsor tools used are named on Devpost (Channel3, Render, and any others actually
-      used)
+      used), and the video shows Channel3 being called (its detail page asks for a
+      "meaningful part of the product experience")
 - [ ] No third-party code without a compatible licence; any used is credited in the README
 - [ ] Release v1.0.0 created on GitHub, and `main` frozen until Dec 15
 - [ ] Name and pitch reviewed in the form

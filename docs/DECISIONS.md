@@ -709,3 +709,40 @@ project. Newest at the bottom.
   - one run failed (Gemini busy): the page showed the error and nothing was bought.
 - **Status:** accepted.
 
+### D-030 · 2026-10-16 · Rules and process audit after F2 and half of F3
+
+Sergi asked for a full check before going on. Sources: the official rules, the hackathon
+main page, the sponsor detail pages for Channel3 and APIMatic, the FAQ and the updates
+(all read on Oct 16 in the built-in browser), plus the repository and its git history.
+
+- **Channel3 through the REST API is valid.** The Channel3 detail page says projects "may
+  use the Channel3 API or our MCP server as a meaningful part of the product experience";
+  only mentioning it without calling it does not count. Leash calls it on every agent
+  search and re-reads each Channel3 product before deciding. To compete for "Best Use of
+  Channel3" (judged also by a Channel3 founding engineer), the demo must show real Channel3
+  offers, not only the demo catalog (ROADMAP F3).
+- **Channel3 credits:** hackathon keys get 20,000 free credits with promo code
+  `PAYPAL-HACKATHON-2026`, no credit card, and top-ups on Discord. The 300-search cap stays
+  until Sergi applies the code and confirms no card is saved.
+- **AI coding assistants are allowed:** the APIMatic page presents its plugin for "AI coding
+  tools like Claude Code". The rules require original work owned by the entrant and verify
+  the winner's role, so every decision stays explained in this file.
+- **No rule broken in the code:** no secrets, personal data or third-party brands in tracked
+  files; local data and backups are git-ignored; MIT licence detected. Production
+  dependencies are MIT, Apache-2.0, ISC or BSD, except two that Next.js brings in and that
+  Leash neither copies nor ships in the repository: `caniuse-lite` (CC-BY-4.0, browser data)
+  and `@img/sharp-libvips` (LGPL-3.0, an image library installed by npm). The free Gemini
+  tier only receives invented rules text and public product data.
+- **Process slips (fixed from now on in CLAUDE.md):**
+  1. the titles of PRs #16, #17 and #18 had 77–78 characters, so their commit subjects on
+     `main` break the 72-character rule. History is never rewritten; new rule: PR titles of
+     66 characters at most;
+  2. PR #16 mixed two tasks (rules confirmation and the Gemini fallback); new rule: a fix
+     found mid-task gets its own branch and PR;
+  3. some commits were made without first showing `git status` and a diff summary in the
+     chat, and once `git add -N .` was used to scan a diff (undone at once, nothing slipped
+     in). The rule now says both explicitly.
+- **Checked in the sandbox, not yet in the PayPal dashboard:** the agent's charges were
+  verified through the API and the database; Sergi will look at the Business account.
+- **Status:** accepted.
+
