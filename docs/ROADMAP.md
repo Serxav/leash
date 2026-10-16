@@ -79,7 +79,16 @@ definition of done in `CLAUDE.md`. Tags close each phase.
 - [ ] `feat/f3-leashed-tools`: Agent Toolkit tools wrapped by the Leash permission layer
 - [ ] `test/f3-prompt-injection`: the trap product is blocked and logged
 - [ ] Decide how Channel3 results are shown without third-party brands in the video
-      (generic queries, no product images or neutral images). Record it in DECISIONS
+      (generic queries, no product images or neutral images). Ask the Channel3 team on the
+      PayPal Discord (#channel3) whether retailer names may appear. Record it in DECISIONS
+- [ ] Make Channel3 visible in the demo ("Best Use of Channel3", D-030): at least one real
+      Channel3 offer in the agent flow, for example by searching inside the user's allowed
+      categories (`filters.category_ids`)
+- [ ] Sergi: apply promo code `PAYPAL-HACKATHON-2026` in the Channel3 dashboard (20,000 free
+      credits, no card) and confirm no payment method is saved. Then the monthly cap (300)
+      can be raised
+- [ ] Sergi: check in the sandbox Business account that the agent's charges arrived (€5.49,
+      €6.90, €10.98 on Oct 16)
 - [ ] Anthropic: workspace "leash", spending limit, `leash-dev` key (Sergi, end of
       October). Run the rules-conversion tests with both providers
 
