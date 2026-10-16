@@ -86,3 +86,27 @@ export const policies = sqliteTable(
 );
 
 export type Policy = typeof policies.$inferSelect;
+
+/**
+ * Channel3 search results kept for a few hours (D-028), so the same search
+ * does not spend another credit. Prices are re-read (free) before any
+ * decision, so a cached price never decides a purchase.
+ */
+export const catalogSearches = sqliteTable("catalog_searches", {
+  /** The normalised query, e.g. "a4 printer paper". */
+  queryKey: text("query_key").primaryKey(),
+  /** The products found (validated catalog products, JSON). */
+  productsJson: text("products_json").notNull(),
+  createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
+});
+
+/**
+ * Channel3 searches made per calendar month in Madrid (D-028). Leash stops
+ * calling Channel3 search at a cap far below the 1,000 free monthly credits,
+ * so no bill can ever come; the local catalog is used instead.
+ */
+export const catalogUsage = sqliteTable("catalog_usage", {
+  /** "2026-10" */
+  month: text("month").primaryKey(),
+  searches: integer("searches").notNull(),
+});
