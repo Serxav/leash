@@ -235,3 +235,24 @@ One entry per session: date, what was done, what is left, blockers.
 
 **Left**
 - `feat/f2-rules-confirmation` (UI, minimal until the design pass), then tag `v0.2.0`.
+
+## 2026-10-16 · Session 2 – repository review
+
+**Done**
+- Reviewed Sergi's PR #13 (LICENSE): closed without merging, because `main` had no
+  duplicate and the change made GitHub report the licence as "Other" instead of MIT. Its
+  branch was deleted.
+- Full repository review (`chore/f2-repo-review`):
+  - GitHub settings, ruleset, required checks and tags match D-001 and D-012; CI on `main`
+    is green; no secret-scanning alerts;
+  - no secrets in the code or in the whole git history; `.env.example` has no values;
+  - **fixed:** `.gitignore` did not cover the SQLite `-wal`/`-shm` files or `data/`, which
+    hold vault payment tokens. They were only excluded on Sergi's machine;
+  - **fixed:** Next.js warned about a stray lockfile in a parent folder; `turbopack.root`
+    now points at the project;
+  - README status updated (it still said F0), DECISIONS D-001 and D-010 brought up to date;
+  - `npm audit`: 0 vulnerabilities in what ships; dev-only findings documented in D-010.
+- Lint, typecheck, 291 tests and build pass.
+
+**Left**
+- `feat/f2-rules-confirmation`, then tag `v0.2.0`.

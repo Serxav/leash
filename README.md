@@ -7,8 +7,10 @@ Built for the [PayPal AI Hackathon](https://paypalaihackathon.devpost.com/) on D
 This is a web application for desktop and mobile, created from scratch during the
 submission period. It uses the **PayPal sandbox only**: no real money ever moves.
 
-> **Status: under active development (phase F0 – setup).** This README describes the planned
-> design. Each section will be updated as features land. See [docs/ROADMAP.md](docs/ROADMAP.md).
+> **Status: under active development.** The end-to-end PayPal payment works in the sandbox
+> (`v0.1.0`), and the spending rules are in progress (phase F2). Sections marked
+> **Implemented** exist today; the rest describes the planned design. See
+> [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## What it is
 
@@ -21,7 +23,9 @@ layer between an AI shopping agent and the user's money:
    which the user confirms.
 2. **The AI proposes, the code decides.** The agent can only *propose* purchases. A
    deterministic policy engine, plain TypeScript with no AI, decides `APPROVE`,
-   `NEEDS_APPROVAL` or `BLOCK`.
+   `NEEDS_APPROVAL` or `BLOCK`. **Implemented:** the strict rules schema
+   (`src/rules/schema.ts`), the policy engine (`src/rules/engine.ts`) and the plain-language
+   rules builder (`src/rules/builder.ts`).
 3. **PayPal executes only what is approved.** The user saves PayPal once (the mandate).
    Approved purchases are charged with the saved method, and refunds go back through PayPal.
 
@@ -73,6 +77,7 @@ and how to test each user story.
 - [docs/PROJECT_BRIEF.md](docs/PROJECT_BRIEF.md): full product specification
 - [docs/ROADMAP.md](docs/ROADMAP.md): phases and tasks
 - [docs/DECISIONS.md](docs/DECISIONS.md): technical decisions and why
+- [docs/PROGRESS.md](docs/PROGRESS.md): what was done in each session
 - [docs/HACKATHON_RULES.md](docs/HACKATHON_RULES.md): official rules and compliance checklist
 
 ## License
