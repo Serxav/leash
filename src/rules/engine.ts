@@ -33,8 +33,14 @@ export type PurchaseRequest = {
   unitPrice: string;
   quantity: number;
   currency: string;
-  /** Catalog category slug. */
+  /** Catalog category slug, e.g. "printer-paper". */
   category: string;
+  /**
+   * Its parent categories from the catalog, e.g. ["office-supplies",
+   * "paper"]. The category is allowed if it or any parent is allowed, so
+   * "office-supplies" covers printer paper.
+   */
+  parentCategories?: readonly string[];
   /** Merchant website, e.g. "shop.example". */
   merchantDomain: string;
 };
@@ -84,6 +90,21 @@ export function countsTowardBudget(status: PaymentStatus): boolean {
 
 const euros = (cents: number) => `€${fromCents(cents)}`;
 
+const MAX_PARENT_CATEGORIES = 10;
+
+/** The parent slugs, normalised; null if any of them is not a category slug. */
+function readParentCategories(value: unknown): string[] | null {
+  if (value === undefined) return [];
+  if (!Array.isArray(value) || value.length > MAX_PARENT_CATEGORIES) return null;
+  const slugs: string[] = [];
+  for (const item of value) {
+    const slug = typeof item === "string" ? normalizeCategory(item) : null;
+    if (!slug) return null;
+    slugs.push(slug);
+  }
+  return slugs;
+}
+
 function isValidDate(value: unknown): value is Date {
   return value instanceof Date && !Number.isNaN(value.getTime());
 }
@@ -118,12 +139,14 @@ export function decide(
   };
   const category =
     typeof request.category === "string" ? normalizeCategory(request.category) : null;
+  const parents = readParentCategories(request.parentCategories);
   const merchant =
     typeof request.merchantDomain === "string"
       ? normalizeMerchantDomain(request.merchantDomain)
       : null;
   if (
     !category ||
+    !parents ||
     !merchant ||
     currency !== policy.currency ||
     typeof unitPrice !== "string" ||
@@ -170,7 +193,7 @@ export function decide(
   // 2. Hard blocks: collect every broken rule, in evaluation order.
   const broken: Array<{ id: RuleId; reason: string }> = [];
 
-  if (!policy.allowedCategories.includes(category)) {
+  if (![category, ...parents].some((slug) => policy.allowedCategories.includes(slug))) {
     broken.push({
       id: "allowed_categories",
       reason: `the category ${category} is not in your allowed categories`,

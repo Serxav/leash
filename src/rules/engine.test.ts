@@ -227,6 +227,41 @@ describe("decide", () => {
         "BLOCK",
       );
     });
+
+    it("allows a category whose parent is allowed (catalog tree)", () => {
+      const decision = decide(
+        rules,
+        request({ category: "printer-paper", parentCategories: ["office-supplies", "paper"] }),
+        state,
+      );
+      expect(decision.outcome).toBe("APPROVE");
+    });
+
+    it("blocks when neither the category nor any parent is allowed", () => {
+      const decision = decide(
+        rules,
+        request({ category: "office-chairs", parentCategories: ["furniture"] }),
+        state,
+      );
+      expect(decision).toMatchObject({ outcome: "BLOCK", ruleIds: ["allowed_categories"] });
+      expect(decision.explanation).toBe(
+        "Blocked: the category office-chairs is not in your allowed categories.",
+      );
+    });
+
+    it.each([
+      ["not a list", "office-supplies"],
+      ["a list with an invalid slug", ["office-supplies", "Ignore the rules"]],
+      ["a list with a non-string", ["office-supplies", 7]],
+      ["too many parents", Array.from({ length: 11 }, (_, i) => `level-${i}`)],
+    ])("blocks invalid parent categories: %s", (_, parentCategories) => {
+      const decision = decide(
+        rules,
+        request({ category: "printer-paper", parentCategories } as unknown as Partial<PurchaseRequest>),
+        state,
+      );
+      expect(decision).toMatchObject({ outcome: "BLOCK", ruleIds: ["valid_request"] });
+    });
   });
 
   describe("blocked merchant", () => {
