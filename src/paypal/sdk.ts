@@ -1,3 +1,4 @@
+import "server-only";
 import { Client, Environment } from "@paypal/paypal-server-sdk";
 import { getServerEnv } from "@/config/env";
 

@@ -1,9 +1,6 @@
 import { generateText } from "ai";
-import { describe, expect, it, vi } from "vitest";
-
-vi.mock("server-only", () => ({}));
-
-const { describeModels, getModel } = await import("@/ai/models");
+import { describe, expect, it } from "vitest";
+import { describeModels, getModel } from "@/ai/models";
 
 // One tiny real call to the configured provider (free tier, invented data).
 describe("AI provider", () => {

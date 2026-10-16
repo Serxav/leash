@@ -1,3 +1,4 @@
+import "server-only";
 import { assertSandboxApiBase, getServerEnv } from "@/config/env";
 
 /**

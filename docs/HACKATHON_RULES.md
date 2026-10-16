@@ -106,7 +106,10 @@ have **no prize of their own**.
 - [ ] README in English: what it is, AI used (Claude via the Anthropic API) and for what,
       PayPal parts used (Vault, Orders v2, refunds, Agent Toolkit) and their folders,
       requirements, variables, install and run
-- [ ] Sandbox test credentials in the README and how to get any special access
+- [ ] Sandbox test credentials in the README and how to get any special access. The rules
+      allow "test account credentials, API keys, or sandbox login details", but our API
+      keys are never published (D-025): judges use the hosted demo with the sandbox
+      Personal login, or their own free keys to run it locally
 - [ ] `.env.example` complete, and no secret anywhere in git history
 - [ ] Green CI on the last commit of `main`
 - [ ] Render demo working, or instructions that work from scratch on a clean machine
