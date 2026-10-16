@@ -256,3 +256,21 @@ One entry per session: date, what was done, what is left, blockers.
 
 **Left**
 - `feat/f2-rules-confirmation`, then tag `v0.2.0`.
+
+## 2026-10-16 · Session 2 (cont.) – key leak review
+
+**Done**
+- Merged PR #14 (repository review fixes).
+- Checked the official rules: they ask for a way to test the project, never for our keys.
+- `chore/f2-server-only-guards` (D-025): `server-only` on the env, PayPal OAuth, PayPal SDK
+  and database modules; a throwaway browser component importing the env file made the
+  build fail, as intended. Vitest uses a stub for `server-only`.
+- Scanned the 49 browser-facing build files for every real key value and key pattern:
+  nothing found.
+- Lint, typecheck, 291 unit tests and build pass; sandbox PayPal and Gemini checks pass.
+
+**Note**
+- One live Gemini check timed out once (slow answer) and passed on retry.
+
+**Left**
+- `feat/f2-rules-confirmation`, then tag `v0.2.0`. Repeat the browser scan before F6.

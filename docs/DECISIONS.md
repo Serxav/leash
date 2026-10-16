@@ -539,3 +539,34 @@ project. Newest at the bottom.
   - F5: the rules builder calls a paid model in the public demo, so its route needs the
     same per-visitor rate limit as the agent routes.
 - **Status:** accepted.
+
+### D-025 · 2026-10-16 · No key can leak: layers of protection
+
+- **Why:** the repository is public, so any key that reaches it is leaked for good. The
+  official rules ask for a way to test the project ("test account credentials, API keys,
+  or sandbox login details"), not for our keys: judges get the hosted demo plus the
+  sandbox Personal login, or instructions to run it locally with their own free keys.
+- **Layers, from the disk to the browser:**
+  1. **Disk:** keys live only in `.env.local`, ignored by git; `.env.example` has names, no
+     values. The SQLite files (which hold vault tokens) and `data/` are ignored too (#14).
+     Claude Code is denied read and edit access to `.env` and `.env.local`.
+  2. **GitHub:** secret scanning and push protection are on; CI runs gitleaks on every pull
+     request and both checks are required to merge. The whole history was scanned on
+     Oct 16: no secrets.
+  3. **Server only:** only `src/config/env.ts` reads `process.env`. It, the PayPal OAuth
+     client, the PayPal SDK client, the database client and the AI models file import
+     `server-only`, so importing any of them from browser code fails the build (tested on
+     Oct 16 with a throwaway client component: the build failed). There are no
+     `NEXT_PUBLIC_` variables and no client components yet.
+  4. **Browser output:** on Oct 16, the 49 files Next.js serves to browsers (`.next/static`
+     and the prerendered pages) were searched for the real value of every key and for key
+     patterns (Google, Anthropic, PayPal access tokens): none found. The script printed
+     only names and found/not found, never a value.
+  5. **Logs and errors:** env validation names variables but never their values; PayPal and
+     AI provider errors are reduced to an issue code and a debug ID; nothing logs requests,
+     headers or tokens.
+  6. **The model:** it only ever sees rule text (and later, public product data); no
+     credentials, tokens, emails or internal PayPal IDs (CLAUDE.md).
+- **Tests:** Vitest maps `server-only` to an empty stub (`tests/stubs/server-only.ts`), so
+  unit and sandbox tests import the guarded files normally.
+- **Status:** accepted. Repeat the browser-output scan before the submission (F6).
