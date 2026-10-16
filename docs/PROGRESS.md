@@ -302,3 +302,26 @@ One entry per session: date, what was done, what is left, blockers.
 **Left**
 - Tag `v0.2.0` after merging (F2 done, except the optional UI shells).
 - F3: the agent. F5: per-visitor users and rate limit before deploying.
+
+## 2026-10-16 · Session 3 (cont.) – Channel3 catalog
+
+**Done**
+- Merged PR #16 and tagged `v0.2.0` (F2 done).
+- Read the Channel3 docs (search, product detail, locale, offers, categories, caching,
+  pricing, rate limits).
+- `feat/f3-channel3-catalog` (D-028):
+  - `src/catalog/channel3.ts`: REST client (the SDK has no licence), Spain + EUR, Zod
+    validation, safe errors;
+  - `src/catalog/catalog.ts`: 6-hour search cache, a cap of 300 searches a month (no bills),
+    local fallback, fail-closed product re-read;
+  - `src/catalog/local-catalog.json`: invented shops and the trap product;
+  - the engine accepts a category if it or a parent category is allowed;
+  - tables `catalog_searches` and `catalog_usage` (migration `0003`).
+- Live check: Channel3 returns euro offers in Spain under `office-supplies`; the product
+  re-read works. 4 credits used.
+- Lint, typecheck, unit tests and build pass.
+
+**Left**
+- `feat/f3-shopping-agent`, then `test/f3-prompt-injection`.
+- Sergi: check that the Channel3 dashboard has no payment method.
+

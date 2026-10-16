@@ -63,7 +63,9 @@ are chosen in one place: `src/ai/models.ts`.
 
 ## Sponsor tools
 
-- **Channel3:** product catalog search for the agent.
+- **Channel3:** product catalog search for the agent, through its REST API (Spain + EUR).
+  **Implemented:** `src/catalog/` (search, free price re-read, cache, monthly cap and a local
+  fallback catalog with invented shops).
 - **Render:** hosting for the public demo.
 - **APIMatic:** the PayPal Server SDK, built with the APIMatic Context Plugin for PayPal.
 

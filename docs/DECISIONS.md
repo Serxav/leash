@@ -632,3 +632,45 @@ project. Newest at the bottom.
 - **Tests:** unit tests with a fake Google API (503 and 429 go to the fallback, 400 does
   not); live tests with Gemini pass, including a new Spanish case.
 - **Status:** accepted (Sergi: "whatever is most convenient, as long as no bill comes").
+
+### D-028 · 2026-10-16 · Channel3 through its REST API, with a cache and a monthly cap
+
+- **REST API, not the SDK:** `@channel3/sdk` declares no licence on npm, its `package.json`
+  lists a `LICENSE` file that is not in the package, and its GitHub repository answers 404.
+  The official rules only allow third-party code with a compatible licence, while the
+  Channel3 prize asks to "use any Channel3 tools", which the API is. So Leash calls the two
+  documented endpoints with `fetch` (`src/catalog/channel3.ts`):
+  - `POST /v1/search` (1 credit) with `config: { country: "ES", currency: "EUR" }` and
+    `filters: { availability: ["InStock"], conditions: ["new"] }`;
+  - `GET /v1/products/{id}?country=ES&currency=EUR` (free), to re-read price, merchant and
+    category before any decision (brief §4.2).
+  No new dependency. The key travels only in the `x-api-key` header and is never logged;
+  errors keep only a code and the HTTP status.
+- **Validation:** every product is checked on its own with Zod and code. Only new, in-stock
+  euro offers with a valid domain and a price of at most two decimals are kept (one per
+  merchant, cheapest first). A product without a valid ID, category or offer is dropped.
+  Prices become strings at once and are compared in cents.
+- **Offers have no ID** in Channel3: an offer is identified by its merchant domain.
+- **Categories are a tree:** a product has one category and a path, e.g.
+  `office-supplies > general-office-supplies > paper-products > stationery`. The engine now
+  accepts a category if it **or any parent** is in the user's allowed categories, so
+  Marta's `office-supplies` covers printer paper. Invalid parents block the request.
+- **Language:** no `language` is sent. On Oct 16 the same query with `language: "en"`
+  returned napkins and T-shirts; without it (Channel3 infers it from the country) half the
+  results were office supplies.
+- **No bills:** 1,000 free searches a month, then $0.007 each. Leash counts its searches per
+  Madrid month in the database and **stops at 300**, then uses the local catalog. A search
+  is counted before it is sent, so failed calls count too. Same searches are cached for 6
+  hours (Channel3 recommends short caches); re-reading a product is free and not counted.
+- **Never breaks:** no key, an error, a timeout (10 s) or the cap → local catalog. A product
+  that cannot be re-read is `null`, and the caller must not buy it (fail closed).
+- **Local catalog** (`src/catalog/local-catalog.json`): generic office products from invented
+  shops (`.example` domains, no brands), with the demo cases: a cheaper offer from
+  `marketplace-x.example` (blocked), a toner above €15 (approval), a chair in `furniture`
+  (wrong category) and the trap product `local-sticky-notes-deal`, whose description tells AI
+  agents to ignore the rules (US8, blocked in `test/f3-prompt-injection`).
+- **Credits used on Oct 16:** 4 (live checks).
+- **For later:** search inside the user's allowed categories (`filters.category_ids`
+  accepts category slugs) to get better results; product titles from Channel3 can include
+  brands, so the video question stays open (ROADMAP F3).
+- **Status:** accepted (Sergi: "whatever is best for the hackathon rules", "no bills").
