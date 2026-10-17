@@ -4,7 +4,7 @@ import { PRODUCT_ID_PATTERN, toCatalogProduct, type CatalogProduct } from "./pro
 
 /**
  * Channel3 product catalog, called through its documented REST API (D-028):
- * - POST /v1/search: 1 credit per call (1,000 free per month);
+ * - POST /v1/search: 1 credit per call (free hackathon credits, D-031);
  * - GET /v1/products/{id}: free, used to re-read price and merchant.
  * Docs: https://docs.trychannel3.com/api-reference/v1/search and
  * https://docs.trychannel3.com/api-reference/v1/product-detail

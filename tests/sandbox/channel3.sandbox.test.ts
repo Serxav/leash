@@ -2,8 +2,8 @@ import { describe, expect, it } from "vitest";
 import { createChannel3Client } from "@/catalog/channel3";
 import { getServerEnv } from "@/config/env";
 
-// Real Channel3 calls. Each run spends 1 search credit (of 1,000 free per
-// month); the product re-read is free. Skipped without CHANNEL3_API_KEY.
+// Real Channel3 calls. Each run spends 1 free search credit (D-031); the
+// product re-read is free. Skipped without CHANNEL3_API_KEY.
 const apiKey = getServerEnv().CHANNEL3_API_KEY;
 
 describe.skipIf(!apiKey)("Channel3 catalog (live)", () => {

@@ -101,9 +101,9 @@ export const catalogSearches = sqliteTable("catalog_searches", {
 });
 
 /**
- * Channel3 searches made per calendar month in Madrid (D-028). Leash stops
- * calling Channel3 search at a cap far below the 1,000 free monthly credits,
- * so no bill can ever come; the local catalog is used instead.
+ * Channel3 searches made per calendar month in Madrid (D-028, D-031). Leash
+ * stops calling Channel3 search at a cap far below its free credits, so no
+ * bill can ever come; the local catalog is used instead.
  */
 export const catalogUsage = sqliteTable("catalog_usage", {
   /** "2026-10" */

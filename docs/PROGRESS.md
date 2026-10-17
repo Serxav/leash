@@ -365,3 +365,14 @@ One entry per session: date, what was done, what is left, blockers.
 **Left**
 - `test/f3-prompt-injection`, then `feat/f3-leashed-tools`.
 
+
+## 2026-10-17 · Session 4 – Channel3 cap
+
+**Done**
+- `chore/f3-channel3-cap` (D-031): the Channel3 monthly search cap goes from 300 to 2,000
+  now that the key has the 20,000 hackathon credits. The cap test now starts one search
+  below the cap instead of running every search.
+
+**Left**
+- `test/f3-prompt-injection`, then `feat/f3-leashed-tools`.
+- Sergi: confirm no payment method is saved in the Channel3 dashboard.

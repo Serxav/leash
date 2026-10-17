@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createDb, type Db } from "@/db/client";
-import { catalogSearches } from "@/db/schema";
+import { catalogSearches, catalogUsage } from "@/db/schema";
 import {
   CatalogError,
   CHANNEL3_MONTHLY_SEARCH_CAP,
@@ -98,12 +98,12 @@ describe("catalog search", () => {
   it(`stops calling Channel3 at ${CHANNEL3_MONTHLY_SEARCH_CAP} searches a month (no bills)`, async () => {
     const { client, calls } = fakeChannel3();
     const catalog = catalogWith(client);
-    for (let i = 0; i < CHANNEL3_MONTHLY_SEARCH_CAP; i++) {
-      await catalog.search(`query ${i}`);
-    }
+    db.insert(catalogUsage).values({ month: "2026-10", searches: CHANNEL3_MONTHLY_SEARCH_CAP - 1 }).run();
+    const last = await catalog.search("pens");
+    expect(last.products.some((product) => product.source === "channel3")).toBe(true);
     const result = await catalog.search("printer paper");
     expect(result.products.every((product) => product.source === "local")).toBe(true);
-    expect(calls.search).toBe(CHANNEL3_MONTHLY_SEARCH_CAP);
+    expect(calls.search).toBe(1);
     expect(searchesThisMonth(db, NOW)).toBe(CHANNEL3_MONTHLY_SEARCH_CAP);
   });
 
