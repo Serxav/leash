@@ -760,3 +760,21 @@ main page, the sponsor detail pages for Channel3 and APIMatic, the FAQ and the u
   that runs out stays active and is topped up on Discord. Sergi still confirms in the
   dashboard that no payment method is saved.
 - **Status:** accepted (Sergi approved the task on Oct 17).
+
+### D-032 · 2026-10-17 · Force a patched esbuild inside drizzle-kit
+
+- **Why:** Dependabot alert #1 (medium): esbuild 0.24.2 and older let any website send
+  requests to esbuild's own development server and read the answers. `drizzle-kit` (dev only,
+  used to write migrations) depends on the deprecated `@esbuild-kit/core-utils`, which pins
+  esbuild 0.18.20. The latest stable `drizzle-kit` (0.31.11) still has it, and 1.0 is only a
+  release candidate.
+- **Real risk was low:** that package only uses esbuild's `transform`, never its server, and
+  nothing of it reaches the app or Render. It is fixed anyway so the alert list stays clean.
+- **Fix:** an `overrides` entry in `package.json` makes `@esbuild-kit/core-utils` use esbuild
+  `^0.25.12`, the same version `drizzle-kit` already uses itself. `drizzle-kit generate`
+  ("No schema changes") and `drizzle-kit check` still work. Remove the override when
+  `drizzle-kit` drops `@esbuild-kit`.
+- **Still listed by `npm audit`:** `braces` (high, alert #2, auto-dismissed by GitHub) inside
+  the lint tools of `eslint-config-next`. There is no patched version, npm's only fix is
+  downgrading to Next 14, and it only reads Leash's own lint file patterns. Left as is.
+- **Status:** accepted (Sergi: "empieza fix/deps-esbuild-alert").

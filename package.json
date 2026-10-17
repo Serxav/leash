@@ -42,5 +42,10 @@
   },
   "allowScripts": {
     "better-sqlite3@13.0.3": true
+  },
+  "overrides": {
+    "@esbuild-kit/core-utils": {
+      "esbuild": "^0.25.12"
+    }
   }
 }

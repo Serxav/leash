@@ -376,3 +376,13 @@ One entry per session: date, what was done, what is left, blockers.
 **Left**
 - `test/f3-prompt-injection`, then `feat/f3-leashed-tools`.
 - Sergi: confirm no payment method is saved in the Channel3 dashboard.
+
+## 2026-10-17 · Session 4 (cont.) – esbuild alert
+
+**Done**
+- Merged PR #20 (Channel3 cap).
+- `fix/deps-esbuild-alert` (D-032): an npm override gives `drizzle-kit`'s old
+  `@esbuild-kit` loader a patched esbuild; migrations tooling still works.
+
+**Left**
+- `test/f3-prompt-injection`, then `feat/f3-leashed-tools`.
