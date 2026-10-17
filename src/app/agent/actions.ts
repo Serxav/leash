@@ -10,6 +10,8 @@ import { getMandateView } from "@/payments/mandate";
 import { proposeForUser } from "@/purchases/server";
 import { describeRules } from "@/rules/describe";
 import { getActivePolicy } from "@/rules/policies";
+import { injectionEvent, logInjection } from "@/security/events";
+import { securityEvents } from "@/db/schema";
 import type { AgentFormState } from "./state";
 
 /**
@@ -40,6 +42,12 @@ export async function runAgent(
         model: getModel("agent"),
         catalog: getCatalog(),
         propose: proposeForUser(DEMO_USER_ID),
+        reportInjection: (product, signals) => {
+          db.insert(securityEvents)
+            .values(injectionEvent({ userId: DEMO_USER_ID, stage: "SEARCH", product, signals, at: new Date() }))
+            .run();
+          logInjection("SEARCH", product.id, signals);
+        },
       },
       { request, ruleTags: describeRules(policy.rules).map((tag) => tag.text) },
     );

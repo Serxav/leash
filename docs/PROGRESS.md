@@ -386,3 +386,22 @@ One entry per session: date, what was done, what is left, blockers.
 
 **Left**
 - `test/f3-prompt-injection`, then `feat/f3-leashed-tools`.
+
+## 2026-10-17 · Session 4 (cont.) – prompt injection
+
+**Done**
+- Merged PR #21 (esbuild alert, GitHub marks it fixed).
+- `test/f3-prompt-injection` (D-033):
+  - `src/security/untrusted-text.ts`: a plain-code check for instructions aimed at AI agents
+    in shop text, in English and Spanish;
+  - the agent's search hides flagged products from the model; the server blocks them again
+    at proposal time with the fixed rule `untrusted_instructions`;
+  - table `security_events` (migration `0005`) and a "Security log" section on `/agent`;
+  - sandbox test with the real agent model: the trap never reached it and was reported.
+- Lint, typecheck and 451 unit tests pass.
+
+**Left**
+- The `/agent` page could not be opened in the browser: the dev server fails to start with
+  `EPERM: process.cwd` (macOS blocks the app from the Documents folder). Sergi checks the
+  macOS privacy setting, then the security log is checked on screen.
+- `feat/f3-leashed-tools`.

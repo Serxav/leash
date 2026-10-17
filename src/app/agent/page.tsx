@@ -8,6 +8,8 @@ import { getMandateView } from "@/payments/mandate";
 import { listProposals, type ProposalView } from "@/purchases/propose";
 import { describeRules } from "@/rules/describe";
 import { getActivePolicy } from "@/rules/policies";
+import { listSecurityEvents, type SecurityEventView } from "@/security/events";
+import { describeSignals } from "@/security/untrusted-text";
 import { AgentForm } from "./agent-form";
 
 export const metadata: Metadata = {
@@ -27,6 +29,11 @@ const PAYMENT_LABELS: Record<string, string> = {
   FAILED: "payment failed",
   REFUNDED: "refunded",
   PARTIALLY_REFUNDED: "partly refunded",
+};
+
+const STAGE_LABELS: Record<SecurityEventView["stage"], string> = {
+  SEARCH: "Hidden from the agent",
+  PROPOSAL: "Proposal blocked",
 };
 
 const dateTime = new Intl.DateTimeFormat("en-GB", {
@@ -67,6 +74,7 @@ async function AgentState() {
   const policy = getActivePolicy(db, DEMO_USER_ID);
   const mandate = getMandateView(db, DEMO_USER_ID);
   const proposals = listProposals(db, DEMO_USER_ID);
+  const securityLog = listSecurityEvents(db, DEMO_USER_ID, 10);
 
   return (
     <>
@@ -132,6 +140,41 @@ async function AgentState() {
                 <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-400">
                   Agent&apos;s reason: {proposal.agentReason}
                 </p>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      <section aria-labelledby="security-heading" className="flex flex-col gap-3">
+        <h2 id="security-heading" className="text-xl font-semibold">
+          Security log
+        </h2>
+        <p className="text-sm text-zinc-700 dark:text-zinc-300">
+          Products whose shop text tried to give orders to the AI. Leash&apos;s code hides them from
+          the agent and never buys them, whatever your rules say.
+        </p>
+        {securityLog.length === 0 ? (
+          <p className="text-sm text-zinc-600 dark:text-zinc-400">Nothing suspicious so far.</p>
+        ) : (
+          <ul className="flex flex-col gap-3">
+            {securityLog.map((event) => (
+              <li key={event.id} className="rounded-lg border border-red-300 p-4 text-sm dark:border-red-800">
+                <p>
+                  <strong>{STAGE_LABELS[event.stage]}</strong>
+                  {" · "}
+                  {dateTime.format(event.createdAt)}
+                </p>
+                {/* Shop text, rendered as plain text (React escapes it). */}
+                <p className="font-medium">{event.productTitle}</p>
+                {event.merchantDomain && (
+                  <p className="text-zinc-700 dark:text-zinc-300">{event.merchantDomain}</p>
+                )}
+                {event.signals.length > 0 && (
+                  <p className="mt-1 text-zinc-700 dark:text-zinc-300">
+                    Its text {describeSignals(event.signals)}.
+                  </p>
+                )}
               </li>
             ))}
           </ul>

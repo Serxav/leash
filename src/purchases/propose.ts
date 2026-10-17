@@ -8,6 +8,7 @@ import {
   decisions,
   payments,
   purchaseIntents,
+  securityEvents,
   type PaymentStatus,
 } from "@/db/schema";
 import type { ChargeInput, PaymentView } from "@/payments/charge";
@@ -15,12 +16,16 @@ import { getMandateView } from "@/payments/mandate";
 import { countsTowardBudget, decide, type Decision, type Outcome } from "@/rules/engine";
 import { getActivePolicy } from "@/rules/policies";
 import { normalizeMerchantDomain, type RuleId } from "@/rules/schema";
+import { injectionEvent, logInjection } from "@/security/events";
+import { screenProduct } from "@/security/untrusted-text";
 
 /**
  * The purchase flow (brief §4). THE AI PROPOSES, THE CODE DECIDES:
  * 1. the agent proposes a product, an offer (its merchant), a quantity and
  *    a reason — never a price;
  * 2. the server re-reads price, merchant and category from the catalog;
+ *    a product whose shop text carries instructions for AI agents is
+ *    blocked here, whatever the rules say (US8);
  * 3. the policy engine decides with the user's confirmed rules;
  * 4. the intent and the decision are stored;
  * 5. only APPROVE charges, with the saved PayPal, merchant-initiated.
@@ -108,6 +113,7 @@ export async function proposePurchase(
     // 2. Re-read from the catalog: never trust the model's numbers.
     const product = await deps.catalog.getProduct(input.productId);
     const offer = product?.offers.find((o) => o.merchantDomain === input.merchantDomain) ?? null;
+    const injection = product ? screenProduct(product) : [];
     const policy = getActivePolicy(deps.db, input.userId);
     const at = now();
 
@@ -116,6 +122,14 @@ export async function proposePurchase(
     let decision: Decision;
     if (!product) {
       decision = blocked("Blocked: Leash could not check this product's current price, so it did not buy it.");
+    } else if (injection.length > 0) {
+      decision = {
+        outcome: "BLOCK",
+        ruleIds: ["untrusted_instructions"],
+        explanation:
+          "Blocked: this product's shop text contains instructions for AI agents (a prompt injection), so Leash never buys it.",
+        orderTotal: null,
+      };
     } else if (!offer) {
       decision = blocked(`Blocked: ${input.merchantDomain} does not sell this product in euros right now.`);
     } else if (!policy) {
@@ -171,7 +185,23 @@ export async function proposePurchase(
           decidedAt: at,
         })
         .run();
+      if (product && injection.length > 0) {
+        tx.insert(securityEvents)
+          .values(
+            injectionEvent({
+              userId: input.userId,
+              stage: "PROPOSAL",
+              product,
+              signals: injection,
+              merchantDomain: input.merchantDomain,
+              intentId,
+              at,
+            }),
+          )
+          .run();
+      }
     });
+    if (product && injection.length > 0) logInjection("PROPOSAL", product.id, injection);
 
     const result: ProposalResult = {
       outcome: decision.outcome,
