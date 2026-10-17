@@ -746,3 +746,17 @@ main page, the sponsor detail pages for Channel3 and APIMatic, the FAQ and the u
   verified through the API and the database; Sergi will look at the Business account.
 - **Status:** accepted.
 
+
+### D-031 · 2026-10-17 · Channel3 monthly search cap raised to 2,000
+
+- **Why:** on Oct 16 Sergi applied the hackathon promo code, so the Channel3 key has 20,000
+  free credits. The 300-search cap (D-028) was set for the 1,000 free credits and would run
+  out quickly once the demo searches inside the user's categories and judges try it.
+- **New cap:** 2,000 searches per Madrid month (`CHANNEL3_MONTHLY_SEARCH_CAP`). From October
+  to December, the last month of judging, Leash can spend at most 6,000 credits, far below
+  20,000. Everything else stays: the 6-hour cache, counting before sending, and the local
+  catalog when the cap is reached.
+- **No bills:** no card is needed for the credits, and the Channel3 page says that a key
+  that runs out stays active and is topped up on Discord. Sergi still confirms in the
+  dashboard that no payment method is saved.
+- **Status:** accepted (Sergi approved the task on Oct 17).

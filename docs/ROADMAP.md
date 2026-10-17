@@ -84,9 +84,9 @@ definition of done in `CLAUDE.md`. Tags close each phase.
 - [ ] Make Channel3 visible in the demo ("Best Use of Channel3", D-030): at least one real
       Channel3 offer in the agent flow, for example by searching inside the user's allowed
       categories (`filters.category_ids`)
-- [ ] Sergi: apply promo code `PAYPAL-HACKATHON-2026` in the Channel3 dashboard (20,000 free
-      credits, no card) and confirm no payment method is saved. Then the monthly cap (300)
-      can be raised
+- [x] Sergi: apply promo code `PAYPAL-HACKATHON-2026` in the Channel3 dashboard (20,000 free
+      credits, no card). Monthly cap raised from 300 to 2,000 (D-031)
+- [ ] Sergi: confirm no payment method is saved in the Channel3 dashboard
 - [ ] Sergi: check in the sandbox Business account that the agent's charges arrived (€5.49,
       €6.90, €10.98 on Oct 16)
 - [ ] Anthropic: workspace "leash", spending limit, `leash-dev` key (Sergi, end of

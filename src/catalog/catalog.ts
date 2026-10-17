@@ -17,12 +17,13 @@ import { catalogProductSchema, cleanText, type CatalogProduct } from "./product"
  * results.
  *
  * No bills: Leash counts its Channel3 searches per Madrid month and stops
- * at CHANNEL3_MONTHLY_SEARCH_CAP, far below the 1,000 free credits. A search
+ * at CHANNEL3_MONTHLY_SEARCH_CAP. Even at the cap every month until judging
+ * ends, Leash stays far below the 20,000 hackathon credits (D-031). A search
  * is counted before it is sent, so failed calls count too (never under).
  * Re-reading a product is free on Channel3 and is not counted.
  */
 
-export const CHANNEL3_MONTHLY_SEARCH_CAP = 300;
+export const CHANNEL3_MONTHLY_SEARCH_CAP = 2_000;
 /** Channel3 recommends short caches; prices are re-read before deciding. */
 export const SEARCH_CACHE_TTL_MS = 6 * 60 * 60 * 1000;
 export const MAX_QUERY_LENGTH = 200;
