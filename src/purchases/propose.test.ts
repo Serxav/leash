@@ -82,12 +82,14 @@ describe("proposePurchase", () => {
       explanation: expect.any(String),
       orderTotal: "13.80",
       paymentStatus: "COMPLETED",
+      purchaseRef: expect.any(String),
     });
     expect(charged).toEqual([
       expect.objectContaining({ userId: USER, amount: "13.80", initiator: "MERCHANT" }),
     ]);
     const [intent] = db.select().from(purchaseIntents).all();
     expect(charged[0].intentId).toBe(intent.id);
+    expect(result.purchaseRef).toBe(intent.id);
   });
 
   it("uses the catalog's price, never a price from the model", async () => {
@@ -162,6 +164,7 @@ describe("proposePurchase", () => {
       outcome: "BLOCK",
       explanation: expect.stringContaining("instructions for AI agents"),
       orderTotal: null,
+      purchaseRef: expect.any(String),
     });
     expect(charged).toEqual([]);
 

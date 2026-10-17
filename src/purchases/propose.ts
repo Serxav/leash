@@ -52,6 +52,11 @@ export type ProposalResult = {
   orderTotal: string | null;
   /** What PayPal did, for approved purchases only. */
   paymentStatus?: PaymentStatus;
+  /**
+   * Leash's own reference for the stored proposal (the intent ID), so the
+   * agent can check it later. Not a PayPal ID.
+   */
+  purchaseRef?: string;
 };
 
 export type ProposeDeps = {
@@ -207,6 +212,7 @@ export async function proposePurchase(
       outcome: decision.outcome,
       explanation: decision.explanation,
       orderTotal: decision.orderTotal,
+      purchaseRef: intentId,
     };
     if (decision.outcome !== "APPROVE" || !decision.orderTotal || !product) return result;
 

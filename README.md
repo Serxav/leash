@@ -43,7 +43,7 @@ layer between an AI shopping agent and the user's money:
 | Vault – save PayPal for purchase later | The user's mandate (payment token). **Implemented:** `src/payments/mandate.ts` |
 | Orders v2 | Charging approved purchases with the saved payment method (`vault_id`, `stored_credential`). **Implemented:** `src/payments/charge.ts` |
 | Payments v2 – refunds | Full refunds from the purchase history, idempotent per payment. **Implemented:** `src/payments/refund.ts` |
-| Agent Toolkit (`@paypal/agent-toolkit`) | Read-only tools for the agent (order and transaction status) and confirmed refunds, wrapped by Leash's permission layer ("leashed tools") |
+| Agent Toolkit (`@paypal/agent-toolkit`) | Tools for the agent, wrapped by Leash's permission layer ("leashed tools"). **Implemented:** `check_purchase_status` reads one of the user's own purchases with the toolkit's `get_order` and checks it against Leash's records (`src/paypal/agent-toolkit.ts`, `src/agent/leashed-tools.ts`). Planned: refunds through the toolkit, only after the user confirms (F4) |
 
 Customer-initiated charges carry PayPal **FraudNet** risk data (`src/components/fraudnet.tsx`, `PayPal-Client-Metadata-Id`).
 

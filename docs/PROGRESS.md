@@ -409,3 +409,23 @@ One entry per session: date, what was done, what is left, blockers.
 **Left**
 - `feat/f3-leashed-tools`.
 - The agent's summary shows Markdown marks (`**`) as plain text: fix in the design pass.
+
+## 2026-10-17 · Session 4 (cont.) – leashed tools
+
+**Done**
+- Merged PR #22 (prompt-injection defence).
+- `feat/f3-leashed-tools` (D-034):
+  - installed `@paypal/agent-toolkit` 1.11.0 (pinned) after reading its code; overrides
+    patch its vulnerable dependencies (only 5 low findings left, in code Leash never calls);
+  - `src/paypal/agent-toolkit.ts`: sandbox-only runner, new toolkit per call, time limit;
+  - `src/agent/leashed-tools.ts`: `check_purchase_status`, the agent's third tool: own
+    purchases only, checked against Leash's records, whitelisted fields only;
+  - `propose_purchase` now returns a `purchaseRef` (Leash's intent ID).
+- Tried in the sandbox: toolkit sandbox tests pass; on `/agent` the agent bought pens
+  (€8.50) and a stapler (€12.95) and confirmed the stapler with PayPal through the toolkit.
+- Lint, typecheck, 472 unit tests and build pass; the browser bundle has no toolkit code.
+
+**Left**
+- Make Channel3 visible in the demo, then tag `v0.3.0`.
+- Small fix: `tests/sandbox/paypal-charge` and `paypal-refund` still use `lab-user`, so they
+  are skipped since the mandate moved to the demo user (D-029).

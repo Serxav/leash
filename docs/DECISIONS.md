@@ -813,3 +813,45 @@ main page, the sponsor detail pages for Channel3 and APIMatic, the FAQ and the u
   for "the sticky notes mega pack with the best price deal", the agent never saw the trap,
   proposed the normal sticky notes and told the user that Leash hid one product.
 - **Status:** accepted (Sergi: "sí, empieza test/f3-prompt-injection").
+
+### D-034 · 2026-10-17 · Leashed tools: the PayPal Agent Toolkit behind Leash's permission layer
+
+- **What the agent gets:** a third tool, `check_purchase_status`, read only. After a purchase
+  is charged, the agent checks it at PayPal and tells the user whether PayPal confirmed it.
+  It never gets a tool that pays or refunds.
+- **How it works** (`src/agent/leashed-tools.ts`):
+  1. **Permission first:** the agent sends the `purchaseRef` that `propose_purchase` gave
+     it (Leash's own intent ID, not a PayPal ID). Leash checks it is a purchase of the
+     current user; another user's purchase answers exactly like a missing one. At most 5
+     checks per run.
+  2. **One toolkit call:** the toolkit's `get_order`, in the sandbox.
+  3. **Checked against Leash's records:** same order ID, same payment attempt (`custom_id`)
+     and same amount and currency, or the agent is told to warn the user.
+  4. **Whitelisted fields only:** order and payment status (from fixed lists, anything else
+     becomes `UNKNOWN`), the amount, and whether it matches. No PayPal IDs, payer names,
+     emails, addresses or links reach the model. The server log line has no IDs either.
+- **The toolkit** (`@paypal/agent-toolkit` 1.11.0, pinned; `src/paypal/agent-toolkit.ts`).
+  As found in D-014, its tools are built for AI SDK v4, so they are never given to the model;
+  Leash calls one tool's `execute` itself. Reading its code before installing it showed
+  four risks, each handled:
+  - it caches its OAuth token forever (sandbox tokens expire after a few hours): Leash makes
+    a new toolkit for every call;
+  - it sets no time limit: Leash adds 15 seconds;
+  - it uses the sandbox host `api.sandbox.paypal.com`, not `api-m`: Leash forces
+    `sandbox: true` and refuses any host that is not one of those two sandbox hosts;
+  - it returns raw PayPal JSON: only the whitelisted fields above are passed on.
+  It reads no `.env` file and logs only with `DEBUG=agent-toolkit:*`.
+- **Its dependencies:** it brings old versions with known advisories (10 new findings in
+  `npm audit`, most of them high). `overrides` in `package.json`, limited to the toolkit,
+  move `mathjs`, `@langchain/core`, `langsmith`, `uuid` and `jsondiffpatch` to patched
+  versions. What is left are 5 low findings in its own AI SDK v4 (file-upload checks and
+  UI streaming), code Leash never calls; the toolkit's next release should remove them. The
+  `get_order` call, the build and the browser bundle scan were checked with the overrides.
+- **Refunds:** the toolkit's `create_refund` will run only after the user confirms a refund in
+  the history page (F4). The agent never gets it.
+- **Tested:** unit tests for the permission checks, the comparison, the whitelist, errors and
+  the sandbox host check; sandbox tests that read a real Leash order with the toolkit and
+  through the leashed tool, and a missing order as an error; and on `/agent`: the agent
+  bought a stapler (€12.95, approved and charged in the sandbox), checked it, and the server
+  log shows the toolkit call ("order COMPLETED, payment COMPLETED, matches Leash: true").
+- **Status:** accepted (Sergi: "lo que cumpla con las normas del torneo y sea mejor").
