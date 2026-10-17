@@ -30,6 +30,9 @@ layer between an AI shopping agent and the user's money:
    **Implemented:** the shopping agent (`src/agent/agent.ts`, page `/agent`). Its only tools
    are a catalog search and `propose_purchase`; the server re-reads price, shop and category,
    runs the engine and charges only approved purchases (`src/purchases/propose.ts`).
+   **Implemented:** prompt-injection defence (`src/security/`). Shop text that gives orders
+   to AI agents is found by plain code, hidden from the agent and never bought, and each case
+   appears in the security log on `/agent`.
 3. **PayPal executes only what is approved.** The user saves PayPal once (the mandate).
    Approved purchases are charged with the saved method, and refunds go back through PayPal.
 

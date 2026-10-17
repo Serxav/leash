@@ -29,6 +29,9 @@ export const MAX_BLOCKED_MERCHANTS = 50;
  */
 export const RULE_IDS = [
   "valid_request",
+  // A fixed protection, not a user rule: the product's shop text carries
+  // instructions for AI agents (US8, D-033).
+  "untrusted_instructions",
   "mandate_active",
   "agent_active",
   "allowed_categories",

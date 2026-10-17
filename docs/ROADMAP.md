@@ -77,7 +77,7 @@ definition of done in `CLAUDE.md`. Tags close each phase.
 - [x] `feat/f3-shopping-agent` (D-029): agent (Gemini via `src/ai/models.ts`) whose only
       purchase tool is `propose_purchase`; the server re-reads price, merchant and category
 - [ ] `feat/f3-leashed-tools`: Agent Toolkit tools wrapped by the Leash permission layer
-- [ ] `test/f3-prompt-injection`: the trap product is blocked and logged
+- [x] `test/f3-prompt-injection`: the trap product is blocked and logged (D-033)
 - [ ] Decide how Channel3 results are shown without third-party brands in the video
       (generic queries, no product images or neutral images). Ask the Channel3 team on the
       PayPal Discord (#channel3) whether retailer names may appear. Record it in DECISIONS

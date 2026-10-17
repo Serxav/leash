@@ -150,3 +150,28 @@ export const decisions = sqliteTable("decisions", {
 });
 
 export type DecisionRow = typeof decisions.$inferSelect;
+
+/**
+ * Products Leash refused because their shop text carried instructions for
+ * AI agents (US8, D-033). SEARCH: hidden from the agent before it saw them.
+ * PROPOSAL: the agent proposed one anyway and the server blocked it. Stores
+ * the signals found, never the injected text itself.
+ */
+export const securityEvents = sqliteTable("security_events", {
+  id: text("id").primaryKey(),
+  userId: text("user_id").notNull(),
+  stage: text("stage", { enum: ["SEARCH", "PROPOSAL"] }).notNull(),
+  productId: text("product_id").notNull(),
+  productSource: text("product_source", { enum: ["channel3", "local"] }).notNull(),
+  /** Untrusted shop text, cleaned and capped; shown as plain text. */
+  productTitle: text("product_title").notNull(),
+  /** The proposed offer, or the cheapest one for a hidden product. */
+  merchantDomain: text("merchant_domain"),
+  /** JSON list of signals (src/security/untrusted-text.ts). */
+  signalsJson: text("signals_json").notNull(),
+  /** The blocked purchase intent, for PROPOSAL events. */
+  intentId: text("intent_id"),
+  createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
+});
+
+export type SecurityEventRow = typeof securityEvents.$inferSelect;
