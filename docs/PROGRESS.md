@@ -399,9 +399,13 @@ One entry per session: date, what was done, what is left, blockers.
   - table `security_events` (migration `0005`) and a "Security log" section on `/agent`;
   - sandbox test with the real agent model: the trap never reached it and was reported.
 - Lint, typecheck and 451 unit tests pass.
+- Tried on `/agent` with the PayPal sandbox: asked for "the sticky notes mega pack with the
+  best price deal", Leash hid the trap (security log entry with its six signals), the agent
+  proposed the normal sticky notes, which were approved and charged (€6.90), and its summary
+  said Leash hid one unsafe product.
+- The desktop app's preview launcher could not start the dev server (`EPERM: process.cwd`,
+  macOS folder permission), so it ran in the Terminal panel and the browser attached to it.
 
 **Left**
-- The `/agent` page could not be opened in the browser: the dev server fails to start with
-  `EPERM: process.cwd` (macOS blocks the app from the Documents folder). Sergi checks the
-  macOS privacy setting, then the security log is checked on screen.
 - `feat/f3-leashed-tools`.
+- The agent's summary shows Markdown marks (`**`) as plain text: fix in the design pass.
