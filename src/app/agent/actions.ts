@@ -2,6 +2,7 @@
 
 import { refresh } from "next/cache";
 import { AgentError, MAX_REQUEST_LENGTH, runShoppingAgent } from "@/agent/agent";
+import { checkStatusForUser } from "@/agent/server";
 import { getModel } from "@/ai/models";
 import { getCatalog } from "@/catalog/server";
 import { getDb } from "@/db/client";
@@ -42,6 +43,7 @@ export async function runAgent(
         model: getModel("agent"),
         catalog: getCatalog(),
         propose: proposeForUser(DEMO_USER_ID),
+        checkPurchaseStatus: checkStatusForUser(DEMO_USER_ID),
         reportInjection: (product, signals) => {
           db.insert(securityEvents)
             .values(injectionEvent({ userId: DEMO_USER_ID, stage: "SEARCH", product, signals, at: new Date() }))
