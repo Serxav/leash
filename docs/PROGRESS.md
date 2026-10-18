@@ -429,3 +429,17 @@ One entry per session: date, what was done, what is left, blockers.
 - Make Channel3 visible in the demo, then tag `v0.3.0`.
 - Small fix: `tests/sandbox/paypal-charge` and `paypal-refund` still use `lab-user`, so they
   are skipped since the mandate moved to the demo user (D-029).
+
+## 2026-10-18 · Session 5 – sandbox tests on the demo user
+
+**Done**
+- Merged PR #23 (leashed Agent Toolkit tool).
+- `fix/f3-sandbox-tests-demo-user`: `tests/sandbox/paypal-charge` and `paypal-refund` now use
+  the demo user, who holds the mandate since D-029, so they run again instead of being
+  skipped. Each charge test run adds €1.00 (fake money) to the demo user's spending, like a
+  charge from `/lab/payments`.
+- Tried in the sandbox: 3 tests pass (charge, declined charge, refund and the refused second
+  refund). Lint, typecheck, 472 unit tests and build pass.
+
+**Left**
+- Make Channel3 visible in the demo, then tag `v0.3.0`.
