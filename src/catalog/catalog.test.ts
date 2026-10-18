@@ -7,7 +7,10 @@ import {
   createCatalog,
   normalizeQuery,
   SEARCH_CACHE_TTL_MS,
+  searchCacheKey,
   searchesThisMonth,
+  searchScopeFromRules,
+  type SearchScope,
 } from "./catalog";
 import { Channel3Error, type Channel3Client } from "./channel3";
 import { LOCAL_PRODUCTS, TRAP_PRODUCT_ID } from "./local";
@@ -137,6 +140,55 @@ describe("catalog search", () => {
   it("normalises and caps queries", () => {
     expect(normalizeQuery("  A4\tPrinter\u0000 PAPER  ")).toBe("a4 printer paper");
     expect(normalizeQuery("x".repeat(500))).toHaveLength(200);
+  });
+});
+
+describe("catalog search inside the user's rules (D-035)", () => {
+  const scope: SearchScope = { categories: ["office-supplies"], maxUnitPrice: "40.00" };
+
+  it("builds the scope from the confirmed rules, not from the model", () => {
+    expect(
+      searchScopeFromRules({ allowedCategories: ["paper", "office-supplies"], maxPerOrder: "40.00" }),
+    ).toEqual({ categories: ["office-supplies", "paper"], maxUnitPrice: "40.00" });
+  });
+
+  it("asks Channel3 for the allowed categories and price limit", async () => {
+    const seen: unknown[] = [];
+    const { client } = fakeChannel3({
+      search: async (...args) => {
+        seen.push(args);
+        return [remote];
+      },
+    });
+    await catalogWith(client).search("Stapler", scope);
+    expect(seen).toEqual([["stapler", 10, { categoryIds: ["office-supplies"], maxPrice: "40.00" }]]);
+  });
+
+  it("still returns the demo catalog unfiltered, so the blocked demo cases stay", async () => {
+    const { client } = fakeChannel3({ search: async () => [] });
+    const { products } = await catalogWith(client).search("office chair", scope);
+    expect(products.map((product) => product.id)).toContain("local-office-chair");
+  });
+
+  it("caches each scope apart: other rules never reuse another scope's results", async () => {
+    const { client, calls } = fakeChannel3();
+    const catalog = catalogWith(client);
+    await catalog.search("stapler", scope);
+    await catalog.search("stapler", scope);
+    await catalog.search("stapler", { ...scope, maxUnitPrice: "15.00" });
+    await catalog.search("stapler");
+    expect(calls.search).toBe(3);
+    expect(db.select().from(catalogSearches).all().map((row) => row.queryKey).sort()).toEqual([
+      "stapler",
+      "stapler|in:office-supplies|max:15.00",
+      "stapler|in:office-supplies|max:40.00",
+    ]);
+  });
+
+  it("gives the same cache key whatever the category order", () => {
+    expect(searchCacheKey("pens", { categories: ["paper", "office-supplies"], maxUnitPrice: "9.99" })).toBe(
+      searchCacheKey("pens", { categories: ["office-supplies", "paper"], maxUnitPrice: "9.99" }),
+    );
   });
 });
 

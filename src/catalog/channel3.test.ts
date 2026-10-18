@@ -47,6 +47,18 @@ describe("Channel3 search", () => {
     });
   });
 
+  it("narrows the search to the given categories and price limit (D-035)", async () => {
+    const { client, sent } = fakeChannel3(() => Response.json({ products: [product], next_page_token: null }));
+    await client.search("stapler", 10, { categoryIds: ["office-supplies", "paper"], maxPrice: "12.99" });
+
+    expect(JSON.parse(String(sent[0].init.body)).filters).toEqual({
+      availability: ["InStock"],
+      conditions: ["new"],
+      category_ids: ["office-supplies", "paper"],
+      price: { min_price: null, max_price: 12.99 },
+    });
+  });
+
   it("drops products it cannot use and keeps the rest", async () => {
     const { client } = fakeChannel3(() =>
       Response.json({

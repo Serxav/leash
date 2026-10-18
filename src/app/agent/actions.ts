@@ -4,6 +4,7 @@ import { refresh } from "next/cache";
 import { AgentError, MAX_REQUEST_LENGTH, runShoppingAgent } from "@/agent/agent";
 import { checkStatusForUser } from "@/agent/server";
 import { getModel } from "@/ai/models";
+import { searchScopeFromRules } from "@/catalog/catalog";
 import { getCatalog } from "@/catalog/server";
 import { getDb } from "@/db/client";
 import { DEMO_USER_ID } from "@/lib/demo-user";
@@ -37,11 +38,15 @@ export async function runAgent(
     return { kind: "error", request: shown, message: "Connect PayPal first, so Leash can pay approved purchases." };
   }
 
+  // Channel3 searches only what these rules could allow (D-035).
+  const catalog = getCatalog();
+  const scope = searchScopeFromRules(policy.rules);
+
   try {
     const run = await runShoppingAgent(
       {
         model: getModel("agent"),
-        catalog: getCatalog(),
+        catalog: { search: (query) => catalog.search(query, scope) },
         propose: proposeForUser(DEMO_USER_ID),
         checkPurchaseStatus: checkStatusForUser(DEMO_USER_ID),
         reportInjection: (product, signals) => {

@@ -78,12 +78,11 @@ definition of done in `CLAUDE.md`. Tags close each phase.
       purchase tool is `propose_purchase`; the server re-reads price, merchant and category
 - [x] `feat/f3-leashed-tools`: Agent Toolkit tools wrapped by the Leash permission layer (D-034)
 - [x] `test/f3-prompt-injection`: the trap product is blocked and logged (D-033)
-- [ ] Decide how Channel3 results are shown without third-party brands in the video
-      (generic queries, no product images or neutral images). Ask the Channel3 team on the
-      PayPal Discord (#channel3) whether retailer names may appear. Record it in DECISIONS
-- [ ] Make Channel3 visible in the demo ("Best Use of Channel3", D-030): at least one real
-      Channel3 offer in the agent flow, for example by searching inside the user's allowed
-      categories (`filters.category_ids`)
+- [ ] Brands in the video (D-035: the app shows real shop names, no logos or images). Sergi
+      asks the Channel3 team on the PayPal Discord (#channel3) whether retailer names may
+      appear in the video; until then the video uses the demo shops
+- [x] `feat/f3-channel3-in-demo` (D-035): Channel3 searches inside the user's allowed
+      categories and price limit; a real Channel3 offer bought in the agent flow
 - [x] Sergi: apply promo code `PAYPAL-HACKATHON-2026` in the Channel3 dashboard (20,000 free
       credits, no card). Monthly cap raised from 300 to 2,000 (D-031)
 - [ ] Sergi: confirm no payment method is saved in the Channel3 dashboard

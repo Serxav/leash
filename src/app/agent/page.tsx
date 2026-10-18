@@ -22,6 +22,11 @@ const OUTCOME_LABELS: Record<ProposalView["outcome"], string> = {
   BLOCK: "Blocked",
 };
 
+const SOURCE_LABELS: Record<ProposalView["source"], string> = {
+  channel3: "Channel3 offer",
+  local: "Demo shop",
+};
+
 const PAYMENT_LABELS: Record<string, string> = {
   COMPLETED: "charged with PayPal (sandbox)",
   PENDING: "payment pending at PayPal",
@@ -56,8 +61,9 @@ export default function AgentPage() {
         >
           Purchases here are proposed by an AI agent. The agent cannot pay: Leash&apos;s code
           checks every proposal against your confirmed rules before PayPal (sandbox) charges
-          anything. Products come from Channel3 (real offers) and a small Leash demo catalog with
-          invented shops; either way the payee is the Leash demo store.
+          anything. Products come from Channel3 (real offers, searched only inside your allowed
+          categories and price limit) and a small Leash demo catalog with invented shops; either
+          way the payee is the Leash demo store.
         </p>
       </header>
 
@@ -126,7 +132,7 @@ async function AgentState() {
                   {proposal.quantity} × {proposal.productTitle ?? "Unknown product"}
                 </p>
                 <p className="text-zinc-700 dark:text-zinc-300">
-                  {proposal.merchantDomain}
+                  {SOURCE_LABELS[proposal.source]} · {proposal.merchantDomain}
                   {proposal.unitPrice && <> · €{proposal.unitPrice} each</>}
                   {proposal.orderTotal && <> · total €{proposal.orderTotal}</>}
                   {" · "}
