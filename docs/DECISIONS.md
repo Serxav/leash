@@ -927,3 +927,40 @@ main page, the sponsor detail pages for Channel3 and APIMatic, the FAQ and the u
   took 26.5 s to create and capture that order (2.7 s earlier the same day); the page showed
   "Saving your answer…" meanwhile.
 - **Status:** accepted (Sergi approved the task as proposed: "aprobado").
+
+### D-037 · 2026-10-18 · Purchase history, and refunds through the leashed Agent Toolkit
+
+- **What:** `/history` lists every purchase the agent proposed (US6), newest first: the
+  decision and who made it, the rule and its one-sentence reason, the amount, the PayPal
+  transaction ID (the capture ID, shown to the user only, never to the model), the
+  "14-day return window" (D-008) and a **Refund** button while the window is open.
+- **Return window:** from the payment date, `RETURN_WINDOW_DAYS` (14). Any part of a day
+  counts as a day left. After the deadline the page says when it closed and the server
+  refuses the refund (`WINDOW_CLOSED`), whatever the browser sends. Refunded purchases, and
+  ones whose refund is still on its way, have no window.
+- **Refunds use the Agent Toolkit**, as the brief and D-034 planned: the toolkit's
+  `create_refund`, wrapped by Leash (`refundPurchase` in `src/purchases/history.ts`). Only
+  the user starts one; the agent never gets a refund tool. Before calling it, Leash checks
+  the purchase is the user's own, charged (COMPLETED with a capture) and inside its window.
+  - **In full only:** Leash sends only `capture_id`, no amount, so PayPal refunds the whole
+    capture.
+  - **Never twice:** we create a new toolkit for every call, so each call gets its own
+    `request_id`, which the toolkit sends as `PayPal-Request-Id`. Leash uses
+    `refund-<payment id>`, the same key as the SDK refund. Refunds also run in the per-user
+    queue.
+  - Checked in the sandbox: the same refund sent twice returned the same refund ID, not a
+    second refund (sandbox test in `tests/sandbox/agent-toolkit.sandbox.test.ts`).
+  - **Results:** COMPLETED → the payment becomes REFUNDED (and stops counting toward the
+    budget); PENDING → it keeps its refund ID and shows "refund on its way".
+  - **Errors:** the toolkit keeps only PayPal's message, not the issue code, so on any
+    failure Leash reads the order with `get_order`. If the capture is already REFUNDED
+    (for example from the PayPal dashboard), Leash brings its record in line. Otherwise it
+    says it failed and changes nothing; trying again is safe with the same request ID.
+  - The toolkit is still sandbox-only with the host check, a time limit and one action per
+    call (`payments.createRefund`).
+- **The payments lab** keeps its SDK refund (`src/payments/refund.ts`), for the lab only.
+- **Tried in the sandbox (Oct 18):**
+  - refunded the stapler (€12.95) from `/history` through the toolkit → REFUNDED;
+  - the same Refund button in a second, stale tab answered "This purchase was already
+    refunded." without calling PayPal.
+- **Status:** accepted (planned in the brief and D-034; Sergi approved the F4 task list).

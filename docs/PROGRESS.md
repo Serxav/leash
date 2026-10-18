@@ -486,3 +486,26 @@ One entry per session: date, what was done, what is left, blockers.
 - `feat/f4-history` and `feat/f4-permissions-panel`.
 - PayPal sandbox calls can be slow (26.5 s once). Consider a time limit on the SDK calls
   before the public demo (F5).
+
+## 2026-10-18 · Session 5 (cont.) – purchase history and refunds
+
+**Done**
+- Merged PR #26 (approval inbox). **Process slip:** GitHub's squash of a one-commit PR uses
+  the commit subject, not the PR title, so `main` got a 73-character subject (`76e5bdd`).
+  History is never rewritten. From now on merges pass `--subject "<PR title> (#NN)"`.
+- `feat/f4-history` (D-037):
+  - `/history`: every proposal with its decision, rule, PayPal transaction ID, "14-day
+    return window" countdown and a Refund button while it is open;
+  - refunds through the Agent Toolkit's `create_refund`, leashed: own charged purchase,
+    inside the window, in full, `PayPal-Request-Id` per payment, `get_order` to reconcile
+    after a failure; the agent never gets it;
+  - shared labels for `/agent` and `/history`; links from the home page.
+- Tried in the sandbox: the toolkit refund sandbox test (the same refund sent twice gives
+  one refund); on `/history` the stapler (€12.95) was refunded; a stale second tab got
+  "already refunded" without a PayPal call. Lint, typecheck, 507 unit tests and build pass.
+
+**Left**
+- `feat/f4-permissions-panel`.
+- One local €1.00 test payment (no intent) stays COMPLETED in Sergi's local database
+  although PayPal refunded it, from the first run of the toolkit refund sandbox test (the
+  test now records the refund). It only adds €1.00 to the local budget.

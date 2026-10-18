@@ -3,8 +3,10 @@ import { OrdersController } from "@paypal/paypal-server-sdk";
 import { getCatalog } from "@/catalog/server";
 import { getDb } from "@/db/client";
 import { chargeWithMandate } from "@/payments/charge";
+import { getToolkitRunner } from "@/paypal/agent-toolkit";
 import { getPayPalClient } from "@/paypal/sdk";
 import { answerApproval, type ApprovalChoice, type ApprovalResult } from "./approve";
+import { refundPurchase, type RefundResult } from "./history";
 import { proposePurchase, type ProposalInput, type ProposalResult, type ProposeDeps } from "./propose";
 
 /** The app's database, catalog and PayPal sandbox. */
@@ -32,4 +34,9 @@ export function answerForUser(
   input: { intentId: string; choice: ApprovalChoice },
 ): Promise<ApprovalResult> {
   return answerApproval(appDeps(), { ...input, userId });
+}
+
+/** A refund the user asked for in the history page (leashed toolkit call). */
+export function refundForUser(userId: string, intentId: string): Promise<RefundResult> {
+  return refundPurchase({ db: getDb(), runToolkit: getToolkitRunner() }, { userId, intentId });
 }

@@ -1,15 +1,20 @@
 import { existsSync } from "node:fs";
+import { OrdersController } from "@paypal/paypal-server-sdk";
 import { and, desc, eq, isNotNull } from "drizzle-orm";
 import { describe, expect, it } from "vitest";
 import { createDb, DEFAULT_DB_PATH } from "@/db/client";
 import { payments } from "@/db/schema";
 import { DEMO_USER_ID } from "@/lib/demo-user";
 import { checkPurchaseStatus } from "@/agent/leashed-tools";
+import { chargeWithMandate } from "@/payments/charge";
+import { getActiveVaultToken } from "@/payments/mandate";
+import { refundRequestId } from "@/payments/refund";
 import { getToolkitRunner, ToolkitError } from "@/paypal/agent-toolkit";
+import { getPayPalClient } from "@/paypal/sdk";
 
-// Real PayPal Agent Toolkit calls in the sandbox (read only, no money moves).
-// Uses the newest completed agent purchase in the local database: run the
-// agent once on /agent first.
+// Real PayPal Agent Toolkit calls in the sandbox (fake money). The reads use
+// the newest completed agent purchase in the local database: run the agent
+// once on /agent first. The refund test charges €1.00 and refunds it.
 const db = existsSync(DEFAULT_DB_PATH) ? createDb(DEFAULT_DB_PATH) : undefined;
 const payment = db
   ?.select()
@@ -50,4 +55,30 @@ describe("PayPal Agent Toolkit (sandbox)", () => {
     });
     expect(JSON.stringify(status)).not.toContain(payment!.paypalOrderId!);
   });
+
+  it.skipIf(!db || !getActiveVaultToken(db, DEMO_USER_ID))(
+    "refunds a capture in full once, even when the refund is sent twice",
+    async () => {
+      const charged = await chargeWithMandate(
+        { db: db!, orders: new OrdersController(getPayPalClient()) },
+        { userId: DEMO_USER_ID, amount: "1.00", description: "Leash sandbox test (toolkit refund)", initiator: "MERCHANT" },
+      );
+      expect(charged.status).toBe("COMPLETED");
+
+      const requestId = refundRequestId(charged.id);
+      const run = getToolkitRunner();
+      const first = (await run("create_refund", { capture_id: charged.captureId! }, { requestId })) as {
+        id: string;
+        status: string;
+      };
+      expect(first.status).toBe("COMPLETED");
+      // Same PayPal-Request-Id: PayPal returns the same refund, not a new one.
+      const again = (await run("create_refund", { capture_id: charged.captureId! }, { requestId })) as { id: string };
+      expect(again.id).toBe(first.id);
+
+      // Keep the local record true: this €1.00 no longer counts toward the budget.
+      db!.update(payments).set({ status: "REFUNDED", refundId: first.id }).where(eq(payments.id, charged.id)).run();
+    },
+    60_000,
+  );
 });

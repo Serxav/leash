@@ -12,7 +12,9 @@ import { getServerEnv } from "@/config/env";
  * only whitelisted fields.
  *
  * Safety around the toolkit:
- * - only the actions Leash needs are enabled (today: read an order);
+ * - only the actions Leash needs are enabled, one per call: read an order
+ *   (the agent's status check) and refund a capture in full (only after
+ *   the user confirms in the history page, D-037);
  * - `sandbox: true` always, and the toolkit's API host is checked: it
  *   must be a PayPal sandbox host;
  * - a new toolkit per call, because it keeps its OAuth token forever and
@@ -21,10 +23,20 @@ import { getServerEnv } from "@/config/env";
  * - its debug logs stay off (they only print with DEBUG=agent-toolkit:*).
  */
 
-/** The toolkit tools Leash may call. Anything else is refused. */
-export type ToolkitMethod = "get_order";
+/** The toolkit tools Leash may call, with their arguments. Anything else is refused. */
+export type ToolkitCalls = {
+  get_order: { id: string };
+  /** No amount: PayPal refunds the whole capture (Leash only does full refunds). */
+  create_refund: { capture_id: string };
+};
+export type ToolkitMethod = keyof ToolkitCalls;
 
-export type ToolkitRunner = (method: ToolkitMethod, args: { id: string }) => Promise<unknown>;
+export type ToolkitRunner = <M extends ToolkitMethod>(
+  method: M,
+  args: ToolkitCalls[M],
+  /** Sent as PayPal-Request-Id, so a retry never repeats the action. */
+  options?: { requestId?: string },
+) => Promise<unknown>;
 
 export const TOOLKIT_TIMEOUT_MS = 15_000;
 
@@ -46,6 +58,7 @@ export class ToolkitError extends Error {
 
 const ACTIONS: Record<ToolkitMethod, { [product: string]: { [action: string]: boolean } }> = {
   get_order: { orders: { get: true } },
+  create_refund: { payments: { createRefund: true } },
 };
 
 /** Throws unless the URL's origin is a PayPal sandbox API host. */
@@ -65,11 +78,14 @@ export function createToolkitRunner(credentials: {
   clientId: string;
   clientSecret: string;
 }): ToolkitRunner {
-  return async (method, args) => {
+  return async (method, args, options) => {
     const toolkit = new PayPalAgentToolkit({
       clientId: credentials.clientId,
       clientSecret: credentials.clientSecret,
-      configuration: { actions: ACTIONS[method], context: { sandbox: true } },
+      configuration: {
+        actions: ACTIONS[method],
+        context: { sandbox: true, ...(options?.requestId && { request_id: options.requestId }) },
+      },
     });
     assertToolkitSandbox(toolkit.client.getBaseUrl());
 
@@ -101,7 +117,7 @@ export function createToolkitRunner(credentials: {
       throw new ToolkitError("UNAVAILABLE", "The Agent Toolkit returned an unreadable answer.");
     }
     if (isToolkitFailure(parsed)) {
-      throw new ToolkitError("PAYPAL_ERROR", "PayPal could not return this order.");
+      throw new ToolkitError("PAYPAL_ERROR", `PayPal refused the ${method} call.`);
     }
     return parsed;
   };
