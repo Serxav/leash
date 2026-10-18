@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { asc, desc, eq, inArray, sql } from "drizzle-orm";
 import { z } from "zod";
+import { isAgentPaused } from "@/account/settings";
 import type { Catalog } from "@/catalog/catalog";
 import { isLocalProductId } from "@/catalog/local";
 import { cleanText, PRODUCT_ID_PATTERN, type CatalogOffer, type CatalogProduct } from "@/catalog/product";
@@ -258,7 +259,7 @@ export async function reviewPurchase(
       },
       {
         mandate: getMandateView(deps.db, input.userId).status,
-        agentPaused: false, // the pause switch arrives in F4 (US7)
+        agentPaused: isAgentPaused(deps.db, input.userId),
         spending: budgetSpending(deps.db, input.userId),
         now: at,
       },

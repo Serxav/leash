@@ -43,6 +43,13 @@
       "when": 1792234657670,
       "tag": "0005_create_security_events",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1792317876136,
+      "tag": "0006_create_user_settings",
+      "breakpoints": true
     }
   ]
 }

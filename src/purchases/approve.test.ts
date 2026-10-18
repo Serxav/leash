@@ -6,6 +6,7 @@ import { getLocalProduct } from "@/catalog/local";
 import { createDb, type Db } from "@/db/client";
 import { mandates, payments, securityEvents } from "@/db/schema";
 import type { ChargeInput, PaymentView } from "@/payments/charge";
+import { setAgentPaused } from "@/account/settings";
 import { confirmDraft, saveDraft } from "@/rules/policies";
 import type { SpendingRules } from "@/rules/schema";
 import { answerApproval, type ApprovalChoice } from "./approve";
@@ -163,6 +164,13 @@ describe("approval inbox: approve (US5)", () => {
     const intentId = await pendingToner();
     db.update(mandates).set({ status: "PAUSED" }).where(eq(mandates.id, "m1")).run();
     expect(await answer(intentId, "APPROVE")).toMatchObject({ result: "BLOCKED" });
+    expect(charged).toEqual([]);
+  });
+
+  it("blocks approvals too while the agent is paused (US7)", async () => {
+    const intentId = await pendingToner();
+    setAgentPaused(db, USER, true, NOW);
+    expect(await answer(intentId, "APPROVE")).toEqual({ result: "BLOCKED", message: "Blocked: you paused the agent." });
     expect(charged).toEqual([]);
   });
 

@@ -5,7 +5,10 @@ import { integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core
  *
  * - PENDING: setup token created, waiting for the payer's approval on PayPal.
  * - ACTIVE: approved; Leash holds a vault payment token it can charge.
- * - PAUSED / REVOKED: see US7 (F4).
+ * - PAUSED: kept for a future pause of the mandate itself (the engine blocks
+ *   it); today the user pauses the agent instead (userSettings).
+ * - REVOKED: the user revoked it (US7, D-038). Leash never charges it again;
+ *   `vaultTokenRef` is cleared once PayPal has deleted the token.
  *
  * `vaultTokenRef` is the PayPal payment token. It is server-only data: never
  * send it to the browser, to logs or to the AI model.
@@ -175,3 +178,14 @@ export const securityEvents = sqliteTable("security_events", {
 });
 
 export type SecurityEventRow = typeof securityEvents.$inferSelect;
+
+/**
+ * Per-user switches (US7, D-038). No row means the defaults: the agent is
+ * active.
+ */
+export const userSettings = sqliteTable("user_settings", {
+  userId: text("user_id").primaryKey(),
+  /** The user paused the agent: the engine blocks every purchase. */
+  agentPaused: integer("agent_paused", { mode: "boolean" }).notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull(),
+});

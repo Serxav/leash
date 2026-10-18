@@ -1,6 +1,7 @@
 "use server";
 
 import { refresh } from "next/cache";
+import { isAgentPaused } from "@/account/settings";
 import { AgentError, MAX_REQUEST_LENGTH, runShoppingAgent } from "@/agent/agent";
 import { checkStatusForUser } from "@/agent/server";
 import { getModel } from "@/ai/models";
@@ -33,6 +34,9 @@ export async function runAgent(
   const policy = getActivePolicy(db, DEMO_USER_ID);
   if (!policy) {
     return { kind: "error", request: shown, message: "Confirm your spending rules first." };
+  }
+  if (isAgentPaused(db, DEMO_USER_ID)) {
+    return { kind: "error", request: shown, message: "You paused the agent. Resume it in Permissions first." };
   }
   if (getMandateView(db, DEMO_USER_ID).status !== "ACTIVE") {
     return { kind: "error", request: shown, message: "Connect PayPal first, so Leash can pay approved purchases." };

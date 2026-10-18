@@ -43,12 +43,15 @@ layer between an AI shopping agent and the user's money:
    refund button while it is open (D-037).
 3. **PayPal executes only what is approved.** The user saves PayPal once (the mandate).
    Approved purchases are charged with the saved method, and refunds go back through PayPal.
+4. **The user stays in control** (`/permissions`, D-038). Pause the agent (Leash blocks
+   every purchase, approvals included), revoke the mandate (Leash stops charging at once
+   and PayPal deletes the saved token), or delete the account and all its data.
 
 ## Planned PayPal integration (sandbox)
 
 | PayPal API | Used for |
 |---|---|
-| Vault – save PayPal for purchase later | The user's mandate (payment token). **Implemented:** `src/payments/mandate.ts` |
+| Vault – save PayPal for purchase later | The user's mandate (payment token). **Implemented:** `src/payments/mandate.ts`, including revoking it from `/permissions` (`DELETE /v3/vault/payment-tokens/{id}`, D-038) |
 | Orders v2 | Charging approved purchases with the saved payment method (`vault_id`, `stored_credential`). **Implemented:** `src/payments/charge.ts` |
 | Payments v2 – refunds | Full refunds, idempotent per payment. **Implemented:** `src/payments/refund.ts` (payments lab, SDK); the purchase history refunds through the Agent Toolkit (next row) |
 | Agent Toolkit (`@paypal/agent-toolkit`) | Tools for the agent, wrapped by Leash's permission layer ("leashed tools"). **Implemented:** `check_purchase_status` reads one of the user's own purchases with the toolkit's `get_order` and checks it against Leash's records (`src/paypal/agent-toolkit.ts`, `src/agent/leashed-tools.ts`). **Implemented:** refunds with the toolkit's `create_refund` on `/history`, only when the user asks: their own charged purchase, inside its 14-day return window, in full, with a `PayPal-Request-Id` per payment so it never refunds twice (`src/purchases/history.ts`, D-037). The agent never gets a refund tool |

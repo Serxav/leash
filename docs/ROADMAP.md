@@ -98,8 +98,8 @@ definition of done in `CLAUDE.md`. Tags close each phase.
 - [x] `feat/f4-approval-inbox`: one-tap approve/reject, where approving triggers the charge (D-036)
 - [x] `feat/f4-history`: status, amount, rule, PayPal reference, "14-day return window"
       countdown (D-008), refund button through the Agent Toolkit (D-037)
-- [ ] `feat/f4-permissions-panel`: pause the agent, revoke the mandate (deletes the vault
-      token), delete the account and data
+- [x] `feat/f4-permissions-panel`: pause the agent, revoke the mandate (deletes the vault
+      token), delete the account and data (D-038)
 - [ ] Everything works on mobile
 - [ ] *(Optional sponsor, D-007)* AG Grid for the history/audit table on desktop
 

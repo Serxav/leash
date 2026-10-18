@@ -4,6 +4,7 @@ import { getLocalProduct, TRAP_PRODUCT_ID } from "@/catalog/local";
 import { createDb, type Db } from "@/db/client";
 import { decisions, mandates, payments, purchaseIntents, securityEvents } from "@/db/schema";
 import type { ChargeInput, PaymentView } from "@/payments/charge";
+import { setAgentPaused } from "@/account/settings";
 import { confirmDraft, saveDraft } from "@/rules/policies";
 import type { SpendingRules } from "@/rules/schema";
 import { listProposals, proposePurchase, type ProposalInput } from "./propose";
@@ -241,6 +242,15 @@ describe("proposePurchase", () => {
     expect(approved).toHaveLength(11);
     expect(charged).toHaveLength(11);
     expect(results.filter((result) => result.outcome === "BLOCK")).toHaveLength(2);
+  });
+
+  it("blocks everything while the user has paused the agent (US7)", async () => {
+    setup();
+    setAgentPaused(db, USER, true, NOW);
+    expect(await propose()).toMatchObject({ outcome: "BLOCK", explanation: "Blocked: you paused the agent." });
+    expect(charged).toEqual([]);
+    setAgentPaused(db, USER, false, NOW);
+    expect((await propose()).outcome).toBe("APPROVE");
   });
 
   it("reports a charge that throws as failed", async () => {
