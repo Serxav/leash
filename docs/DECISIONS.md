@@ -895,3 +895,35 @@ main page, the sponsor detail pages for Channel3 and APIMatic, the FAQ and the u
   the Agent Toolkit: "matches Leash: true"); "one nice ballpoint pen" → a Channel3 offer at
   €29.00, **needs approval**, not charged.
 - **Status:** accepted.
+
+### D-036 · 2026-10-18 · The approval inbox: the user's yes covers the threshold, nothing else
+
+- **What:** `/inbox` lists every purchase the engine sent to the user (`NEEDS_APPROVAL`,
+  not answered, not paid), oldest first, with the rule and reason. One tap approves or
+  rejects (US5). Only the user can answer, from this page: the agent has no tool for it,
+  and the server takes the user from the session, never from the form.
+- **Approve = decide again.** The user's yes covers the approval threshold and nothing else.
+  The server re-reads the product and runs the same checks as a new proposal
+  (`reviewPurchase`, shared with `propose.ts`): the prompt-injection screen, the current
+  confirmed rules, the mandate and this month's spending. Then:
+  - a hard rule that now fails (budget spent since, mandate paused, product gone, injected
+    text) → `BLOCK`, stored as the engine's decision, nothing charged;
+  - a total **above** the one the user saw → `BLOCK` with the new fixed protection
+    `approved_amount`: the user approved €24.00, not €26.00;
+  - otherwise → `APPROVE`, stored as the user's decision (`decidedBy: USER`), and charged
+    exactly like an engine approval (merchant-initiated, linked to the intent). A lower
+    price is charged at the lower price.
+- **Reject** → `BLOCK` stored as the user's decision; nothing is charged.
+- **Once only.** Answers run in the same per-user queue as proposals, and the server checks
+  again after the re-read that nobody answered meanwhile, so a double click or two tabs
+  never charge twice (unit test: two approvals at once → one charge).
+- **Two decisions per purchase:** the engine's first decision stays (audit), and the user's
+  answer is a second row. Every reader takes the latest one (`latestDecisions`); `/agent`
+  shows "Approved by you" or "Rejected by you".
+- **No expiry:** a waiting purchase can be answered later, because approving checks
+  everything again with fresh data.
+- **Tried in the sandbox (Oct 18):** approved the toner (€24.00, demo shop) → charged in the
+  PayPal sandbox, COMPLETED; rejected the Channel3 pen (€29.00) → no payment. The sandbox
+  took 26.5 s to create and capture that order (2.7 s earlier the same day); the page showed
+  "Saving your answer…" meanwhile.
+- **Status:** accepted (Sergi approved the task as proposed: "aprobado").

@@ -1,24 +1,26 @@
 import { randomUUID } from "node:crypto";
-import { desc, eq, inArray } from "drizzle-orm";
+import { asc, desc, eq, inArray, sql } from "drizzle-orm";
 import { z } from "zod";
 import type { Catalog } from "@/catalog/catalog";
 import { isLocalProductId } from "@/catalog/local";
-import { cleanText, PRODUCT_ID_PATTERN, type CatalogProduct } from "@/catalog/product";
+import { cleanText, PRODUCT_ID_PATTERN, type CatalogOffer, type CatalogProduct } from "@/catalog/product";
 import type { Db } from "@/db/client";
 import {
   decisions,
   payments,
   purchaseIntents,
   securityEvents,
+  type DecisionRow,
   type PaymentStatus,
+  type PurchaseIntent,
 } from "@/db/schema";
 import type { ChargeInput, PaymentView } from "@/payments/charge";
 import { getMandateView } from "@/payments/mandate";
 import { countsTowardBudget, decide, type Decision, type Outcome } from "@/rules/engine";
-import { getActivePolicy } from "@/rules/policies";
+import { getActivePolicy, type ActivePolicy } from "@/rules/policies";
 import { normalizeMerchantDomain, type RuleId } from "@/rules/schema";
 import { injectionEvent, logInjection } from "@/security/events";
-import { screenProduct } from "@/security/untrusted-text";
+import { screenProduct, type InjectionSignal } from "@/security/untrusted-text";
 
 /**
  * The purchase flow (brief §4). THE AI PROPOSES, THE CODE DECIDES:
@@ -84,9 +86,12 @@ const blocked = (explanation: string): Decision => ({
   orderTotal: null,
 });
 
-/** Runs one user's work one at a time (single server process, D-029). */
+/**
+ * Runs one user's work one at a time (single server process, D-029):
+ * proposals and the user's answers in the inbox share this queue.
+ */
 const queues = new Map<string, Promise<unknown>>();
-function oneAtATime<T>(userId: string, work: () => Promise<T>): Promise<T> {
+export function oneAtATime<T>(userId: string, work: () => Promise<T>): Promise<T> {
   const previous = queues.get(userId) ?? Promise.resolve();
   const next = previous.then(work, work);
   const settled = next.catch(() => undefined);
@@ -116,49 +121,13 @@ export async function proposePurchase(
   const now = deps.now ?? (() => new Date());
 
   return oneAtATime(input.userId, async () => {
-    // 2. Re-read from the catalog: never trust the model's numbers.
-    const product = await deps.catalog.getProduct(input.productId);
-    const offer = product?.offers.find((o) => o.merchantDomain === input.merchantDomain) ?? null;
-    const injection = product ? screenProduct(product) : [];
-    const policy = getActivePolicy(deps.db, input.userId);
-    const at = now();
-
-    // 3. Decide. From here to recording the charge there is no await, so the
-    // next proposal always sees this one's payment in the budget.
-    let decision: Decision;
-    if (!product) {
-      decision = blocked("Blocked: Leash could not check this product's current price, so it did not buy it.");
-    } else if (injection.length > 0) {
-      decision = {
-        outcome: "BLOCK",
-        ruleIds: ["untrusted_instructions"],
-        explanation:
-          "Blocked: this product's shop text contains instructions for AI agents (a prompt injection), so Leash never buys it.",
-        orderTotal: null,
-      };
-    } else if (!offer) {
-      decision = blocked(`Blocked: ${input.merchantDomain} does not sell this product in euros right now.`);
-    } else if (!policy) {
-      decision = blocked("Blocked: you have not confirmed any spending rules yet.");
-    } else {
-      decision = decide(
-        policy.rules,
-        {
-          unitPrice: offer.unitPrice,
-          quantity: input.quantity,
-          currency: offer.currency,
-          category: product.category,
-          parentCategories: product.parentCategories,
-          merchantDomain: offer.merchantDomain,
-        },
-        {
-          mandate: getMandateView(deps.db, input.userId).status,
-          agentPaused: false, // the pause switch arrives in F4 (US7)
-          spending: budgetSpending(deps.db, input.userId),
-          now: at,
-        },
-      );
-    }
+    // 2–3. Re-read from the catalog and decide. From the decision to
+    // recording the charge there is no await, so the next proposal always
+    // sees this one's payment in the budget.
+    const { product, offer, injection, policy, decision, at } = await reviewPurchase(
+      { ...deps, now },
+      input,
+    );
 
     // 4. Store the intent and the decision together.
     const intentId = randomUUID();
@@ -234,8 +203,72 @@ export async function proposePurchase(
   });
 }
 
+export type PurchaseReview = {
+  product: CatalogProduct | null;
+  offer: CatalogOffer | null;
+  /** Injection signals in the product's shop text; [] when clean. */
+  injection: InjectionSignal[];
+  policy: ActivePolicy | null;
+  decision: Decision;
+  /** When the engine decided. */
+  at: Date;
+};
+
+/**
+ * Re-reads a product from the catalog (never trusting the model's numbers)
+ * and decides it with the user's current confirmed rules. Writes nothing.
+ * Used for new proposals and again when the user approves one (D-036).
+ * Its only await is the catalog re-read, before the decision.
+ */
+export async function reviewPurchase(
+  deps: Pick<ProposeDeps, "db" | "catalog"> & { now: () => Date },
+  input: { userId: string; productId: string; merchantDomain: string; quantity: number },
+): Promise<PurchaseReview> {
+  const product = await deps.catalog.getProduct(input.productId);
+  const offer = product?.offers.find((o) => o.merchantDomain === input.merchantDomain) ?? null;
+  const injection = product ? screenProduct(product) : [];
+  const policy = getActivePolicy(deps.db, input.userId);
+  const at = deps.now();
+
+  let decision: Decision;
+  if (!product) {
+    decision = blocked("Blocked: Leash could not check this product's current price, so it did not buy it.");
+  } else if (injection.length > 0) {
+    decision = {
+      outcome: "BLOCK",
+      ruleIds: ["untrusted_instructions"],
+      explanation:
+        "Blocked: this product's shop text contains instructions for AI agents (a prompt injection), so Leash never buys it.",
+      orderTotal: null,
+    };
+  } else if (!offer) {
+    decision = blocked(`Blocked: ${input.merchantDomain} does not sell this product in euros right now.`);
+  } else if (!policy) {
+    decision = blocked("Blocked: you have not confirmed any spending rules yet.");
+  } else {
+    decision = decide(
+      policy.rules,
+      {
+        unitPrice: offer.unitPrice,
+        quantity: input.quantity,
+        currency: offer.currency,
+        category: product.category,
+        parentCategories: product.parentCategories,
+        merchantDomain: offer.merchantDomain,
+      },
+      {
+        mandate: getMandateView(deps.db, input.userId).status,
+        agentPaused: false, // the pause switch arrives in F4 (US7)
+        spending: budgetSpending(deps.db, input.userId),
+        now: at,
+      },
+    );
+  }
+  return { product, offer, injection, policy, decision, at };
+}
+
 /** Payments that use up this user's budget, for the engine. */
-function budgetSpending(db: Db, userId: string): Array<{ amount: string; at: Date }> {
+export function budgetSpending(db: Db, userId: string): Array<{ amount: string; at: Date }> {
   return db
     .select({ amount: payments.amount, status: payments.status, at: payments.createdAt })
     .from(payments)
@@ -259,9 +292,27 @@ export type ProposalView = {
   outcome: Outcome;
   ruleIds: RuleId[];
   explanation: string;
+  /** The engine, or the user answering in the inbox (D-036). */
+  decidedBy: DecisionRow["decidedBy"];
   orderTotal: string | null;
   paymentStatus: PaymentStatus | null;
 };
+
+/**
+ * Each intent's latest decision. An intent has one engine decision, and a
+ * second one once the user answers it in the inbox (D-036).
+ */
+export function latestDecisions(db: Db, intentIds: string[]): Map<string, DecisionRow> {
+  if (intentIds.length === 0) return new Map();
+  const rows = db
+    .select()
+    .from(decisions)
+    .where(inArray(decisions.intentId, intentIds))
+    .orderBy(asc(decisions.decidedAt), sql`rowid`)
+    .all();
+  // Later rows replace earlier ones.
+  return new Map(rows.map((row) => [row.intentId, row]));
+}
 
 export function listProposals(db: Db, userId: string, limit = 20): ProposalView[] {
   const intents = db
@@ -271,12 +322,29 @@ export function listProposals(db: Db, userId: string, limit = 20): ProposalView[
     .orderBy(desc(purchaseIntents.createdAt))
     .limit(limit)
     .all();
+  return toProposalViews(db, intents);
+}
+
+/**
+ * Proposals waiting for the user (US5): the engine said NEEDS_APPROVAL and
+ * nobody has answered yet. Oldest first, all of them.
+ */
+export function listPendingApprovals(db: Db, userId: string): ProposalView[] {
+  const intents = db
+    .select()
+    .from(purchaseIntents)
+    .where(eq(purchaseIntents.userId, userId))
+    .orderBy(asc(purchaseIntents.createdAt))
+    .all();
+  return toProposalViews(db, intents).filter(
+    (view) => view.outcome === "NEEDS_APPROVAL" && view.paymentStatus === null,
+  );
+}
+
+function toProposalViews(db: Db, intents: PurchaseIntent[]): ProposalView[] {
   if (intents.length === 0) return [];
   const ids = intents.map((intent) => intent.id);
-  const decisionByIntent = new Map(
-    db.select().from(decisions).where(inArray(decisions.intentId, ids)).all()
-      .map((row) => [row.intentId, row]),
-  );
+  const decisionByIntent = latestDecisions(db, ids);
   const paymentByIntent = new Map(
     db.select().from(payments).where(inArray(payments.intentId, ids)).all()
       .map((row) => [row.intentId, row]),
@@ -303,6 +371,7 @@ export function listProposals(db: Db, userId: string, limit = 20): ProposalView[
         outcome: decision.outcome,
         ruleIds,
         explanation: decision.explanation,
+        decidedBy: decision.decidedBy,
         orderTotal: decision.orderTotal,
         paymentStatus: paymentByIntent.get(intent.id)?.status ?? null,
       },

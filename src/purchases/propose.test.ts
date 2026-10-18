@@ -284,6 +284,7 @@ describe("listProposals", () => {
       unitPrice: "6.90",
       outcome: "APPROVE",
       ruleIds: [],
+      decidedBy: "ENGINE",
       orderTotal: "13.80",
       paymentStatus: "COMPLETED",
     });

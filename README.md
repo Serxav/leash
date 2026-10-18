@@ -33,6 +33,11 @@ layer between an AI shopping agent and the user's money:
    **Implemented:** prompt-injection defence (`src/security/`). Shop text that gives orders
    to AI agents is found by plain code, hidden from the agent and never bought, and each case
    appears in the security log on `/agent`.
+   **Implemented:** the approval inbox (`/inbox`, `src/purchases/approve.ts`). Purchases
+   above the user's approval amount wait there; one tap approves or rejects. Approving does
+   not skip the checks: Leash re-reads the price and runs the engine again with the current
+   rules and budget, blocks it if the price went up or a rule now fails, and only then
+   charges (D-036).
 3. **PayPal executes only what is approved.** The user saves PayPal once (the mandate).
    Approved purchases are charged with the saved method, and refunds go back through PayPal.
 

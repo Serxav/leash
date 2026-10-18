@@ -95,7 +95,7 @@ definition of done in `CLAUDE.md`. Tags close each phase.
 
 - [ ] `chore/f4-switch-to-claude`: `AI_PROVIDER=anthropic`, pass the rules and agent tests,
       tune the prompts
-- [ ] `feat/f4-approval-inbox`: one-tap approve/reject, where approving triggers the charge
+- [x] `feat/f4-approval-inbox`: one-tap approve/reject, where approving triggers the charge (D-036)
 - [ ] `feat/f4-history`: status, amount, rule, PayPal reference, "14-day return window"
       countdown (D-008), refund button
 - [ ] `feat/f4-permissions-panel`: pause the agent, revoke the mandate (deletes the vault

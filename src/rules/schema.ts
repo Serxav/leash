@@ -32,6 +32,9 @@ export const RULE_IDS = [
   // A fixed protection, not a user rule: the product's shop text carries
   // instructions for AI agents (US8, D-033).
   "untrusted_instructions",
+  // A fixed protection, not a user rule: the price rose after the user saw
+  // it in the inbox, so their approval does not cover it (D-036).
+  "approved_amount",
   "mandate_active",
   "agent_active",
   "allowed_categories",
