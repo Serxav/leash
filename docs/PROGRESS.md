@@ -530,3 +530,23 @@ One entry per session: date, what was done, what is left, blockers.
 - Sergi: reconnect PayPal in `/lab/payments` (the sandbox mandate was revoked for the test).
 - F4 is done except the switch to Claude (from Nov 2, needs the Anthropic key) and the
   mobile check. Connecting PayPal outside the lab comes with F5 onboarding.
+
+## 2026-10-18 · Session 5 – end
+
+**Done**
+- Merged PR #28 (permissions panel).
+- Sergi reconnected PayPal in `/lab/payments` after the revoke test (new ACTIVE mandate).
+  Tip: the browser may still be logged in to the sandbox Business account; sign out first
+  and approve with the Personal one.
+- Sergi saw the agent's charges arrive in the sandbox Business account (ROADMAP F3 box).
+- Session totals: PRs #24–#28, tag `v0.3.0`, decisions D-035 to D-038, 520 unit tests.
+
+**Next (proposed, waiting for Sergi's "aprobado")**
+1. `test/f4-mobile-check`: every page at phone width and with the keyboard.
+2. `feat/f5-demo-users`: one anonymous demo user per visitor with Marta's rules and a
+   "Reset demo"; design first, it needs Sergi's decisions.
+3. `feat/f5-render-deploy`: first deploy on Render early, with `/api/health` and the
+   per-visitor rate limit.
+- Later: `chore/f4-switch-to-claude` (Sergi's Anthropic key), then tag `v0.4.0`.
+- Sergi: confirm no payment method is saved in the Channel3 dashboard; ask on Discord
+  #channel3 whether retailer names may appear in the video.

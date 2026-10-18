@@ -86,8 +86,8 @@ definition of done in `CLAUDE.md`. Tags close each phase.
 - [x] Sergi: apply promo code `PAYPAL-HACKATHON-2026` in the Channel3 dashboard (20,000 free
       credits, no card). Monthly cap raised from 300 to 2,000 (D-031)
 - [ ] Sergi: confirm no payment method is saved in the Channel3 dashboard
-- [ ] Sergi: check in the sandbox Business account that the agent's charges arrived (€5.49,
-      €6.90, €10.98 on Oct 16)
+- [x] Sergi: check in the sandbox Business account that the agent's charges arrived. Checked
+      on Oct 18: the latest charges (€24.00, €3.00, €1.00) appear in its recent activity
 - [ ] Anthropic: workspace "leash", spending limit, `leash-dev` key (Sergi, end of
       October). Run the rules-conversion tests with both providers
 
