@@ -1,7 +1,8 @@
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 import type { Db } from "@/db/client";
-import { decisions, payments, purchaseIntents } from "@/db/schema";
+import { payments, purchaseIntents } from "@/db/schema";
+import { latestDecisions } from "@/purchases/propose";
 import type { ToolkitRunner } from "@/paypal/agent-toolkit";
 
 /**
@@ -97,11 +98,7 @@ export async function checkPurchaseStatus(
     .where(and(eq(payments.intentId, intent.id), eq(payments.userId, input.userId)))
     .get();
   if (!payment?.paypalOrderId) {
-    const decision = deps.db
-      .select({ outcome: decisions.outcome })
-      .from(decisions)
-      .where(eq(decisions.intentId, intent.id))
-      .get();
+    const decision = latestDecisions(deps.db, [intent.id]).get(intent.id);
     return {
       result: "NOT_CHARGED",
       message: payment

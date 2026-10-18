@@ -466,3 +466,23 @@ One entry per session: date, what was done, what is left, blockers.
 - Sergi: ask on Discord #channel3 whether retailer names may appear in the video.
 - The dev server prints server action arguments (the agent request and summary) in its log.
   Invented data only, but check in F5 that production does not log them.
+
+## 2026-10-18 · Session 5 (cont.) – approval inbox
+
+**Done**
+- Merged PR #25 (Channel3 in the demo) and tagged `v0.3.0` (F3).
+- `feat/f4-approval-inbox` (D-036):
+  - `src/purchases/approve.ts`: approve or reject a pending purchase. Approving re-reads the
+    product and runs the engine again; a higher price (`approved_amount`) or a failing hard
+    rule blocks it; otherwise it is charged once, as the user's decision;
+  - `reviewPurchase` and `latestDecisions` shared with the propose flow and the leashed
+    status tool;
+  - `/inbox` page with one-tap Approve and Reject; links from the home page and `/agent`;
+    `/agent` shows "Approved by you" or "Rejected by you".
+- Tried in the sandbox: toner approved and charged (€24.00), Channel3 pen rejected (no
+  payment). Lint, typecheck, 493 unit tests and build pass.
+
+**Left**
+- `feat/f4-history` and `feat/f4-permissions-panel`.
+- PayPal sandbox calls can be slow (26.5 s once). Consider a time limit on the SDK calls
+  before the public demo (F5).

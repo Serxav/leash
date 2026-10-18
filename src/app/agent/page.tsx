@@ -10,6 +10,7 @@ import { describeRules } from "@/rules/describe";
 import { getActivePolicy } from "@/rules/policies";
 import { listSecurityEvents, type SecurityEventView } from "@/security/events";
 import { describeSignals } from "@/security/untrusted-text";
+import { SOURCE_LABELS } from "../labels";
 import { AgentForm } from "./agent-form";
 
 export const metadata: Metadata = {
@@ -22,10 +23,13 @@ const OUTCOME_LABELS: Record<ProposalView["outcome"], string> = {
   BLOCK: "Blocked",
 };
 
-const SOURCE_LABELS: Record<ProposalView["source"], string> = {
-  channel3: "Channel3 offer",
-  local: "Demo shop",
-};
+/** The outcome, saying when it was the user's own answer (D-036). */
+function outcomeLabel(proposal: ProposalView): string {
+  if (proposal.decidedBy === "USER") {
+    return proposal.outcome === "APPROVE" ? "Approved by you" : "Rejected by you";
+  }
+  return OUTCOME_LABELS[proposal.outcome];
+}
 
 const PAYMENT_LABELS: Record<string, string> = {
   COMPLETED: "charged with PayPal (sandbox)",
@@ -139,10 +143,17 @@ async function AgentState() {
                   {dateTime.format(proposal.createdAt)}
                 </p>
                 <p className="mt-2">
-                  <strong>{OUTCOME_LABELS[proposal.outcome]}</strong>
+                  <strong>{outcomeLabel(proposal)}</strong>
                   {proposal.paymentStatus && <> · {PAYMENT_LABELS[proposal.paymentStatus] ?? proposal.paymentStatus}</>}
                 </p>
                 <p className="text-zinc-700 dark:text-zinc-300">{proposal.explanation}</p>
+                {proposal.outcome === "NEEDS_APPROVAL" && !proposal.paymentStatus && (
+                  <p className="mt-1">
+                    <Link href="/inbox" className="underline">
+                      Approve or reject it in your inbox
+                    </Link>
+                  </p>
+                )}
                 <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-400">
                   Agent&apos;s reason: {proposal.agentReason}
                 </p>
