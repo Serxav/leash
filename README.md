@@ -38,6 +38,9 @@ layer between an AI shopping agent and the user's money:
    not skip the checks: Leash re-reads the price and runs the engine again with the current
    rules and budget, blocks it if the price went up or a rule now fails, and only then
    charges (D-036).
+   **Implemented:** the purchase history (`/history`): every proposal with its decision and
+   rule, the PayPal transaction ID, the "14-day return window" countdown (D-008) and a
+   refund button while it is open (D-037).
 3. **PayPal executes only what is approved.** The user saves PayPal once (the mandate).
    Approved purchases are charged with the saved method, and refunds go back through PayPal.
 
@@ -47,8 +50,8 @@ layer between an AI shopping agent and the user's money:
 |---|---|
 | Vault – save PayPal for purchase later | The user's mandate (payment token). **Implemented:** `src/payments/mandate.ts` |
 | Orders v2 | Charging approved purchases with the saved payment method (`vault_id`, `stored_credential`). **Implemented:** `src/payments/charge.ts` |
-| Payments v2 – refunds | Full refunds from the purchase history, idempotent per payment. **Implemented:** `src/payments/refund.ts` |
-| Agent Toolkit (`@paypal/agent-toolkit`) | Tools for the agent, wrapped by Leash's permission layer ("leashed tools"). **Implemented:** `check_purchase_status` reads one of the user's own purchases with the toolkit's `get_order` and checks it against Leash's records (`src/paypal/agent-toolkit.ts`, `src/agent/leashed-tools.ts`). Planned: refunds through the toolkit, only after the user confirms (F4) |
+| Payments v2 – refunds | Full refunds, idempotent per payment. **Implemented:** `src/payments/refund.ts` (payments lab, SDK); the purchase history refunds through the Agent Toolkit (next row) |
+| Agent Toolkit (`@paypal/agent-toolkit`) | Tools for the agent, wrapped by Leash's permission layer ("leashed tools"). **Implemented:** `check_purchase_status` reads one of the user's own purchases with the toolkit's `get_order` and checks it against Leash's records (`src/paypal/agent-toolkit.ts`, `src/agent/leashed-tools.ts`). **Implemented:** refunds with the toolkit's `create_refund` on `/history`, only when the user asks: their own charged purchase, inside its 14-day return window, in full, with a `PayPal-Request-Id` per payment so it never refunds twice (`src/purchases/history.ts`, D-037). The agent never gets a refund tool |
 
 Customer-initiated charges carry PayPal **FraudNet** risk data (`src/components/fraudnet.tsx`, `PayPal-Client-Metadata-Id`).
 

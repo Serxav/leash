@@ -21,8 +21,9 @@ import type { ToolkitRunner } from "@/paypal/agent-toolkit";
  * - propose_purchase: propose; Leash's engine decides (src/purchases);
  * - check_purchase_status: read one of its purchases at PayPal through the
  *   Agent Toolkit's get_order (this file).
- * Refunds with the toolkit wait for the user's confirmation in the history
- * page (F4): the agent never gets them.
+ * Refunds also use the toolkit (create_refund), but only when the user asks
+ * for one in the history page (src/purchases/history.ts, D-037): the agent
+ * never gets them.
  */
 
 export type StatusCheckDeps = {
