@@ -855,3 +855,43 @@ main page, the sponsor detail pages for Channel3 and APIMatic, the FAQ and the u
   bought a stapler (€12.95, approved and charged in the sandbox), checked it, and the server
   log shows the toolkit call ("order COMPLETED, payment COMPLETED, matches Leash: true").
 - **Status:** accepted (Sergi: "lo que cumpla con las normas del torneo y sea mejor").
+
+### D-035 · 2026-10-18 · Channel3 searches inside the user's rules, and shop names in the app
+
+- **Problem:** Channel3 searched its whole catalog. For Marta's requests it returned
+  designer notebooks, acne patches, Montblanc pens at €340–880, and for "stapler" power
+  cables and ham. None fitted her rules (office supplies, at most €40), so the agent always
+  bought from the demo catalog and Channel3 never showed in the demo ("Best Use of
+  Channel3", D-030).
+- **Change:** the agent's Channel3 searches use two documented `POST /v1/search` filters
+  (docs read on Oct 18): `filters.category_ids` (category slugs; results also come from
+  subcategories) with the user's allowed categories, and `filters.price.max_price`
+  (inclusive) with the rules' `maxPerOrder`. A unit above `maxPerOrder` is always blocked,
+  so nothing the rules could allow is filtered out.
+  - The **server** builds this scope from the confirmed rules (`searchScopeFromRules` in
+    `src/catalog/catalog.ts`, used in `src/app/agent/actions.ts`). The model cannot change
+    it, and every proposal is still decided by the engine, which re-reads the product.
+  - The search cache keeps each query and scope apart
+    (`"desk organiser|in:office-supplies|max:40.00"`), so other rules never reuse it.
+  - The demo catalog is not filtered, so its demo cases stay (a blocked shop, an approval,
+    a wrong category, the trap product).
+  - `/agent` marks each proposal as a "Channel3 offer" or a "Demo shop" (from the product
+    ID, so no migration).
+- **Probe before coding (Oct 18):** with both filters, "sticky notes", "ballpoint pens" and
+  "stapler" returned only office supplies at €40 or less, several under €15. Six credits
+  (two runs of three searches, outside the app's counter).
+- **Shop names (Sergi: "deja que se vea"):** Channel3 offers show their real shop name and
+  title in the app (for example `ikea.com`). Checked in the official rules on Oct 18: the
+  **video** "must not include third party trademarks… unless the Entrant has permission";
+  the rules do not forbid real data from an authorised API inside the app, and Channel3 is
+  a sponsor whose product is these offers. So: no third-party logos or images anywhere;
+  the app may show Channel3 shop names; the video and screenshots use the demo shops unless
+  the Channel3 team gives permission (Sergi asks on Discord #channel3). CLAUDE.md and the
+  brief were updated to match.
+- **Paying a Channel3 offer** never pays that shop: the payee is always the Leash demo
+  store (the sandbox Business account), with fake money.
+- **Tried in the sandbox (Oct 18), Marta's rules v3:** "Buy one desk organiser" → the agent
+  bought a Channel3 offer (€3.00, approved, charged in the PayPal sandbox and confirmed with
+  the Agent Toolkit: "matches Leash: true"); "one nice ballpoint pen" → a Channel3 offer at
+  €29.00, **needs approval**, not charged.
+- **Status:** accepted.

@@ -443,3 +443,26 @@ One entry per session: date, what was done, what is left, blockers.
 
 **Left**
 - Make Channel3 visible in the demo, then tag `v0.3.0`.
+
+## 2026-10-18 · Session 5 (cont.) – Channel3 in the demo
+
+**Done**
+- Merged PR #24 (sandbox tests on the demo user).
+- `feat/f3-channel3-in-demo` (D-035):
+  - the agent's Channel3 searches stay inside the user's allowed categories and price limit
+    (`filters.category_ids`, `filters.price`), built by the server from the confirmed rules;
+  - the search cache keeps each scope apart; the demo catalog is not filtered;
+  - `/agent` labels each proposal "Channel3 offer" or "Demo shop".
+- Checked the official rules on brands: the video needs permission for third-party
+  trademarks; the app may show Channel3 shop names (no logos or images). CLAUDE.md and the
+  brief updated.
+- Tried on `/agent` with the PayPal sandbox: a real Channel3 desk organiser (€3.00) approved,
+  charged and confirmed with the Agent Toolkit; a Channel3 pen (€29.00) needs approval and
+  was not charged. No browser console errors.
+- Lint, typecheck and 479 unit tests pass.
+
+**Left**
+- Tag `v0.3.0` after the merge.
+- Sergi: ask on Discord #channel3 whether retailer names may appear in the video.
+- The dev server prints server action arguments (the agent request and summary) in its log.
+  Invented data only, but check in F5 that production does not log them.

@@ -298,7 +298,9 @@ Rules schema (Zod), starting point: `currency`, `maxPerOrder`, `monthlyBudget`,
 - **Transparency.** Show a visible notice that purchases are proposed by an AI agent, and
   explain every decision in one sentence.
 - **No credit scoring and no financing.**
-- **No brands.** In the demo, generic products without third-party brands or logos.
+- **No brands in the video.** No third-party logos or images anywhere. Channel3 offers may
+  show their real shop name and title in the app; the video and screenshots use the demo
+  shops unless Channel3 gives permission (D-035).
 
 ## 8. What you must never do
 

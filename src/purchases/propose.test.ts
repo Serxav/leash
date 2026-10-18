@@ -278,6 +278,7 @@ describe("listProposals", () => {
     const [view] = listProposals(db, USER);
     expect(view).toMatchObject({
       productTitle: expect.stringMatching(/Sticky notes/),
+      source: "local",
       merchantDomain: "office-supplies-demo.example",
       quantity: 2,
       unitPrice: "6.90",
@@ -287,5 +288,20 @@ describe("listProposals", () => {
       paymentStatus: "COMPLETED",
     });
     expect(listProposals(db, "someone-else")).toEqual([]);
+  });
+
+  it("marks a Channel3 offer as such, for the page (D-035)", async () => {
+    setup();
+    const offer: CatalogProduct = {
+      id: "c3Organiser",
+      source: "channel3",
+      title: "Desk organiser",
+      description: null,
+      category: "desktop-organizers",
+      parentCategories: ["office-supplies"],
+      offers: [{ merchantDomain: "shop.example", unitPrice: "3.00", currency: "EUR" }],
+    };
+    await propose({ productId: "c3Organiser", merchantDomain: "shop.example", quantity: 1 }, deps(async () => offer));
+    expect(listProposals(db, USER)[0]).toMatchObject({ source: "channel3", outcome: "APPROVE", paymentStatus: "COMPLETED" });
   });
 });

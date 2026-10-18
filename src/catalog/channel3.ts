@@ -1,10 +1,12 @@
 import "server-only";
 import { z } from "zod";
+import { toCents } from "@/lib/money";
 import { PRODUCT_ID_PATTERN, toCatalogProduct, type CatalogProduct } from "./product";
 
 /**
  * Channel3 product catalog, called through its documented REST API (D-028):
- * - POST /v1/search: 1 credit per call (free hackathon credits, D-031);
+ * - POST /v1/search: 1 credit per call (free hackathon credits, D-031),
+ *   optionally narrowed to the user's categories and price limit (D-035);
  * - GET /v1/products/{id}: free, used to re-read price and merchant.
  * Docs: https://docs.trychannel3.com/api-reference/v1/search and
  * https://docs.trychannel3.com/api-reference/v1/product-detail
@@ -22,8 +24,16 @@ export const CHANNEL3_API_URL = "https://api.trychannel3.com";
 export const CHANNEL3_LOCALE = { country: "ES", currency: "EUR" } as const;
 const TIMEOUT_MS = 10_000;
 
+/** Narrows a search with Channel3's documented filters (D-035). */
+export type Channel3SearchFilters = {
+  /** Category slugs; results also come from their subcategories. */
+  categoryIds: string[];
+  /** Highest offer price in euros, inclusive, e.g. "40.00". */
+  maxPrice: string;
+};
+
 export type Channel3Client = {
-  search(query: string, limit: number): Promise<CatalogProduct[]>;
+  search(query: string, limit: number, filters?: Channel3SearchFilters): Promise<CatalogProduct[]>;
   /** The product with fresh offers, or null if Channel3 does not know it. */
   getProduct(id: string): Promise<CatalogProduct | null>;
 };
@@ -108,14 +118,22 @@ export function createChannel3Client(options: {
   }
 
   return {
-    async search(query, limit) {
+    async search(query, limit, filters) {
       const body = await call("/v1/search", {
         method: "POST",
         body: JSON.stringify({
           query,
           limit,
           config: CHANNEL3_LOCALE,
-          filters: { availability: ["InStock"], conditions: ["new"] },
+          filters: {
+            availability: ["InStock"],
+            conditions: ["new"],
+            ...(filters && {
+              category_ids: filters.categoryIds,
+              // Only a search filter: Leash still decides in cents.
+              price: { min_price: null, max_price: toCents(filters.maxPrice) / 100 },
+            }),
+          },
         }),
       });
       const parsed = searchResponseSchema.safeParse(body);

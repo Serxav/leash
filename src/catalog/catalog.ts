@@ -3,18 +3,20 @@ import { z } from "zod";
 import type { Db } from "@/db/client";
 import { catalogSearches, catalogUsage } from "@/db/schema";
 import { madridMonth } from "@/rules/engine";
+import type { SpendingRules } from "@/rules/schema";
 import { Channel3Error, type Channel3Client } from "./channel3";
 import { getLocalProduct, isLocalProductId, searchLocal } from "./local";
 import { catalogProductSchema, cleanText, type CatalogProduct } from "./product";
 
 /**
- * The catalog the agent searches (D-028, D-029). Every search returns real
- * Channel3 offers (when available) plus matches from Leash's demo catalog
- * of invented shops; each product says where it comes from. Channel3's
- * Spanish catalog has few everyday office supplies and its titles carry
- * brands, so the demo catalog keeps the demo reliable and brand-free. It
- * never breaks: no key, an error or the monthly cap just mean no Channel3
- * results.
+ * The catalog the agent searches (D-028, D-029, D-035). Every search returns
+ * real Channel3 offers (when available) plus matches from Leash's demo
+ * catalog of invented shops; each product says where it comes from. The
+ * agent's Channel3 searches stay inside the user's allowed categories and
+ * price limit (SearchScope), so its offers are ones the rules could allow.
+ * The demo catalog keeps the demo cases (a blocked shop, an approval, a
+ * wrong category, the trap). It never breaks: no key, an error or the
+ * monthly cap just mean no Channel3 results.
  *
  * No bills: Leash counts its Channel3 searches per Madrid month and stops
  * at CHANNEL3_MONTHLY_SEARCH_CAP. Even at the cap every month until judging
@@ -35,8 +37,23 @@ export type SearchResult = {
   products: CatalogProduct[];
 };
 
+/**
+ * What the user's confirmed rules could ever allow (D-035). Channel3
+ * searches the whole of its catalog, so without this a search for a stapler
+ * returned cables and €300 pens, which the rules block. Built by server code
+ * from the rules, never by the model, and only narrows Channel3: every
+ * proposal is still decided by the engine.
+ */
+export type SearchScope = {
+  /** The allowed categories; Channel3 includes their subcategories. */
+  categories: string[];
+  /** The highest unit price that could pass: the rules' maxPerOrder. */
+  maxUnitPrice: string;
+};
+
 export type Catalog = {
-  search(query: string): Promise<SearchResult>;
+  /** Without a scope, Channel3 searches everything (tests, the lab). */
+  search(query: string, scope?: SearchScope): Promise<SearchResult>;
   /**
    * The product with fresh prices, or null if it cannot be checked right
    * now. Callers must treat null as "do not buy" (fail closed).
@@ -52,6 +69,18 @@ export class CatalogError extends Error {
 }
 
 const cachedProducts = z.array(catalogProductSchema);
+
+export function searchScopeFromRules(
+  rules: Pick<SpendingRules, "allowedCategories" | "maxPerOrder">,
+): SearchScope {
+  return { categories: [...rules.allowedCategories].sort(), maxUnitPrice: rules.maxPerOrder };
+}
+
+/** One cache row per query and scope: "a4 paper|in:office-supplies|max:40.00". */
+export function searchCacheKey(queryKey: string, scope?: SearchScope): string {
+  if (!scope) return queryKey;
+  return `${queryKey}|in:${[...scope.categories].sort().join(",")}|max:${scope.maxUnitPrice}`;
+}
 
 /** "  A4  Printer PAPER " → "a4 printer paper". */
 export function normalizeQuery(query: string): string {
@@ -116,18 +145,23 @@ export function createCatalog(deps: {
   }
 
   /** Channel3 results, or none without a key, at the cap or on errors. */
-  async function searchChannel3(queryKey: string): Promise<CatalogProduct[]> {
+  async function searchChannel3(queryKey: string, scope?: SearchScope): Promise<CatalogProduct[]> {
     if (!deps.channel3) return [];
     const at = now();
-    const cached = readCache(queryKey, at);
+    const cacheKey = searchCacheKey(queryKey, scope);
+    const cached = readCache(cacheKey, at);
     if (cached) return cached;
     if (!takeSearchCredit(at)) {
       console.warn("[catalog] monthly Channel3 search cap reached; demo catalog only");
       return [];
     }
     try {
-      const products = (await deps.channel3.search(queryKey, SEARCH_LIMIT)).slice(0, SEARCH_LIMIT);
-      writeCache(queryKey, products, at);
+      const filters = scope && { categoryIds: scope.categories, maxPrice: scope.maxUnitPrice };
+      const products = (await deps.channel3.search(queryKey, SEARCH_LIMIT, filters)).slice(
+        0,
+        SEARCH_LIMIT,
+      );
+      writeCache(cacheKey, products, at);
       return products;
     } catch (error) {
       const reason = error instanceof Channel3Error ? error.message : "unexpected error";
@@ -137,11 +171,12 @@ export function createCatalog(deps: {
   }
 
   return {
-    async search(query) {
+    async search(query, scope) {
       const queryKey = normalizeQuery(query);
       if (!queryKey) throw new CatalogError("EMPTY_QUERY");
+      // The demo catalog is not narrowed: its blocked cases stay in the demo.
       const demo = searchLocal(queryKey, DEMO_SEARCH_LIMIT);
-      return { products: [...(await searchChannel3(queryKey)), ...demo] };
+      return { products: [...(await searchChannel3(queryKey, scope)), ...demo] };
     },
 
     async getProduct(id) {

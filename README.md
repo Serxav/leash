@@ -70,9 +70,12 @@ are chosen in one place: `src/ai/models.ts`.
 ## Sponsor tools
 
 - **Channel3:** product catalog search for the agent, through its REST API (Spain + EUR).
-  **Implemented:** `src/catalog/` (search, free price re-read, cache and monthly cap). Every
-  search also includes a small Leash demo catalog with invented shops and no brands, because
-  Channel3's Spanish catalog has few everyday office supplies (D-029).
+  **Implemented:** `src/catalog/` (search, free price re-read, cache and monthly cap). The
+  agent's searches stay inside the user's allowed categories and price limit
+  (`filters.category_ids` and `filters.price`), so it finds real offers the rules can allow,
+  and `/agent` marks each purchase as a "Channel3 offer" or a "Demo shop" (D-035). Every
+  search also includes a small Leash demo catalog with invented shops and no brands, which
+  keeps the demo cases (a blocked shop, an approval, a wrong category, the trap product).
 - **Render:** hosting for the public demo.
 - **APIMatic:** the PayPal Server SDK, built with the APIMatic Context Plugin for PayPal.
 

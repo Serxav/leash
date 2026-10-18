@@ -60,7 +60,7 @@ charges approved purchases (Orders v2) and refunds them (Payments v2).
 | AI dev, until Nov 1 | `AI_PROVIDER=google`, model `gemini-3.5-flash-lite` with automatic fallback to `gemini-3.1-flash-lite` when Google is busy (D-023, D-027: free tier, no billing, invented data only) |
 | AI from Nov 2, and always in the public demo, video and submission | `AI_PROVIDER=anthropic`: `claude-sonnet-5-5` for the agent, `claude-haiku-5-5` for rule conversion and summaries |
 | Validation | Zod for env vars, rules and every structured AI output |
-| Catalog | Channel3 REST API (`POST /v1/search`, `GET /v1/products/{id}`), not the SDK, which ships without a licence (D-028). 6-hour search cache and a cap of 2,000 searches a month (no bills, D-031). Spain + EUR only, never convert currencies. Local JSON fallback catalog, which includes the trap product |
+| Catalog | Channel3 REST API (`POST /v1/search`, `GET /v1/products/{id}`), not the SDK, which ships without a licence (D-028). 6-hour search cache and a cap of 2,000 searches a month (no bills, D-031). The agent searches only inside the user's allowed categories and price limit (D-035). Spain + EUR only, never convert currencies. Local JSON fallback catalog, which includes the trap product |
 | PayPal SDK | `@paypal/paypal-server-sdk` (APIMatic), pinned. **Before writing SDK code, load the matching `paypal:typescript-*` skill** from the APIMatic Context Plugin (getting-started first). Client: `src/paypal/sdk.ts`; errors: `src/paypal/errors.ts` |
 | Payments | PayPal **sandbox only**: Vault (save PayPal, `usage_type` MERCHANT), Orders v2 (`payment_source.paypal.vault_id`, intent CAPTURE), Payments v2 refunds, `@paypal/agent-toolkit` (`sandbox: true`) behind "leashed tools" |
 | Data | SQLite + Drizzle ORM. The Render disk is wiped on restart, so demo data is re-seeded at boot |
@@ -88,7 +88,10 @@ charges approved purchases (Orders v2) and refunds them (Payments v2).
 - **Transparency.** Show a visible notice that purchases are proposed by an AI agent, and a
   one-sentence explanation for every decision.
 - **No credit scoring and no financing features.** They are high risk under the EU AI Act.
-- **No third-party brands or logos** in the UI, screenshots or video.
+- **No third-party logos or images**, anywhere. Real shop names and product titles from
+  Channel3 offers may appear in the app, because they are Channel3 data (D-035). The video
+  and screenshots show no third-party trademarks without permission (official rules), so
+  they use the demo shops unless Channel3 says otherwise.
 
 ## Never
 

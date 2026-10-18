@@ -2,7 +2,8 @@ import { randomUUID } from "node:crypto";
 import { desc, eq, inArray } from "drizzle-orm";
 import { z } from "zod";
 import type { Catalog } from "@/catalog/catalog";
-import { cleanText, PRODUCT_ID_PATTERN } from "@/catalog/product";
+import { isLocalProductId } from "@/catalog/local";
+import { cleanText, PRODUCT_ID_PATTERN, type CatalogProduct } from "@/catalog/product";
 import type { Db } from "@/db/client";
 import {
   decisions,
@@ -248,6 +249,8 @@ function budgetSpending(db: Db, userId: string): Array<{ amount: string; at: Dat
 export type ProposalView = {
   intentId: string;
   productTitle: string | null;
+  /** Where the product came from: a real Channel3 offer or the demo catalog. */
+  source: CatalogProduct["source"];
   merchantDomain: string;
   quantity: number;
   unitPrice: string | null;
@@ -291,6 +294,7 @@ export function listProposals(db: Db, userId: string, limit = 20): ProposalView[
       {
         intentId: intent.id,
         productTitle: intent.productTitle,
+        source: isLocalProductId(intent.productId) ? "local" : "channel3",
         merchantDomain: intent.merchantDomain,
         quantity: intent.quantity,
         unitPrice: intent.unitPrice,
