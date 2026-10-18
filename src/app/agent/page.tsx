@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { connection } from "next/server";
 import { Suspense } from "react";
+import { isAgentPaused } from "@/account/settings";
 import { getDb } from "@/db/client";
 import { DEMO_USER_ID } from "@/lib/demo-user";
 import { getMandateView } from "@/payments/mandate";
@@ -60,6 +61,7 @@ async function AgentState() {
   const db = getDb();
   const policy = getActivePolicy(db, DEMO_USER_ID);
   const mandate = getMandateView(db, DEMO_USER_ID);
+  const paused = isAgentPaused(db, DEMO_USER_ID);
   const proposals = listProposals(db, DEMO_USER_ID);
   const securityLog = listSecurityEvents(db, DEMO_USER_ID, 10);
 
@@ -80,6 +82,15 @@ async function AgentState() {
         ) : (
           <p className="text-sm">
             No rules yet. <Link href="/rules" className="underline">Write and confirm your rules</Link> first.
+          </p>
+        )}
+        {paused && (
+          <p className="text-sm text-red-800 dark:text-red-300">
+            You paused the agent: Leash blocks every purchase.{" "}
+            <Link href="/permissions" className="underline">
+              Resume it in Permissions
+            </Link>
+            .
           </p>
         )}
         {mandate.status !== "ACTIVE" && (

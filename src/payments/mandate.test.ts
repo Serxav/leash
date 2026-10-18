@@ -10,6 +10,7 @@ import {
   getActiveVaultToken,
   getMandateView,
   MandateError,
+  revokeMandate,
   startMandate,
 } from "./mandate";
 
@@ -197,5 +198,71 @@ describe("cancelPendingMandate", () => {
     await startMandate({ db, vault }, { userId: USER, ...urls });
     cancelPendingMandate(db, USER);
     expect(getMandateView(db, USER).status).toBe("NONE");
+  });
+});
+
+describe("revokeMandate (US7, D-038)", () => {
+  const connected = (status: "ACTIVE" | "PAUSED" = "ACTIVE", id = "m1", at = new Date("2026-10-20T10:00:00Z")) =>
+    db.insert(mandates).values({
+      id, userId: USER, status, vaultTokenRef: `PAYTOKEN-${id}`, createdAt: at, updatedAt: at,
+    }).run();
+  const deleted: StubReply = { status: 204, body: "" };
+
+  it("stops charges and deletes the saved PayPal at PayPal", async () => {
+    connected();
+    const { vault, requests } = setup(() => deleted);
+    expect(await revokeMandate({ db, vault }, USER)).toBe("REVOKED");
+
+    expect(requests).toHaveLength(1);
+    expect(requests[0].method).toBe("DELETE");
+    expect(requests[0].url).toMatch(/\/v3\/vault\/payment-tokens\/PAYTOKEN-m1$/);
+    expect(getActiveVaultToken(db, USER)).toBeUndefined();
+    expect(getMandateView(db, USER)).toEqual({ status: "REVOKED", connectedAt: undefined, deletionPending: false });
+    expect(db.select().from(mandates).get()?.vaultTokenRef).toBeNull();
+  });
+
+  it("stops charges even when PayPal fails, and deletes it on the next try", async () => {
+    connected();
+    const failing = setup(() => ({ status: 500, body: { name: "INTERNAL_SERVER_ERROR", debug_id: "dbg1" } }));
+    expect(await revokeMandate({ db, vault: failing.vault }, USER)).toBe("PAYPAL_FAILED");
+    expect(getActiveVaultToken(db, USER)).toBeUndefined();
+    expect(getMandateView(db, USER)).toMatchObject({ status: "REVOKED", deletionPending: true });
+
+    const { vault, requests } = setup(() => deleted);
+    expect(await revokeMandate({ db, vault }, USER)).toBe("REVOKED");
+    expect(requests[0].url).toMatch(/PAYTOKEN-m1$/);
+    expect(getMandateView(db, USER).deletionPending).toBe(false);
+  });
+
+  it("counts a token PayPal no longer knows as deleted", async () => {
+    connected();
+    const { vault } = setup(() => ({ status: 404, body: { name: "RESOURCE_NOT_FOUND", debug_id: "dbg2" } }));
+    expect(await revokeMandate({ db, vault }, USER)).toBe("REVOKED");
+    expect(getMandateView(db, USER).deletionPending).toBe(false);
+  });
+
+  it("revokes a paused mandate too", async () => {
+    connected("PAUSED");
+    const { vault } = setup(() => deleted);
+    expect(await revokeMandate({ db, vault }, USER)).toBe("REVOKED");
+    expect(getMandateView(db, USER).status).toBe("REVOKED");
+  });
+
+  it("does nothing without a connection, and never touches other users", async () => {
+    db.insert(mandates).values({
+      id: "other", userId: "someone-else", status: "ACTIVE", vaultTokenRef: "OTHER",
+      createdAt: new Date(), updatedAt: new Date(),
+    }).run();
+    const { vault, requests } = setup(() => deleted);
+    expect(await revokeMandate({ db, vault }, USER)).toBe("NOT_CONNECTED");
+    expect(requests).toEqual([]);
+    expect(getActiveVaultToken(db, "someone-else")).toBe("OTHER");
+  });
+
+  it("lets the user connect PayPal again afterwards", async () => {
+    connected();
+    await revokeMandate({ db, vault: setup(() => deleted).vault }, USER);
+    const { vault } = setup(() => setupTokenCreated);
+    await expect(startMandate({ db, vault }, { userId: USER, ...urls })).resolves.toHaveProperty("approveUrl");
   });
 });

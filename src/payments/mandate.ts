@@ -7,10 +7,10 @@ import {
   VaultTokenRequestType,
   type VaultController,
 } from "@paypal/paypal-server-sdk";
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, inArray, isNotNull } from "drizzle-orm";
 import type { Db } from "@/db/client";
 import { mandates, type MandateStatus } from "@/db/schema";
-import { callPayPal } from "@/paypal/errors";
+import { callPayPal, PayPalRequestError } from "@/paypal/errors";
 
 /**
  * US1 Mandate: the user saves their PayPal once in the PayPal vault
@@ -34,6 +34,8 @@ export type MandateDeps = {
 export type MandateView = {
   status: MandateStatus | "NONE";
   connectedAt?: Date;
+  /** REVOKED, but PayPal has not confirmed deleting the saved token yet. */
+  deletionPending?: boolean;
 };
 
 export class MandateError extends Error {
@@ -69,6 +71,7 @@ export function getMandateView(db: Db, userId: string): MandateView {
   return {
     status: mandate.status,
     connectedAt: mandate.status === "ACTIVE" ? mandate.updatedAt : undefined,
+    deletionPending: mandate.status === "REVOKED" && Boolean(mandate.vaultTokenRef),
   };
 }
 
@@ -221,4 +224,65 @@ export function cancelPendingMandate(db: Db, userId: string): void {
   db.delete(mandates)
     .where(and(eq(mandates.userId, userId), eq(mandates.status, "PENDING")))
     .run();
+}
+
+export type RevokeDeps = {
+  db: Db;
+  vault: Pick<VaultController, "deletePaymentToken">;
+  now?: () => Date;
+};
+
+export type RevokeResult =
+  /** Leash stopped using it and PayPal deleted the saved token. */
+  | "REVOKED"
+  /** Leash stopped using it, but PayPal could not delete the token yet. */
+  | "PAYPAL_FAILED"
+  | "NOT_CONNECTED";
+
+/**
+ * US7: the user revokes the mandate (D-038).
+ * Docs: DELETE /v3/vault/payment-tokens/{id} (204, no body),
+ * https://developer.paypal.com/docs/api/payment-tokens/v3/
+ *
+ * 1. Leash marks it REVOKED first, so it is never charged again, whatever
+ *    PayPal answers next.
+ * 2. Then it asks PayPal to delete the vault token, and forgets the token
+ *    once PayPal confirms. If PayPal fails, the token stays stored only so
+ *    the deletion can be tried again (the same call retries it).
+ *
+ * The sandbox answers 204 even for a token that does not exist (checked on
+ * Oct 18), so deleting twice is safe; a 404 counts as deleted too.
+ */
+export async function revokeMandate(deps: RevokeDeps, userId: string): Promise<RevokeResult> {
+  const now = deps.now ?? (() => new Date());
+  const usable = and(eq(mandates.userId, userId), inArray(mandates.status, ["ACTIVE", "PAUSED"]));
+  const active = deps.db.select({ id: mandates.id }).from(mandates).where(usable).all().length > 0;
+  if (active) {
+    deps.db.update(mandates).set({ status: "REVOKED", updatedAt: now() }).where(usable).run();
+  }
+  const toDelete = deps.db
+    .select()
+    .from(mandates)
+    .where(and(eq(mandates.userId, userId), eq(mandates.status, "REVOKED"), isNotNull(mandates.vaultTokenRef)))
+    .all();
+  if (toDelete.length === 0) return active ? "REVOKED" : "NOT_CONNECTED";
+
+  let result: RevokeResult = "REVOKED";
+  for (const mandate of toDelete) {
+    try {
+      await callPayPal(() => deps.vault.deletePaymentToken(mandate.vaultTokenRef!));
+    } catch (error) {
+      if (!(error instanceof PayPalRequestError && error.failure.status === 404)) {
+        console.error("[mandate] PayPal could not delete the vault token:", (error as Error).name);
+        result = "PAYPAL_FAILED";
+        continue;
+      }
+    }
+    deps.db
+      .update(mandates)
+      .set({ vaultTokenRef: null, updatedAt: now() })
+      .where(eq(mandates.id, mandate.id))
+      .run();
+  }
+  return result;
 }

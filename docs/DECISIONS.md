@@ -964,3 +964,53 @@ main page, the sponsor detail pages for Channel3 and APIMatic, the FAQ and the u
   - the same Refund button in a second, stale tab answered "This purchase was already
     refunded." without calling PayPal.
 - **Status:** accepted (planned in the brief and D-034; Sergi approved the F4 task list).
+
+### D-038 · 2026-10-18 · The permissions panel: pause, revoke, delete
+
+- **What:** `/permissions` (US7) has three controls, and each one works at once for
+  purchases not made yet.
+- **Pause the agent:**
+  - Stored in a new table, `user_settings` (migration `0006`). No row means the agent is
+    active.
+  - The engine's `agent_active` rule, which until now always saw "not paused", reads it.
+  - While paused, Leash blocks every purchase, **including the user's approvals in the
+    inbox** (fail closed). `/agent` refuses to run before any AI call, and shows a notice
+    with a link.
+  - Resuming lifts it.
+- **Revoke the mandate** (`revokeMandate`, `src/payments/mandate.ts`):
+  - **Order:** Leash marks the mandate REVOKED **first**, so it is never charged again,
+    whatever PayPal answers. Then it calls `DELETE /v3/vault/payment-tokens/{id}`
+    (docs read on Oct 18: 204, no body) through the SDK's `deletePaymentToken`, and
+    forgets the token once PayPal confirms.
+  - **If PayPal fails:** the token stays stored only so the deletion can be retried. The
+    page shows "Try deleting it at PayPal again".
+  - **Deleting twice is safe:** the sandbox answers 204 even for a token that does not
+    exist (probed), and a 404 also counts as deleted.
+  - **Paused mandates:** revoking covers them too.
+  - **Reconnecting:** after a revoke, the user can connect PayPal again.
+- **Delete my account and data** (`deleteAccount`, `src/account/account.ts`):
+  - A required checkbox confirms it.
+  - Leash first revokes the mandate and deletes the token at PayPal. If that fails,
+    **nothing is deleted**, so no orphan token stays at PayPal.
+  - Then one transaction deletes every row of the user: rules, proposals and decisions,
+    payments, the security log, settings and mandates.
+  - A unit test checks **every table with a `user_id` column**, so a future table cannot
+    be forgotten silently.
+  - PayPal keeps its own records of past payments; the page says so.
+- **Queue:** revoke and delete run in the per-user purchase queue. A purchase already
+  deciding or charging finishes first, and none starts after (unit test).
+- **Not in this task:**
+  - The lab is the only place to connect PayPal, and it does not exist in production.
+    Connecting PayPal outside the lab belongs to F5 (per-visitor demo users and
+    onboarding).
+  - The mandate's own `PAUSED` status stays unused: the user pauses the agent instead.
+- **Tried in the sandbox (Oct 18, with Sergi's OK, after a `sqlite3 .backup`):**
+  - paused the agent → `/agent` refused at once with no AI call; resumed;
+  - revoked the real sandbox mandate → asked PayPal for the old token: **404
+    TOKEN_NOT_FOUND**;
+  - deleted the account → 0 rows left for the demo user in every table, clean empty pages;
+  - restored the backup with `sqlite3 .restore`, then revoked the restored, stale mandate
+    again (PayPal answered OK for the already deleted token). Sergi reconnects PayPal in
+    the lab.
+- **Status:** accepted (Sergi approved the F4 task list; "haz lo que necesites" for the
+  live test).

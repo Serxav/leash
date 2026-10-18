@@ -509,3 +509,24 @@ One entry per session: date, what was done, what is left, blockers.
 - One local €1.00 test payment (no intent) stays COMPLETED in Sergi's local database
   although PayPal refunded it, from the first run of the toolkit refund sandbox test (the
   test now records the refund). It only adds €1.00 to the local budget.
+
+## 2026-10-18 · Session 5 (cont.) – permissions panel
+
+**Done**
+- Merged PR #27 (history and toolkit refunds) with the PR title as subject (66 characters).
+- `feat/f4-permissions-panel` (D-038):
+  - pause the agent: `user_settings` table (migration `0006`), read by the engine's
+    `agent_active` rule; `/agent` refuses to run while paused;
+  - revoke the mandate: REVOKED first, then PayPal deletes the vault token (retry if PayPal
+    fails);
+  - delete account and data: PayPal token first, then every row of the user in one
+    transaction (tested against every table with `user_id`);
+  - `/permissions` page; links from the home page and `/agent`.
+- Tried in the sandbox: pause and resume; a real revoke (PayPal then answers 404
+  TOKEN_NOT_FOUND for the token); delete account (0 rows left); the local data restored
+  from a backup. Lint, typecheck, 520 unit tests and build pass.
+
+**Left**
+- Sergi: reconnect PayPal in `/lab/payments` (the sandbox mandate was revoked for the test).
+- F4 is done except the switch to Claude (from Nov 2, needs the Anthropic key) and the
+  mobile check. Connecting PayPal outside the lab comes with F5 onboarding.

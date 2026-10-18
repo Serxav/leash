@@ -43,6 +43,12 @@ export default function Home() {
           className="inline-block rounded-full border border-zinc-400 px-5 py-3 text-sm font-medium hover:bg-zinc-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 dark:border-zinc-600 dark:hover:bg-zinc-800"
         >
           Purchase history
+        </Link>{" "}
+        <Link
+          href="/permissions"
+          className="inline-block rounded-full border border-zinc-400 px-5 py-3 text-sm font-medium hover:bg-zinc-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 dark:border-zinc-600 dark:hover:bg-zinc-800"
+        >
+          Permissions
         </Link>
       </p>
       <p className="text-sm text-zinc-600 dark:text-zinc-400">
