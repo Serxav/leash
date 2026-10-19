@@ -1142,3 +1142,54 @@ main page, the sponsor detail pages for Channel3 and APIMatic, the FAQ and the u
   public demo uses Claude, so the Render link is for testing only and is not shared until
   the switch.
 - **Status:** accepted ("ok pues render free").
+
+### D-042 · 2026-10-19 · Pip, a Muse-style chat and an Apple-style look
+
+- **What:** Sergi asked for the agent to look and behave like Meta's Muse: "una mascota
+  interactiva", a chat page, and "modo Apple redondito minimalista moderno y liquid glass".
+  He shared a screenshot of the Muse chat.
+- **What we took from Muse** (screenshot and press: Axios, Fortune, iMasters' interview with
+  its designer): the patterns only.
+  - one message thread, like a text chat;
+  - the agent small at the top centre, with its name and a status line; the character
+    moves while the agent works ("tapping away at a keyboard");
+  - permission cards with the request on top, a grey summary box and pill buttons
+    (Allow / Deny);
+  - a floating message box and a slim icon rail.
+- **What we did not take:** Meta's character (Jolly), names, logos or art. The rules forbid
+  third-party trademarks in the app and video, so the mascot is **Pip**, a puppy on a leash
+  drawn for Leash in SVG (`src/components/mascot.tsx`). It fits the name and the principle:
+  the AI proposes, the leash (the code) decides.
+- **Pip's moods** (`src/components/mascot-mood.ts`): it perks up while the user types
+  ("Listening…"), types on a tiny laptop while the agent runs (the status walks through the
+  run's steps), and afterwards mirrors **what the engine decided**: happy when everything
+  was approved, waiting when something needs the user, held back by a taut leash when
+  something was blocked. The mascot decides nothing, and the same outcome is always written
+  as text next to it. Tapping Pip pats it; its eyes follow the pointer.
+  - Not childish on purpose: Muse is criticised for a mascot that attracts children, and
+    Leash handles money.
+  - Animations stop for people who ask for reduced motion, and glass turns solid for
+    reduced transparency.
+- **The chat** (`src/app/agent/agent-chat.tsx`): each message runs the agent once; the reply
+  carries that run's proposals (`listProposalsByIds`) as permission cards. A waiting
+  purchase can be approved or rejected right on its card, with the same server action as the
+  inbox (US5), so Leash still checks the price and the rules again before charging. Rules,
+  latest proposals and the security log moved to a "Rules & activity" panel. The chat itself
+  is not stored: the proposals are.
+- **Design pass fixes:**
+  - the agent's summary shows **bold** and lists instead of `**` marks, without rendering
+    model text as HTML (`src/lib/agent-text.ts`);
+  - cards no longer repeat the status ("Needs your approval: Needs your approval…"):
+    `reasonText` drops the engine's leading word on screen; stored decisions keep the full
+    sentence.
+- **Rules page** (Sergi: "ha de ser muy bien hecha para que la gente sepa cómo hacerlo"):
+  the three steps (write, check, confirm); "What to include", one tip per rule with an
+  example sentence the user can add with one tap; two full examples; and the exact rules as
+  a settings-style list, both in use and before confirming. The AI and the checks did not
+  change: missing values are still asked by Leash's own questions.
+- **Look:** white surfaces, system font (SF on Apple devices), 20 px rounded cards with soft
+  shadows, pill buttons, Apple blue as the accent, translucent blurred "glass" for the
+  floating parts (rail, tab bar, status, message box, panels). Colours were checked for
+  WCAG AA contrast in light and dark mode.
+- **Status:** accepted (Sergi chose the puppy and the chat; then "algo así" with the Muse
+  screenshot).

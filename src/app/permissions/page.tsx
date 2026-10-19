@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Suspense } from "react";
 import { isAgentPaused } from "@/account/settings";
 import { currentUserId } from "@/account/visitor";
@@ -15,15 +14,12 @@ const date = new Intl.DateTimeFormat("en-GB", { dateStyle: "medium", timeZone: "
 
 export default function PermissionsPage({ searchParams }: PageProps<"/permissions">) {
   return (
-    <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-8 px-6 py-12">
+    <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-8 px-4 py-10 sm:px-6">
       <header className="flex flex-col gap-2">
-        <Link href="/" className="inline-block py-1 text-sm text-zinc-600 underline dark:text-zinc-400">
-          Leash
-        </Link>
-        <h1 className="text-3xl font-semibold tracking-tight">Permissions</h1>
+        <h1 className="text-3xl font-semibold">Permissions</h1>
         <p
           role="note"
-          className="rounded-lg border border-zinc-300 p-4 text-sm leading-6 text-zinc-700 dark:border-zinc-700 dark:text-zinc-300"
+          className="card p-4 text-sm leading-6 text-muted"
         >
           You stay in control of the AI agent: pause it, disconnect PayPal, or delete everything
           Leash stores about you. Each switch works at once, for purchases the agent has not made
@@ -31,7 +27,7 @@ export default function PermissionsPage({ searchParams }: PageProps<"/permission
         </p>
       </header>
 
-      <Suspense fallback={<p className="text-sm text-zinc-600">Loading…</p>}>
+      <Suspense fallback={<p className="text-sm text-muted">Loading…</p>}>
         <Permissions searchParams={searchParams} />
       </Suspense>
     </main>

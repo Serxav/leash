@@ -627,3 +627,31 @@ One entry per session: date, what was done, what is left, blockers.
   `v0.4.0`.
 - Sergi: confirm no payment method is saved in the Channel3 dashboard; ask on Discord
   #channel3 whether retailer names may appear in the video.
+
+## 2026-10-19 · Session 7 – design pass (Pip and the Muse-style chat)
+
+**Done**
+- `feat/f5-design-pass` (D-042). Sergi asked for an agent like Meta's Muse, "una mascota
+  interactiva", and an Apple-style look with liquid glass; then a screenshot of Muse's chat.
+  - **Pip**, a puppy on a leash drawn for Leash in SVG (no Meta art). Small at the top of the
+    chat in a glass status pill: it perks up while you type, types on a tiny laptop while
+    the agent works (the status walks through the steps), then mirrors the engine's
+    decisions. Tap to pat it; eyes follow the pointer; still for reduced motion.
+  - **Chat** on `/agent`: one thread, timestamps, blue and grey bubbles, permission cards
+    with Approve / Reject right in the chat (same server action as the inbox), floating
+    message box, "Rules & activity" panel for rules, latest proposals and the security log.
+  - **Look:** white, system font, rounded cards with soft shadows, pill buttons, Apple blue,
+    glass for floating parts; icon rail on wide screens and a tab bar on phones.
+  - **Rules page:** three steps, "What to include" with one-tap example sentences, two full
+    examples, rules shown as a settings-style list.
+  - Fixes: agent summary Markdown (bold, lists, code marks) without HTML; the status label is
+    no longer repeated on cards; "in your inbox" removed from answers given in the chat.
+- Tried in the sandbox (Personal account, Gemini): toner €24.00 → "Approve this purchase?"
+  → approved in the chat, charged (PayPal transaction in the history); paper €5.49 and sticky
+  notes €6.90 approved and charged; office chair not proposed (above €40); toner again →
+  rejected in the chat, "Nothing was charged". Error cases: "Connect PayPal first" before
+  connecting; rules with missing values → Leash's questions. Phone, desktop, light and dark,
+  keyboard. Lint, typecheck, 560 unit tests and build pass.
+
+**Next**
+- The Render setup (Sergi), the README for judges and the judges' sandbox account.

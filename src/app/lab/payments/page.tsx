@@ -35,20 +35,20 @@ export default function PaymentsLabPage({
 }: PageProps<"/lab/payments">) {
   assertLabEnabled();
   return (
-    <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-8 px-6 py-12">
+    <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-8 px-4 py-10 sm:px-6">
       <header className="flex flex-col gap-2">
-        <p className="text-sm font-medium uppercase tracking-wide text-zinc-600 dark:text-zinc-400">
+        <p className="text-sm font-medium uppercase tracking-wide text-muted">
           Development lab · PayPal sandbox only
         </p>
-        <h1 className="text-3xl font-semibold tracking-tight">Payments lab</h1>
-        <p className="text-zinc-700 dark:text-zinc-300">
+        <h1 className="text-3xl font-semibold">Payments lab</h1>
+        <p className="text-muted">
           Runs the F1 flow against the PayPal sandbox: save PayPal (mandate),
           charge, refund and a declined payment. No real money moves.
         </p>
       </header>
 
       {/* Static shell above; request-time data streams in below (Cache Components). */}
-      <Suspense fallback={<p className="text-sm text-zinc-600">Loading lab state…</p>}>
+      <Suspense fallback={<p className="text-sm text-muted">Loading lab state…</p>}>
         <LabState searchParams={searchParams} />
       </Suspense>
     </main>
@@ -99,12 +99,12 @@ async function LabState({
 
       <section
         aria-labelledby="mandate-heading"
-        className="flex flex-col gap-4 rounded-lg border border-zinc-300 p-6 dark:border-zinc-700"
+        className="card flex flex-col gap-4 p-5 sm:p-6"
       >
         <h2 id="mandate-heading" className="text-xl font-semibold">
           1. Mandate (save PayPal)
         </h2>
-        <p className="text-sm text-zinc-700 dark:text-zinc-300">
+        <p className="text-sm text-muted">
           Status: <strong data-testid="mandate-status">{mandate.status}</strong>
           {mandate.connectedAt && (
             <> · connected {mandate.connectedAt.toISOString()}</>
@@ -114,13 +114,13 @@ async function LabState({
           <form action={connectPayPal}>
             <button
               type="submit"
-              className="rounded-full bg-zinc-900 px-5 py-3 text-sm font-medium text-white hover:bg-zinc-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
+              className="btn btn-primary"
             >
               Connect PayPal (sandbox)
             </button>
           </form>
         )}
-        <p className="text-xs text-zinc-600 dark:text-zinc-400">
+        <p className="text-xs text-muted">
           You will approve on www.sandbox.paypal.com with the sandbox Personal
           account, then come back here. Leash only stores a PayPal payment token
           on the server.
@@ -129,17 +129,17 @@ async function LabState({
 
       <section
         aria-labelledby="charge-heading"
-        className="flex flex-col gap-4 rounded-lg border border-zinc-300 p-6 dark:border-zinc-700"
+        className="card flex flex-col gap-4 p-5 sm:p-6"
       >
         <h2 id="charge-heading" className="text-xl font-semibold">
           2. Charge €5 with the saved PayPal
         </h2>
         {mandate.status !== "ACTIVE" ? (
-          <p className="text-sm text-zinc-700 dark:text-zinc-300">
+          <p className="text-sm text-muted">
             Connect PayPal first.
           </p>
         ) : !merchantId ? (
-          <p role="alert" className="text-sm text-red-800 dark:text-red-300">
+          <p role="alert" className="text-sm text-danger">
             Set PAYPAL_MERCHANT_ID in .env.local (sandbox Business account) to
             enable FraudNet risk data before charging.
           </p>
@@ -154,7 +154,7 @@ async function LabState({
               <input type="hidden" name="clientMetadataId" value={clientMetadataId} />
               <button
                 type="submit"
-                className="rounded-full bg-zinc-900 px-5 py-3 text-sm font-medium text-white hover:bg-zinc-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
+                className="btn btn-primary"
               >
                 Charge €5.00 (sandbox)
               </button>
@@ -162,12 +162,12 @@ async function LabState({
                 type="submit"
                 name="simulate"
                 value="INSTRUMENT_DECLINED"
-                className="rounded-full border border-zinc-400 px-5 py-3 text-sm font-medium hover:bg-zinc-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 dark:border-zinc-600 dark:hover:bg-zinc-800"
+                className="btn btn-secondary"
               >
                 Simulate a declined €5.00 charge
               </button>
             </form>
-            <p className="text-xs text-zinc-600 dark:text-zinc-400">
+            <p className="text-xs text-muted">
               The simulation uses PayPal sandbox negative testing
               (PayPal-Mock-Response): PayPal answers INSTRUMENT_DECLINED and
               nothing is charged.
@@ -177,13 +177,13 @@ async function LabState({
 
         <h3 className="text-base font-semibold">Payments</h3>
         {history.length === 0 ? (
-          <p className="text-sm text-zinc-600 dark:text-zinc-400">No payments yet.</p>
+          <p className="text-sm text-muted">No payments yet.</p>
         ) : (
           <ul className="flex flex-col gap-2 text-sm">
             {history.map((payment) => (
               <li
                 key={payment.id}
-                className="rounded border border-zinc-200 p-3 font-mono text-xs dark:border-zinc-800"
+                className="card-muted p-3 font-mono text-xs"
               >
                 {payment.amount} {payment.currency} · <strong>{payment.status}</strong> ·{" "}
                 {payment.initiator}
@@ -206,7 +206,7 @@ async function LabState({
                     <button
                       type="submit"
                       aria-label={`Refund ${payment.amount} ${payment.currency}`}
-                      className="rounded-full border border-zinc-400 px-4 py-2 font-sans text-xs font-medium hover:bg-zinc-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 dark:border-zinc-600 dark:hover:bg-zinc-800"
+                      className="btn btn-secondary min-h-8 px-3 font-sans text-xs"
                     >
                       Refund in full
                     </button>

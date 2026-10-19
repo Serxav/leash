@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { getDb } from "@/db/client";
 import { currentUserId } from "@/account/visitor";
 import { listPendingApprovals } from "@/purchases/propose";
-import { SOURCE_LABELS } from "../labels";
+import { reasonText, SOURCE_LABELS } from "../labels";
 import { InboxList, type PendingItem } from "./inbox-list";
 
 export const metadata: Metadata = {
@@ -19,15 +19,12 @@ const dateTime = new Intl.DateTimeFormat("en-GB", {
 
 export default function InboxPage() {
   return (
-    <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-8 px-6 py-12">
+    <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-8 px-4 py-10 sm:px-6">
       <header className="flex flex-col gap-2">
-        <Link href="/" className="inline-block py-1 text-sm text-zinc-600 underline dark:text-zinc-400">
-          Leash
-        </Link>
-        <h1 className="text-3xl font-semibold tracking-tight">Approval inbox</h1>
+        <h1 className="text-3xl font-semibold">Approval inbox</h1>
         <p
           role="note"
-          className="rounded-lg border border-zinc-300 p-4 text-sm leading-6 text-zinc-700 dark:border-zinc-700 dark:text-zinc-300"
+          className="card p-4 text-sm leading-6 text-muted"
         >
           Purchases the AI agent proposed above the amount you want to approve. Approving pays with
           your saved PayPal (sandbox), but Leash first checks the price and your rules again: if
@@ -35,7 +32,7 @@ export default function InboxPage() {
         </p>
       </header>
 
-      <Suspense fallback={<p className="text-sm text-zinc-600">Loading…</p>}>
+      <Suspense fallback={<p className="text-sm text-muted">Loading…</p>}>
         <PendingPurchases />
       </Suspense>
 
@@ -58,7 +55,7 @@ async function PendingPurchases() {
     quantity: view.quantity,
     unitPrice: view.unitPrice,
     orderTotal: view.orderTotal,
-    explanation: view.explanation,
+    explanation: reasonText(view.explanation),
     agentReason: view.agentReason,
     proposedAt: dateTime.format(view.createdAt),
   }));

@@ -30,7 +30,7 @@ export function HistoryList({ rows }: { rows: HistoryRow[] }) {
     <div className="flex flex-col gap-4">
       <div aria-live="polite">
         {pending && (
-          <p role="status" className="rounded-lg border border-zinc-300 p-4 text-sm dark:border-zinc-700">
+          <p role="status" className="card p-4 text-sm">
             Asking PayPal for the refund…
           </p>
         )}
@@ -41,8 +41,8 @@ export function HistoryList({ rows }: { rows: HistoryRow[] }) {
             role={state.ok ? "status" : "alert"}
             className={
               state.ok
-                ? "rounded-lg border border-emerald-300 p-4 text-sm text-emerald-900 dark:border-emerald-800 dark:text-emerald-200"
-                : "rounded-lg border border-red-300 p-4 text-sm text-red-800 dark:border-red-800 dark:text-red-300"
+                ? "card p-4 text-sm"
+                : "card p-4 text-sm text-danger"
             }
           >
             {state.message}
@@ -51,31 +51,31 @@ export function HistoryList({ rows }: { rows: HistoryRow[] }) {
       </div>
 
       {rows.length === 0 ? (
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">No purchases yet.</p>
+        <p className="text-sm text-muted">No purchases yet.</p>
       ) : (
         <ul className="flex flex-col gap-3">
           {rows.map((row) => (
-            <li key={row.intentId} className="rounded-lg border border-zinc-300 p-4 text-sm dark:border-zinc-700">
+            <li key={row.intentId} className="card p-4 text-sm">
               {/* Shop and agent text, rendered as plain text (React escapes it). */}
               <p className="font-medium">{row.title}</p>
-              <p className="text-zinc-700 dark:text-zinc-300">{row.details}</p>
+              <p className="text-muted">{row.details}</p>
               <p className="mt-2">
                 <strong>{row.status}</strong>
               </p>
-              <p className="text-zinc-700 dark:text-zinc-300">{row.explanation}</p>
+              <p className="text-muted">{row.explanation}</p>
               {row.paypalReference && (
-                <p className="mt-1 text-zinc-700 dark:text-zinc-300">
+                <p className="mt-1 text-muted">
                   PayPal transaction ID: <span className="font-mono">{row.paypalReference}</span>
                 </p>
               )}
               {row.returnWindow && <p className="mt-1">{row.returnWindow}</p>}
-              <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-400">Agent&apos;s reason: {row.agentReason}</p>
+              <p className="mt-1 text-xs text-muted">Agent&apos;s reason: {row.agentReason}</p>
               {row.refundLabel && (
                 <form action={formAction} className="mt-3">
                   <input type="hidden" name="intentId" value={row.intentId} />
                   <SubmitButton
                     pending={pending}
-                    className="rounded-full border border-zinc-400 px-5 py-3 text-sm font-medium hover:bg-zinc-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 dark:border-zinc-600 dark:hover:bg-zinc-800"
+                    className="btn btn-secondary"
                   >
                     {row.refundLabel}
                   </SubmitButton>

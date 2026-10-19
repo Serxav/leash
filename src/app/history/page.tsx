@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { getDb } from "@/db/client";
 import { currentUserId } from "@/account/visitor";
 import { listHistory, type HistoryItem } from "@/purchases/history";
-import { outcomeLabel, PAYMENT_LABELS, SOURCE_LABELS } from "../labels";
+import { outcomeLabel, PAYMENT_LABELS, reasonText, SOURCE_LABELS } from "../labels";
 import { HistoryList, type HistoryRow } from "./history-list";
 
 export const metadata: Metadata = {
@@ -20,15 +20,12 @@ const date = new Intl.DateTimeFormat("en-GB", { dateStyle: "medium", timeZone: "
 
 export default function HistoryPage() {
   return (
-    <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-8 px-6 py-12">
+    <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-8 px-4 py-10 sm:px-6">
       <header className="flex flex-col gap-2">
-        <Link href="/" className="inline-block py-1 text-sm text-zinc-600 underline dark:text-zinc-400">
-          Leash
-        </Link>
-        <h1 className="text-3xl font-semibold tracking-tight">Purchase history</h1>
+        <h1 className="text-3xl font-semibold">Purchase history</h1>
         <p
           role="note"
-          className="rounded-lg border border-zinc-300 p-4 text-sm leading-6 text-zinc-700 dark:border-zinc-700 dark:text-zinc-300"
+          className="card p-4 text-sm leading-6 text-muted"
         >
           Every purchase the AI agent proposed, with the decision and the rule behind it. Charged
           purchases have a 14-day return window: until it closes, you can refund one in full to
@@ -36,7 +33,7 @@ export default function HistoryPage() {
         </p>
       </header>
 
-      <Suspense fallback={<p className="text-sm text-zinc-600">Loading…</p>}>
+      <Suspense fallback={<p className="text-sm text-muted">Loading…</p>}>
         <Purchases />
       </Suspense>
 
@@ -80,7 +77,7 @@ async function Purchases() {
       .filter(Boolean)
       .join(" · "),
     status: statusText(item),
-    explanation: item.explanation,
+    explanation: reasonText(item.explanation),
     agentReason: item.agentReason,
     paypalReference: item.paypalReference,
     returnWindow: windowText(item),

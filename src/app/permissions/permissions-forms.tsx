@@ -19,10 +19,10 @@ export type PermissionsView = {
 };
 
 const primaryButtonClass =
-  "rounded-full bg-zinc-900 px-5 py-3 text-sm font-medium text-white hover:bg-zinc-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300";
+  "btn btn-primary";
 
 const buttonClass =
-  "rounded-full border border-zinc-400 px-5 py-3 text-sm font-medium hover:bg-zinc-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 dark:border-zinc-600 dark:hover:bg-zinc-800";
+  "btn btn-secondary";
 
 /** US7: the agent switch, the PayPal mandate, the demo reset and account deletion. */
 export function PermissionsForms({ view }: { view: PermissionsView }) {
@@ -35,7 +35,7 @@ export function PermissionsForms({ view }: { view: PermissionsView }) {
     <div className="flex flex-col gap-8">
       <div aria-live="polite">
         {pending && (
-          <p role="status" className="rounded-lg border border-zinc-300 p-4 text-sm dark:border-zinc-700">
+          <p role="status" className="card p-4 text-sm">
             Saving…
           </p>
         )}
@@ -46,8 +46,8 @@ export function PermissionsForms({ view }: { view: PermissionsView }) {
             role={state.ok ? "status" : "alert"}
             className={
               state.ok
-                ? "rounded-lg border border-emerald-300 p-4 text-sm text-emerald-900 dark:border-emerald-800 dark:text-emerald-200"
-                : "rounded-lg border border-red-300 p-4 text-sm text-red-800 dark:border-red-800 dark:text-red-300"
+                ? "card p-4 text-sm"
+                : "card p-4 text-sm text-danger"
             }
           >
             {state.message}
@@ -82,8 +82,8 @@ export function PermissionsForms({ view }: { view: PermissionsView }) {
             role={view.paypalNotice.ok ? "status" : "alert"}
             className={
               view.paypalNotice.ok
-                ? "rounded-lg border border-emerald-300 p-4 text-sm text-emerald-900 dark:border-emerald-800 dark:text-emerald-200"
-                : "rounded-lg border border-red-300 p-4 text-sm text-red-800 dark:border-red-800 dark:text-red-300"
+                ? "card p-4 text-sm"
+                : "card p-4 text-sm text-danger"
             }
           >
             {view.paypalNotice.text}
@@ -92,7 +92,7 @@ export function PermissionsForms({ view }: { view: PermissionsView }) {
         <p className="text-sm">{view.mandateText}</p>
         {view.canConnect && (
           <form action={connectPayPal} className="flex flex-col gap-2">
-            <p className="text-sm text-zinc-700 dark:text-zinc-300">
+            <p className="text-sm text-muted">
               You approve on PayPal&apos;s sandbox page, with the sandbox buyer account from the README. No real
               money moves.
             </p>
@@ -105,7 +105,7 @@ export function PermissionsForms({ view }: { view: PermissionsView }) {
         )}
         {(view.canRevoke || view.deletionPending) && (
           <form action={formAction} className="flex flex-col gap-2">
-            <p className="text-sm text-zinc-700 dark:text-zinc-300">
+            <p className="text-sm text-muted">
               {view.deletionPending
                 ? "Leash no longer charges it, but PayPal has not deleted your saved PayPal yet."
                 : "Revoking stops every charge at once and deletes your saved PayPal at PayPal. Purchases already charged stay in your history."}
@@ -125,7 +125,7 @@ export function PermissionsForms({ view }: { view: PermissionsView }) {
           Reset the demo
         </h2>
         <form action={formAction} className="flex flex-col gap-2">
-          <p className="text-sm text-zinc-700 dark:text-zinc-300">
+          <p className="text-sm text-muted">
             Starts again from Marta&apos;s sample rules, with no purchases and PayPal not connected. Your saved
             PayPal is deleted at PayPal first.
           </p>
@@ -143,7 +143,7 @@ export function PermissionsForms({ view }: { view: PermissionsView }) {
           Delete my account and data
         </h2>
         <form action={formAction} className="flex flex-col gap-3 text-sm">
-          <p className="text-zinc-700 dark:text-zinc-300">
+          <p className="text-muted">
             Deletes your rules, the agent&apos;s proposals and decisions, your payments history, the
             security log and your saved PayPal (deleted at PayPal first). PayPal keeps its own records of
             past payments. This cannot be undone.
@@ -156,7 +156,7 @@ export function PermissionsForms({ view }: { view: PermissionsView }) {
           <div>
             <SubmitButton
               pending={pending}
-              className="rounded-full border border-red-400 px-5 py-3 text-sm font-medium text-red-800 hover:bg-red-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 dark:border-red-700 dark:text-red-300 dark:hover:bg-red-950"
+              className="btn btn-danger"
             >
               Delete my account and data
             </SubmitButton>

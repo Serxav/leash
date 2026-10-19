@@ -7,7 +7,7 @@ import type { ChargeInput, PaymentView } from "@/payments/charge";
 import { setAgentPaused } from "@/account/settings";
 import { confirmDraft, saveDraft } from "@/rules/policies";
 import type { SpendingRules } from "@/rules/schema";
-import { listProposals, proposePurchase, type ProposalInput } from "./propose";
+import { listProposals, listProposalsByIds, proposePurchase, type ProposalInput } from "./propose";
 
 const USER = "user-1";
 const NOW = new Date("2026-10-20T10:00:00Z");
@@ -314,5 +314,20 @@ describe("listProposals", () => {
     };
     await propose({ productId: "c3Organiser", merchantDomain: "shop.example", quantity: 1 }, deps(async () => offer));
     expect(listProposals(db, USER)[0]).toMatchObject({ source: "channel3", outcome: "APPROVE", paymentStatus: "COMPLETED" });
+  });
+});
+
+describe("listProposalsByIds", () => {
+  it("returns one run's proposals in the agent's order, only for this user (D-042)", async () => {
+    setup();
+    const first = await propose();
+    const second = await propose({ quantity: 3 });
+    const views = listProposalsByIds(db, USER, [second.purchaseRef!, first.purchaseRef!, "unknown"]);
+    expect(views.map((view) => [view.intentId, view.quantity])).toEqual([
+      [second.purchaseRef, 3],
+      [first.purchaseRef, 2],
+    ]);
+    expect(listProposalsByIds(db, "someone-else", [first.purchaseRef!])).toEqual([]);
+    expect(listProposalsByIds(db, USER, [])).toEqual([]);
   });
 });
