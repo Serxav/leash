@@ -102,13 +102,18 @@ export function AgentChat({ activity, notices }: { activity: ReactNode; notices:
   const step =
     WORK_STEPS[Math.min(Math.max(0, Math.floor((now - sending.at.getTime()) / STEP_MS)), WORK_STEPS.length - 1)];
   const summary = !typing && last ? outcomeSummary(lastOutcomes) : null;
-  const status = pending ? step.dog : `${MOOD_STATUS[restingMood]}${summary ? ` · ${summary}` : ""}`;
+  // Quiet when nothing happens: then it only says Rex is an AI agent.
+  const status = pending
+    ? step.dog
+    : restingMood === "idle" && !summary
+      ? "AI shopping agent"
+      : `${MOOD_STATUS[restingMood]}${summary ? ` · ${summary}` : ""}`;
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col px-4">
       <header ref={headerRef} className="relative z-30 grid grid-cols-[1fr_auto_1fr] items-start pt-4 pb-4">
         <details className="relative justify-self-start">
-          <summary className="glass btn cursor-pointer list-none px-3.5 text-sm [&::-webkit-details-marker]:hidden">
+          <summary className="card btn cursor-pointer list-none px-3.5 text-sm [&::-webkit-details-marker]:hidden">
             <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
               <path d="M2.5 4.5h11M2.5 8h11M2.5 11.5h11" strokeLinecap="round" />
             </svg>
@@ -120,15 +125,12 @@ export function AgentChat({ activity, notices }: { activity: ReactNode; notices:
           </div>
         </details>
 
-        {/* Muse-style status pill: who is working and what it is doing. */}
-        <div className="glass flex flex-col items-center gap-0.5 rounded-[26px] px-4 pt-2 pb-2.5 text-center">
-          <Mascot mood={mood} framing="tile" size={48} interactive />
-          <p className="flex items-center gap-1.5 text-xs font-semibold">
-            {MASCOT_NAME}
-            <span className="rounded-full bg-[var(--surface-muted)] px-1.5 py-px text-[10px] font-medium text-muted">
-              AI agent
-            </span>
-          </p>
+        {/* Like Muse: a small avatar tile and the name; one quiet line under it. */}
+        <div className="flex flex-col items-center gap-1 text-center">
+          <div className="card rounded-[16px] p-1">
+            <Mascot mood={mood} framing="tile" size={40} interactive />
+          </div>
+          <p className="text-xs font-semibold">{MASCOT_NAME}</p>
           <p className="max-w-52 text-[11px] leading-4 text-muted">{status}</p>
         </div>
       </header>

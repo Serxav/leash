@@ -661,3 +661,19 @@ One entry per session: date, what was done, what is left, blockers.
 
 **Next**
 - The Render setup (Sergi), the README for judges and the judges' sandbox account.
+
+## 2026-10-19 · Session 7 – end
+
+**Done**
+- `feat/f5-design-pass` has 3 local commits (Rex, the Muse-style chat, the Apple-style look,
+  the guided rules page, Rex's minimal header). Lint, typecheck, 561 unit tests and build
+  pass; tried in the sandbox. **Not pushed yet**: Sergi reviews the design first.
+
+**Next (start of session 8)**
+1. Sergi looks at the design in the browser; then push `feat/f5-design-pass`, open the PR
+   and merge it with green CI.
+2. Render: guide Sergi to create the Free service from the Blueprint and fill in the
+   variables himself; check `/api/health` and one sandbox purchase there.
+3. README for judges and the judges' sandbox account.
+- Small idea: when the user rejects on a card, Rex's line says "1 blocked"; "1 rejected by
+  you" would be clearer.

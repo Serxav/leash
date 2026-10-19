@@ -1203,6 +1203,8 @@ main page, the sponsor detail pages for Channel3 and APIMatic, the FAQ and the u
     both follow the run's real order on a timer; the real decisions arrive with the reply;
   - a simpler message box (white pill, small send button that turns blue when there is
     text). The "AI agent" label stays next to Rex's name, so the AI notice is always visible;
+  - Rex's header is now as quiet as Muse's: a small white avatar tile, the name and one
+    line ("AI shopping agent" at rest, the dog's step while it works);
   - shorter notes on the home page. The AI notice stays: CLAUDE.md requires a visible notice
     that purchases are proposed by an AI agent.
 - **Status:** accepted (Sergi chose the puppy and the chat; then "algo así" with the Muse
