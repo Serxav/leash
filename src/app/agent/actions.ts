@@ -8,7 +8,7 @@ import { getModel } from "@/ai/models";
 import { searchScopeFromRules } from "@/catalog/catalog";
 import { getCatalog } from "@/catalog/server";
 import { getDb } from "@/db/client";
-import { DEMO_USER_ID } from "@/lib/demo-user";
+import { currentUserId } from "@/account/visitor";
 import { getMandateView } from "@/payments/mandate";
 import { proposeForUser } from "@/purchases/server";
 import { describeRules } from "@/rules/describe";
@@ -31,15 +31,16 @@ export async function runAgent(
 
   // Do not spend AI calls on runs where every proposal would be blocked.
   const db = getDb();
-  const policy = getActivePolicy(db, DEMO_USER_ID);
+  const userId = await currentUserId();
+  const policy = getActivePolicy(db, userId);
   if (!policy) {
     return { kind: "error", request: shown, message: "Confirm your spending rules first." };
   }
-  if (isAgentPaused(db, DEMO_USER_ID)) {
+  if (isAgentPaused(db, userId)) {
     return { kind: "error", request: shown, message: "You paused the agent. Resume it in Permissions first." };
   }
-  if (getMandateView(db, DEMO_USER_ID).status !== "ACTIVE") {
-    return { kind: "error", request: shown, message: "Connect PayPal first, so Leash can pay approved purchases." };
+  if (getMandateView(db, userId).status !== "ACTIVE") {
+    return { kind: "error", request: shown, message: "Connect PayPal in Permissions first, so Leash can pay approved purchases." };
   }
 
   // Channel3 searches only what these rules could allow (D-035).
@@ -51,11 +52,11 @@ export async function runAgent(
       {
         model: getModel("agent"),
         catalog: { search: (query) => catalog.search(query, scope) },
-        propose: proposeForUser(DEMO_USER_ID),
-        checkPurchaseStatus: checkStatusForUser(DEMO_USER_ID),
+        propose: proposeForUser(userId),
+        checkPurchaseStatus: checkStatusForUser(userId),
         reportInjection: (product, signals) => {
           db.insert(securityEvents)
-            .values(injectionEvent({ userId: DEMO_USER_ID, stage: "SEARCH", product, signals, at: new Date() }))
+            .values(injectionEvent({ userId, stage: "SEARCH", product, signals, at: new Date() }))
             .run();
           logInjection("SEARCH", product.id, signals);
         },

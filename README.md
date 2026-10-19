@@ -41,11 +41,19 @@ layer between an AI shopping agent and the user's money:
    **Implemented:** the purchase history (`/history`): every proposal with its decision and
    rule, the PayPal transaction ID, the "14-day return window" countdown (D-008) and a
    refund button while it is open (D-037).
-3. **PayPal executes only what is approved.** The user saves PayPal once (the mandate).
-   Approved purchases are charged with the saved method, and refunds go back through PayPal.
+3. **PayPal executes only what is approved.** The user saves PayPal once (the mandate), with
+   "Connect PayPal (sandbox)" on `/permissions`. Approved purchases are charged with the
+   saved method, and refunds go back through PayPal.
 4. **The user stays in control** (`/permissions`, D-038). Pause the agent (Leash blocks
    every purchase, approvals included), revoke the mandate (Leash stops charging at once
-   and PayPal deletes the saved token), or delete the account and all its data.
+   and PayPal deletes the saved token), reset the demo, or delete the account and all its
+   data.
+5. **Every visitor has a demo space of their own** (D-040). No sign-up: an anonymous,
+   random ID in an httpOnly cookie (`src/proxy.ts`, `src/account/visitor.ts`). A new visitor
+   starts with the sample rules of Marta, an invented office manager, and connects PayPal
+   with a sandbox buyer account. Two visitors never see each other's data, even when they
+   approve with the same sandbox account (each one gets its own vault token). "Reset demo"
+   starts again; spaces not visited for 7 days are deleted with their saved PayPal.
 
 ## Planned PayPal integration (sandbox)
 

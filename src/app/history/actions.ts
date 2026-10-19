@@ -1,7 +1,7 @@
 "use server";
 
 import { refresh } from "next/cache";
-import { DEMO_USER_ID } from "@/lib/demo-user";
+import { currentUserId } from "@/account/visitor";
 import { refundForUser } from "@/purchases/server";
 import type { HistoryFormState } from "./state";
 
@@ -19,7 +19,7 @@ export async function refundPurchaseAction(
     return { kind: "answered", ok: false, message: "That refund could not be read. Please try again." };
   }
   try {
-    const refund = await refundForUser(DEMO_USER_ID, intentId);
+    const refund = await refundForUser(await currentUserId(), intentId);
     const ok = refund.result === "REFUNDED" || refund.result === "PENDING";
     return { kind: "answered", ok, message: refund.message };
   } catch (error) {

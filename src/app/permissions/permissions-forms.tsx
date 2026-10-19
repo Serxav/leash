@@ -2,7 +2,7 @@
 
 import { useActionState } from "react";
 import { SubmitButton, useFocusOnAnswer } from "@/components/submit-button";
-import { updatePermissions } from "./actions";
+import { connectPayPal, updatePermissions } from "./actions";
 import type { PermissionsFormState } from "./state";
 
 export type PermissionsView = {
@@ -10,14 +10,21 @@ export type PermissionsView = {
   /** "Connected on …", "Not connected", "Revoked", as text. */
   mandateText: string;
   canRevoke: boolean;
+  /** Not connected (or revoked and deleted at PayPal): show "Connect PayPal". */
+  canConnect: boolean;
   /** Revoked, but PayPal has not deleted the saved token yet. */
   deletionPending: boolean;
+  /** The answer after PayPal sent the payer back, if any. */
+  paypalNotice?: { ok: boolean; text: string };
 };
+
+const primaryButtonClass =
+  "rounded-full bg-zinc-900 px-5 py-3 text-sm font-medium text-white hover:bg-zinc-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300";
 
 const buttonClass =
   "rounded-full border border-zinc-400 px-5 py-3 text-sm font-medium hover:bg-zinc-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 dark:border-zinc-600 dark:hover:bg-zinc-800";
 
-/** US7: the agent switch, the PayPal mandate and account deletion. */
+/** US7: the agent switch, the PayPal mandate, the demo reset and account deletion. */
 export function PermissionsForms({ view }: { view: PermissionsView }) {
   const [state, formAction, pending] = useActionState<PermissionsFormState, FormData>(updatePermissions, {
     kind: "idle",
@@ -70,7 +77,32 @@ export function PermissionsForms({ view }: { view: PermissionsView }) {
         <h2 id="mandate-heading" className="text-xl font-semibold">
           PayPal mandate
         </h2>
+        {view.paypalNotice && (
+          <p
+            role={view.paypalNotice.ok ? "status" : "alert"}
+            className={
+              view.paypalNotice.ok
+                ? "rounded-lg border border-emerald-300 p-4 text-sm text-emerald-900 dark:border-emerald-800 dark:text-emerald-200"
+                : "rounded-lg border border-red-300 p-4 text-sm text-red-800 dark:border-red-800 dark:text-red-300"
+            }
+          >
+            {view.paypalNotice.text}
+          </p>
+        )}
         <p className="text-sm">{view.mandateText}</p>
+        {view.canConnect && (
+          <form action={connectPayPal} className="flex flex-col gap-2">
+            <p className="text-sm text-zinc-700 dark:text-zinc-300">
+              You approve on PayPal&apos;s sandbox page, with the sandbox buyer account from the README. No real
+              money moves.
+            </p>
+            <div>
+              <button type="submit" className={primaryButtonClass}>
+                Connect PayPal (sandbox)
+              </button>
+            </div>
+          </form>
+        )}
         {(view.canRevoke || view.deletionPending) && (
           <form action={formAction} className="flex flex-col gap-2">
             <p className="text-sm text-zinc-700 dark:text-zinc-300">
@@ -86,6 +118,24 @@ export function PermissionsForms({ view }: { view: PermissionsView }) {
             </div>
           </form>
         )}
+      </section>
+
+      <section aria-labelledby="reset-heading" className="flex flex-col gap-3">
+        <h2 id="reset-heading" className="text-xl font-semibold">
+          Reset the demo
+        </h2>
+        <form action={formAction} className="flex flex-col gap-2">
+          <p className="text-sm text-zinc-700 dark:text-zinc-300">
+            Starts again from Marta&apos;s sample rules, with no purchases and PayPal not connected. Your saved
+            PayPal is deleted at PayPal first.
+          </p>
+          <input type="hidden" name="action" value="reset" />
+          <div>
+            <SubmitButton pending={pending} className={buttonClass}>
+              Reset demo
+            </SubmitButton>
+          </div>
+        </form>
       </section>
 
       <section aria-labelledby="delete-heading" className="flex flex-col gap-3">

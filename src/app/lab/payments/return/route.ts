@@ -1,11 +1,11 @@
 import { redirect } from "next/navigation";
 import type { NextRequest } from "next/server";
+import { currentUserId } from "@/account/visitor";
 import { completeMandate } from "@/payments/mandate";
 import {
   assertLabEnabled,
   failureQuery,
   LAB_PATH,
-  LAB_USER_ID,
   mandateDeps,
 } from "../lab";
 
@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
   let destination = `${LAB_PATH}?status=connected`;
   try {
     await completeMandate(mandateDeps(), {
-      userId: LAB_USER_ID,
+      userId: await currentUserId(),
       approvalTokenId: request.nextUrl.searchParams.get("approval_token_id"),
     });
   } catch (error) {

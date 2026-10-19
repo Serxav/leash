@@ -1045,3 +1045,54 @@ main page, the sponsor detail pages for Channel3 and APIMatic, the FAQ and the u
   explanations repeat the status label ("Needs your approval: …"). Both go to the F5
   design pass.
 - **Status:** accepted (Sergi approved the task).
+
+### D-040 · 2026-10-19 · One anonymous demo user per visitor
+
+- **What:** every visitor gets an isolated demo space of their own (brief §5 "Access"), so
+  two judges at once never step on each other. It replaces the single `demo-user`.
+- **Who the visitor is:**
+  - `src/proxy.ts` (Next.js 16 "Proxy", formerly Middleware) gives each visitor a random
+    UUID in a cookie: `leash_visitor`, httpOnly, SameSite=Lax, Secure in production, 7
+    days, renewed on every visit. No name, email or password.
+  - A new ID is also added to the same request, so the first page already has it. The
+    proxy does no database work (the Next.js docs say Proxy is not for that).
+  - Server code reads the user only from `currentUserId()` (`src/account/visitor.ts`),
+    never from a form or the URL. Only UUIDs are accepted.
+  - SameSite=Lax (not Strict) because the cookie must come back when PayPal sends the payer
+    back to Leash after approving.
+- **A new visitor** (table `demo_users`, migration `0007`) starts with Marta's rules
+  already confirmed as version 1, so the agent can be tried at once. Sergi chose this as the
+  easiest to use; the visitor can rewrite the rules any time.
+- **PayPal (option A, Sergi's choice):** each visitor connects PayPal themselves with
+  "Connect PayPal (sandbox)" on `/permissions` (return and cancel routes under
+  `/permissions/paypal/`). Judges use the sandbox buyer account from the README.
+  - The setup token now sets `permit_multiple_payment_tokens: true`. PayPal's field doc
+    says to use it "when multiple payment tokens are required for the same payer, different
+    customer at merchant/platform". Without it, several judges using the same sandbox
+    account could share one vault token, and one revoke would break the others.
+  - The lab stays development-only and now also uses the visitor's user.
+- **Reset demo** (`/permissions`): deletes everything, saved PayPal first (at PayPal), and
+  starts again from Marta's rules with the same cookie. If PayPal fails, nothing changes.
+- **Delete my account and data** also replaces the cookie with a new random ID, so the old
+  ID is gone too.
+- **Cleanup:** when a new demo user is created, Leash deletes (after the response, with
+  `after()`) users not seen for **7 days** (Sergi's choice) and the least recently seen
+  above **500** users, each with its saved PayPal. If PayPal fails for one, it stays and
+  the next run tries again. `last_seen_at` is written at most once an hour. Render also
+  wipes the disk on restart.
+- **Tried (Oct 19, sandbox):**
+  - a new visitor got Marta's rules; a second visitor (curl) kept its agent active while
+    the browser's was paused;
+  - cancelled on PayPal → back to `/permissions`, "Nothing was saved";
+  - Sergi approved with the Personal sandbox account → connected. The same account now had
+    **2 active, different vault tokens** (the old `demo-user` one and the visitor's);
+  - the agent bought sticky notes (€6.90) for the visitor → charged;
+  - Reset demo → the visitor's token deleted at PayPal, back to Marta's rules; then the old
+    `demo-user` token still charged €1 (`npm run test:sandbox`, charge test);
+  - Delete my account → a new visitor ID and a fresh demo space.
+- **Not in this task:** the per-visitor rate limit on agent and rules calls, and building
+  PayPal's return URL from a fixed app URL instead of the Host header, both with the Render
+  deploy (`feat/f5-render-deploy`). `src/lib/demo-user.ts` stays only for the local sandbox
+  tests.
+- **Status:** accepted ("como sea indicado y más fácil de usar": Marta's rules, option A,
+  7 days).

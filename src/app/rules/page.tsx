@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { connection } from "next/server";
 import { Suspense } from "react";
 import { getDb } from "@/db/client";
-import { DEMO_USER_ID } from "@/lib/demo-user";
+import { currentUserId } from "@/account/visitor";
 import { describeRules } from "@/rules/describe";
 import { getActivePolicy, listPolicyVersions } from "@/rules/policies";
 import { RulesForm } from "./rules-form";
@@ -58,12 +57,12 @@ async function RulesState({
 }: {
   searchParams: PageProps<"/rules">["searchParams"];
 }) {
-  await connection(); // reads the database: always render at request time
+  const userId = await currentUserId(); // reads the visitor cookie: always render at request time
   const status = first((await searchParams).status);
   const message = status && Object.hasOwn(STATUS_MESSAGES, status) ? STATUS_MESSAGES[status] : null;
   const db = getDb();
-  const active = getActivePolicy(db, DEMO_USER_ID);
-  const versions = listPolicyVersions(db, DEMO_USER_ID);
+  const active = getActivePolicy(db, userId);
+  const versions = listPolicyVersions(db, userId);
 
   return (
     <>

@@ -2,6 +2,7 @@
 
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { currentUserId } from "@/account/visitor";
 import { chargeWithMandate, isSandboxMockIssue } from "@/payments/charge";
 import { startMandate } from "@/payments/mandate";
 import { refundPayment } from "@/payments/refund";
@@ -10,7 +11,6 @@ import {
   chargeDeps,
   failureQuery,
   LAB_PATH,
-  LAB_USER_ID,
   mandateDeps,
   refundDeps,
 } from "./lab";
@@ -26,7 +26,7 @@ export async function connectPayPal(): Promise<void> {
   let destination: string;
   try {
     const { approveUrl } = await startMandate(mandateDeps(), {
-      userId: LAB_USER_ID,
+      userId: await currentUserId(),
       returnUrl: `${origin}${LAB_PATH}/return`,
       cancelUrl: `${origin}${LAB_PATH}/cancel`,
     });
@@ -52,7 +52,7 @@ export async function chargeFiveEuros(formData: FormData): Promise<void> {
   let destination: string;
   try {
     const payment = await chargeWithMandate(chargeDeps(), {
-      userId: LAB_USER_ID,
+      userId: await currentUserId(),
       amount: "5.00",
       description: "Leash lab test charge",
       initiator: "CUSTOMER",
@@ -85,7 +85,7 @@ export async function refundLabPayment(formData: FormData): Promise<void> {
   let destination: string;
   try {
     const payment = await refundPayment(refundDeps(), {
-      userId: LAB_USER_ID,
+      userId: await currentUserId(),
       paymentId: typeof paymentId === "string" ? paymentId : "",
     });
     destination = `${LAB_PATH}?status=${payment.status === "REFUNDED" ? "refunded" : "refund-pending"}`;

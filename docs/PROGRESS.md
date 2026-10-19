@@ -567,3 +567,22 @@ One entry per session: date, what was done, what is left, blockers.
 **Notes for the F5 design pass**
 - Engine explanations repeat the status label ("Needs your approval: Needs your approval…"
   reads twice on the cards).
+
+## 2026-10-19 · Session 6 (cont.) – demo users
+
+**Done**
+- Merged PR #30 (mobile and keyboard check).
+- `feat/f5-demo-users` (D-040): every visitor gets an anonymous demo user (random ID in an
+  httpOnly cookie from `src/proxy.ts`), starting with Marta's rules; "Connect PayPal
+  (sandbox)" on `/permissions`; "Reset demo"; delete also replaces the ID; users not seen
+  for 7 days (or above 500) are deleted with their saved PayPal. `permit_multiple_payment_tokens`
+  is now true, so judges sharing one sandbox account each get their own vault token.
+- Tried in the sandbox: two visitors kept apart; cancel on PayPal; Sergi connected with the
+  Personal account (2 different tokens for the same account); a €6.90 charge; Reset demo
+  deleted only the visitor's token (the old one still charged €1); delete gave a new ID.
+  Lint, typecheck, 532 unit tests and build pass.
+
+**Notes**
+- The old `demo-user` data (Sergi's earlier purchases) no longer shows in the app; it stays
+  in the local database for the sandbox tests.
+- A test visitor created with curl stays in the local database until it expires.

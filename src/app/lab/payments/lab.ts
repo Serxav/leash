@@ -1,7 +1,6 @@
 import { OrdersController, PaymentsController, VaultController } from "@paypal/paypal-server-sdk";
 import { notFound } from "next/navigation";
 import { getDb } from "@/db/client";
-import { DEMO_USER_ID } from "@/lib/demo-user";
 import { ChargeError, type ChargeDeps } from "@/payments/charge";
 import { MandateError, type MandateDeps } from "@/payments/mandate";
 import { RefundError, type RefundDeps } from "@/payments/refund";
@@ -13,10 +12,9 @@ import { getPayPalClient } from "@/paypal/sdk";
  * Development only; the real UI replaces it in F4/F5.
  */
 /**
- * The lab connects PayPal for the same demo user that writes rules and runs
- * the agent, so an approved purchase can be charged (one demo user until F5).
+ * The lab works on the visitor's own demo user (`currentUserId`, D-040), the
+ * same one that writes rules and runs the agent.
  */
-export const LAB_USER_ID = DEMO_USER_ID;
 export const LAB_PATH = "/lab/payments";
 
 /** The lab never exists in production builds (the public demo). */

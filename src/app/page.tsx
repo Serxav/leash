@@ -19,6 +19,14 @@ export default function Home() {
         checked against your rules by code, not by the AI, before PayPal
         charges anything.
       </p>
+      <p className="text-sm text-zinc-700 dark:text-zinc-300">
+        This is your own demo space, with no sign-up: it starts with the sample rules of Marta, an
+        invented office manager. Nobody else sees it, and you can start again with{" "}
+        <Link href="/permissions" className="underline">
+          Reset demo
+        </Link>
+        .
+      </p>
       <p>
         <Link
           href="/rules"

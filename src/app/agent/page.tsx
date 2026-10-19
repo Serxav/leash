@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { connection } from "next/server";
 import { Suspense } from "react";
 import { isAgentPaused } from "@/account/settings";
+import { currentUserId } from "@/account/visitor";
 import { getDb } from "@/db/client";
-import { DEMO_USER_ID } from "@/lib/demo-user";
 import { getMandateView } from "@/payments/mandate";
 import { listProposals } from "@/purchases/propose";
 import { describeRules } from "@/rules/describe";
@@ -57,13 +56,13 @@ export default function AgentPage() {
 }
 
 async function AgentState() {
-  await connection(); // reads the database: always render at request time
+  const userId = await currentUserId(); // reads the visitor cookie: always render at request time
   const db = getDb();
-  const policy = getActivePolicy(db, DEMO_USER_ID);
-  const mandate = getMandateView(db, DEMO_USER_ID);
-  const paused = isAgentPaused(db, DEMO_USER_ID);
-  const proposals = listProposals(db, DEMO_USER_ID);
-  const securityLog = listSecurityEvents(db, DEMO_USER_ID, 10);
+  const policy = getActivePolicy(db, userId);
+  const mandate = getMandateView(db, userId);
+  const paused = isAgentPaused(db, userId);
+  const proposals = listProposals(db, userId);
+  const securityLog = listSecurityEvents(db, userId, 10);
 
   return (
     <>
@@ -95,7 +94,11 @@ async function AgentState() {
         )}
         {mandate.status !== "ACTIVE" && (
           <p className="text-sm text-red-800 dark:text-red-300">
-            PayPal is not connected, so Leash cannot pay. Connect it in the payments lab first.
+            PayPal is not connected, so Leash cannot pay.{" "}
+            <Link href="/permissions" className="underline">
+              Connect PayPal (sandbox) in Permissions
+            </Link>
+            .
           </p>
         )}
       </section>

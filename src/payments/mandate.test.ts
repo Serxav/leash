@@ -67,7 +67,7 @@ describe("startMandate", () => {
         paypal: {
           usage_type: "MERCHANT",
           customer_type: "CONSUMER",
-          permit_multiple_payment_tokens: false,
+          permit_multiple_payment_tokens: true,
           experience_context: {
             shipping_preference: "NO_SHIPPING",
             return_url: urls.returnUrl,
