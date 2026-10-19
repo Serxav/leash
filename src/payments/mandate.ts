@@ -109,7 +109,12 @@ export async function startMandate(
             // Leash's own demo store is the merchant that charges.
             usageType: PaypalPaymentTokenUsageType.Merchant,
             customerType: PaypalPaymentTokenCustomerType.Consumer,
-            permitMultiplePaymentTokens: false,
+            // Every demo visitor is a different Leash customer, even when
+            // several judges approve with the same sandbox account (D-040):
+            // "Use this also when multiple payment tokens are required for
+            // the same payer, different customer at merchant/platform."
+            // So one visitor revoking never deletes another visitor's token.
+            permitMultiplePaymentTokens: true,
             experienceContext: {
               brandName: "Leash Demo Store",
               // No shipping address is ever collected or stored (privacy).

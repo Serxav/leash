@@ -53,9 +53,10 @@ const vaultReplying = (reply: StubReply) => {
 };
 const deleted: StubReply = { status: 204, body: "" };
 
-/** A user with rules, a mandate, a charged purchase, a security event and settings. */
+/** A demo user with rules, a mandate, a charged purchase, a security event and settings. */
 async function fullUser(userId: string) {
   confirmDraft(db, { userId, draftId: saveDraft(db, { userId, sourceText: "rules", rules }) });
+  db.insert(schema.demoUsers).values({ userId, createdAt: NOW, lastSeenAt: NOW }).run();
   db.insert(mandates).values({
     id: `m-${userId}`, userId, status: "ACTIVE", vaultTokenRef: `TOKEN-${userId}`, createdAt: NOW, updatedAt: NOW,
   }).run();

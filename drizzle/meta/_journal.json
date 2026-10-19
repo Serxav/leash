@@ -50,6 +50,13 @@
       "when": 1792317876136,
       "tag": "0006_create_user_settings",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1792397114138,
+      "tag": "0007_create_demo_users",
+      "breakpoints": true
     }
   ]
 }

@@ -2,6 +2,7 @@ import { eq, inArray } from "drizzle-orm";
 import type { Db } from "@/db/client";
 import {
   decisions,
+  demoUsers,
   mandates,
   payments,
   policies,
@@ -59,5 +60,6 @@ function deleteUserRows(db: Db, userId: string): void {
     tx.delete(policies).where(eq(policies.userId, userId)).run();
     tx.delete(userSettings).where(eq(userSettings.userId, userId)).run();
     tx.delete(mandates).where(eq(mandates.userId, userId)).run();
+    tx.delete(demoUsers).where(eq(demoUsers.userId, userId)).run();
   });
 }

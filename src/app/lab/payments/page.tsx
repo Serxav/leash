@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { connection } from "next/server";
 import { Suspense } from "react";
+import { currentUserId } from "@/account/visitor";
 import { FraudNet } from "@/components/fraudnet";
 import { getServerEnv } from "@/config/env";
 import { getDb } from "@/db/client";
@@ -8,7 +9,7 @@ import { listPayments, newClientMetadataId } from "@/payments/charge";
 import { getMandateView } from "@/payments/mandate";
 import { paymentIssueMessage } from "@/payments/messages";
 import { chargeFiveEuros, connectPayPal, refundLabPayment } from "./actions";
-import { assertLabEnabled, LAB_USER_ID } from "./lab";
+import { assertLabEnabled } from "./lab";
 
 export const metadata: Metadata = {
   title: "Payments lab – Leash",
@@ -65,8 +66,9 @@ async function LabState({
   const issue = first(params.issue);
   const debug = first(params.debug);
   const db = getDb();
-  const mandate = getMandateView(db, LAB_USER_ID);
-  const history = listPayments(db, LAB_USER_ID);
+  const userId = await currentUserId();
+  const mandate = getMandateView(db, userId);
+  const history = listPayments(db, userId);
   const merchantId = getServerEnv().PAYPAL_MERCHANT_ID;
   // One FraudNet session per page view, sent as PayPal-Client-Metadata-Id.
   const clientMetadataId = newClientMetadataId();

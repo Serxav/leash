@@ -1,7 +1,7 @@
 "use server";
 
 import { refresh } from "next/cache";
-import { DEMO_USER_ID } from "@/lib/demo-user";
+import { currentUserId } from "@/account/visitor";
 import { answerForUser } from "@/purchases/server";
 import type { InboxFormState } from "./state";
 
@@ -20,7 +20,7 @@ export async function answerPurchase(
     return { kind: "answered", ok: false, message: "That answer could not be read. Please try again." };
   }
   try {
-    const answer = await answerForUser(DEMO_USER_ID, { intentId, choice });
+    const answer = await answerForUser(await currentUserId(), { intentId, choice });
     const ok =
       answer.result === "REJECTED" ||
       (answer.result === "APPROVED" && answer.paymentStatus === "COMPLETED");

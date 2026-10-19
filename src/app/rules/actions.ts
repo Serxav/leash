@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { getModel } from "@/ai/models";
 import { getDb } from "@/db/client";
-import { DEMO_USER_ID } from "@/lib/demo-user";
+import { currentUserId } from "@/account/visitor";
 import { buildRules, MAX_RULES_TEXT_LENGTH, RulesBuilderError } from "@/rules/builder";
 import { describeRules } from "@/rules/describe";
 import { confirmDraft, discardDraft, PolicyError, saveDraft } from "@/rules/policies";
@@ -25,14 +25,15 @@ export async function proposeRules(
   const shown = text.slice(0, MAX_RULES_TEXT_LENGTH);
 
   const db = getDb();
-  discardDraft(db, DEMO_USER_ID);
+  const userId = await currentUserId();
+  discardDraft(db, userId);
   try {
     const result = await buildRules({ model: getModel("rules") }, text);
     if (result.kind === "questions") {
       return { kind: "questions", text: shown, questions: result.questions };
     }
     const draftId = saveDraft(db, {
-      userId: DEMO_USER_ID,
+      userId,
       sourceText: text,
       rules: result.rules,
     });
@@ -58,7 +59,7 @@ export async function confirmRules(formData: FormData): Promise<void> {
   let status: string;
   try {
     confirmDraft(getDb(), {
-      userId: DEMO_USER_ID,
+      userId: await currentUserId(),
       draftId: typeof draftId === "string" ? draftId : "",
     });
     status = "confirmed";

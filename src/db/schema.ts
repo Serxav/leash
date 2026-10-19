@@ -189,3 +189,14 @@ export const userSettings = sqliteTable("user_settings", {
   agentPaused: integer("agent_paused", { mode: "boolean" }).notNull(),
   updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull(),
 });
+
+/**
+ * Anonymous demo users (D-040). Every visitor gets one, keyed by a random
+ * ID in an httpOnly cookie: no name, email or password. Users not seen for
+ * a week are deleted, with their saved PayPal.
+ */
+export const demoUsers = sqliteTable("demo_users", {
+  userId: text("user_id").primaryKey(),
+  createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
+  lastSeenAt: integer("last_seen_at", { mode: "timestamp_ms" }).notNull(),
+});

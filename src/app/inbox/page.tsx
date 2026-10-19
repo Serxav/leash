@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { connection } from "next/server";
 import { Suspense } from "react";
 import { getDb } from "@/db/client";
-import { DEMO_USER_ID } from "@/lib/demo-user";
+import { currentUserId } from "@/account/visitor";
 import { listPendingApprovals } from "@/purchases/propose";
 import { SOURCE_LABELS } from "../labels";
 import { InboxList, type PendingItem } from "./inbox-list";
@@ -50,8 +49,8 @@ export default function InboxPage() {
 }
 
 async function PendingPurchases() {
-  await connection(); // reads the database: always render at request time
-  const items: PendingItem[] = listPendingApprovals(getDb(), DEMO_USER_ID).map((view) => ({
+  const userId = await currentUserId(); // reads the visitor cookie: always render at request time
+  const items: PendingItem[] = listPendingApprovals(getDb(), userId).map((view) => ({
     intentId: view.intentId,
     title: view.productTitle ?? "Unknown product",
     sourceLabel: SOURCE_LABELS[view.source],

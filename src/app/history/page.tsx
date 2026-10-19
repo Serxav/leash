@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { connection } from "next/server";
 import { Suspense } from "react";
 import { getDb } from "@/db/client";
-import { DEMO_USER_ID } from "@/lib/demo-user";
+import { currentUserId } from "@/account/visitor";
 import { listHistory, type HistoryItem } from "@/purchases/history";
 import { outcomeLabel, PAYMENT_LABELS, SOURCE_LABELS } from "../labels";
 import { HistoryList, type HistoryRow } from "./history-list";
@@ -68,8 +67,8 @@ function windowText(item: HistoryItem): string | null {
 }
 
 async function Purchases() {
-  await connection(); // reads the database: always render at request time
-  const rows: HistoryRow[] = listHistory(getDb(), DEMO_USER_ID, new Date()).map((item) => ({
+  const userId = await currentUserId(); // reads the visitor cookie: always render at request time
+  const rows: HistoryRow[] = listHistory(getDb(), userId, new Date()).map((item) => ({
     intentId: item.intentId,
     title: `${item.quantity} × ${item.productTitle ?? "Unknown product"}`,
     details: [

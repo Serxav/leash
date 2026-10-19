@@ -106,9 +106,11 @@ definition of done in `CLAUDE.md`. Tags close each phase.
 ## F5 · Polish (Nov 6–8) → `v0.9.0` · feature freeze on Nov 8
 
 - [ ] Design and accessibility pass (contrast, keyboard, labels)
+- [x] `feat/f5-demo-users` (D-040): one anonymous demo user per visitor with Marta's rules,
+      "Connect PayPal (sandbox)" outside the lab, "Reset demo", cleanup after 7 days
 - [ ] Deploy on Render Starter: sandbox env vars, `AI_PROVIDER=anthropic`, `/api/health`,
-      rate limit, demo data re-seeded at boot, anonymous per-session demo users, "Reset
-      demo"
+      per-visitor rate limit, demo data re-seeded at boot, PayPal return URL from a fixed
+      app URL
 - [ ] Dedicated sandbox Personal account for judges, plus a backup account
 - [ ] README for judges: what it is, AI used, PayPal APIs and folders, requirements,
       variables, install, run, sandbox credentials, how to test each user story

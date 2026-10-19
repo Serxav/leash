@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { connection } from "next/server";
 import { Suspense } from "react";
 import { isAgentPaused } from "@/account/settings";
+import { currentUserId } from "@/account/visitor";
 import { getDb } from "@/db/client";
-import { DEMO_USER_ID } from "@/lib/demo-user";
 import { getMandateView, type MandateView } from "@/payments/mandate";
 import { PermissionsForms, type PermissionsView } from "./permissions-forms";
 
@@ -14,7 +13,7 @@ export const metadata: Metadata = {
 
 const date = new Intl.DateTimeFormat("en-GB", { dateStyle: "medium", timeZone: "Europe/Madrid" });
 
-export default function PermissionsPage() {
+export default function PermissionsPage({ searchParams }: PageProps<"/permissions">) {
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-8 px-6 py-12">
       <header className="flex flex-col gap-2">
@@ -33,7 +32,7 @@ export default function PermissionsPage() {
       </header>
 
       <Suspense fallback={<p className="text-sm text-zinc-600">Loading…</p>}>
-        <Permissions />
+        <Permissions searchParams={searchParams} />
       </Suspense>
     </main>
   );
@@ -54,15 +53,25 @@ function mandateText(mandate: MandateView): string {
   }
 }
 
-async function Permissions() {
-  await connection(); // reads the database: always render at request time
+/** The answer after PayPal sends the payer back. */
+const PAYPAL_NOTICES: Record<string, { ok: boolean; text: string }> = {
+  connected: { ok: true, text: "PayPal (sandbox) is connected. Leash can now pay what your rules allow or you approve." },
+  cancelled: { ok: true, text: "You cancelled on PayPal. Nothing was saved." },
+  error: { ok: false, text: "PayPal could not be connected. Nothing was saved. Please try again." },
+};
+
+async function Permissions({ searchParams }: { searchParams: PageProps<"/permissions">["searchParams"] }) {
+  const userId = await currentUserId(); // reads the visitor cookie: always render at request time
+  const { paypal } = await searchParams;
   const db = getDb();
-  const mandate = getMandateView(db, DEMO_USER_ID);
+  const mandate = getMandateView(db, userId);
   const view: PermissionsView = {
-    agentPaused: isAgentPaused(db, DEMO_USER_ID),
+    agentPaused: isAgentPaused(db, userId),
     mandateText: mandateText(mandate),
     canRevoke: mandate.status === "ACTIVE" || mandate.status === "PAUSED",
+    canConnect: mandate.status === "NONE" || mandate.status === "PENDING" || (mandate.status === "REVOKED" && !mandate.deletionPending),
     deletionPending: Boolean(mandate.deletionPending),
+    paypalNotice: typeof paypal === "string" ? PAYPAL_NOTICES[paypal] : undefined,
   };
   return <PermissionsForms view={view} />;
 }
