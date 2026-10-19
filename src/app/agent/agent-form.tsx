@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { SubmitButton } from "@/components/submit-button";
 import { runAgent } from "./actions";
 import type { AgentFormState } from "./state";
 
@@ -32,16 +33,15 @@ export function AgentForm() {
           maxLength={MAX_REQUEST_LENGTH}
           defaultValue={state.request}
           placeholder={EXAMPLE}
-          className="rounded-lg border border-zinc-400 bg-transparent p-3 text-sm leading-6 dark:border-zinc-600"
+          className="rounded-lg border border-zinc-400 bg-transparent p-3 text-base leading-6 sm:text-sm dark:border-zinc-600"
         />
         <div>
-          <button
-            type="submit"
-            disabled={pending}
-            className="rounded-full bg-zinc-900 px-5 py-3 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
+          <SubmitButton
+            pending={pending}
+            className="rounded-full bg-zinc-900 px-5 py-3 text-sm font-medium text-white hover:bg-zinc-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
           >
             {pending ? "The agent is shopping…" : "Ask the agent"}
-          </button>
+          </SubmitButton>
         </div>
       </form>
 

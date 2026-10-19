@@ -550,3 +550,20 @@ One entry per session: date, what was done, what is left, blockers.
 - Later: `chore/f4-switch-to-claude` (Sergi's Anthropic key), then tag `v0.4.0`.
 - Sergi: confirm no payment method is saved in the Channel3 dashboard; ask on Discord
   #channel3 whether retailer names may appear in the video.
+
+## 2026-10-19 · Session 6 – mobile and keyboard check
+
+**Done**
+- `test/f4-mobile-check` (D-039): every page at 375 px and with the keyboard only.
+  - No page scrolls sideways; labels and focus rings were already fine.
+  - Fixed: buttons lost the keyboard focus while saving (new `SubmitButton`, only
+    `aria-disabled`); focus moves to the answer message when a button disappears (inbox,
+    history, permissions); 16 px text boxes on phones (no iPhone zoom); bigger back links
+    and delete checkbox.
+- Tried in the sandbox at 375 px, keyboard only: pause and resume, delete without the box
+  ticked (stopped, nothing deleted), agent toner (€24) → rejected in the inbox, a rules
+  draft (not confirmed). Lint, typecheck, 523 unit tests and build pass.
+
+**Notes for the F5 design pass**
+- Engine explanations repeat the status label ("Needs your approval: Needs your approval…"
+  reads twice on the cards).

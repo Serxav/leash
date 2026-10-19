@@ -100,7 +100,7 @@ definition of done in `CLAUDE.md`. Tags close each phase.
       countdown (D-008), refund button through the Agent Toolkit (D-037)
 - [x] `feat/f4-permissions-panel`: pause the agent, revoke the mandate (deletes the vault
       token), delete the account and data (D-038)
-- [ ] Everything works on mobile
+- [x] Everything works on mobile, with the keyboard too (D-039)
 - [ ] *(Optional sponsor, D-007)* AG Grid for the history/audit table on desktop
 
 ## F5 · Polish (Nov 6–8) → `v0.9.0` · feature freeze on Nov 8

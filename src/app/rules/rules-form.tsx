@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { SubmitButton } from "@/components/submit-button";
 import { MAX_RULES_TEXT_LENGTH } from "@/rules/limits";
 import { confirmRules, proposeRules } from "./actions";
 import type { RulesFormState } from "./state";
@@ -35,16 +36,16 @@ export function RulesForm({ initialText }: { initialText: string }) {
           defaultValue={state.text}
           placeholder={EXAMPLE}
           aria-describedby="rules-text-help"
-          className="rounded-lg border border-zinc-400 bg-transparent p-3 text-sm leading-6 dark:border-zinc-600"
+          className="rounded-lg border border-zinc-400 bg-transparent p-3 text-base leading-6 sm:text-sm dark:border-zinc-600"
         />
         <p id="rules-text-help" className="text-xs text-zinc-600 dark:text-zinc-400">
           Amounts in euros. Say how much per order and per month, what kind of products,
           when to ask you, how many units of the same item and any shops to avoid.
         </p>
         <div>
-          <button type="submit" disabled={pending} className={primaryButton}>
+          <SubmitButton pending={pending} className={primaryButton}>
             {pending ? "Reading your rules…" : "Turn into exact rules"}
-          </button>
+          </SubmitButton>
         </div>
       </form>
 
