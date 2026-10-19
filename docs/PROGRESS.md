@@ -608,3 +608,22 @@ One entry per session: date, what was done, what is left, blockers.
 **Left**
 - Sergi: create the service from the Blueprint in Render and fill in the variables. The
   link stays private until the switch to Claude.
+
+## 2026-10-19 · Session 6 – end
+
+**Done**
+- Merged PR #32 (Render Free blueprint, AI rate limits, fixed app URL).
+- Session totals: PRs #30–#32, decisions D-039 to D-041, 543 unit tests. F4 is done except
+  the switch to Claude; F5 has the mobile check, demo users and the deploy setup.
+
+**Next (start of session 7)**
+1. Render: guide Sergi step by step to create the service from the Blueprint (Free plan,
+   no card) and fill in the variables himself; then check `/api/health` and one sandbox
+   purchase on the Render URL. The link stays private until the switch to Claude.
+2. Sergi decides: stay on Render Free, or Starter with the hackathon's $50 credits.
+3. Then: the F5 design and accessibility pass (agent summary Markdown, repeated status
+   label), the README for judges, and the judges' sandbox account.
+- Later: `chore/f4-switch-to-claude` (Sergi: "lo de Claude más adelante"), then tag
+  `v0.4.0`.
+- Sergi: confirm no payment method is saved in the Channel3 dashboard; ask on Discord
+  #channel3 whether retailer names may appear in the video.
