@@ -54,7 +54,7 @@ charges approved purchases (Orders v2) and refunds them (Payments v2).
 
 | Area | Choice |
 |---|---|
-| App | Next.js (App Router) + TypeScript, deployed on Render (Starter instance, never sleeps). Endpoint `/api/health` and per-visitor rate limit on agent routes |
+| App | Next.js (App Router) + TypeScript, deployed on Render **Free** (no billing; it sleeps after 15 minutes and wakes in about a minute, D-041). Endpoint `/api/health`, per-visitor and global rate limits on AI calls |
 | UI | Tailwind CSS, mobile first, accessible (contrast, keyboard, form labels) |
 | AI | Vercel AI SDK. The provider and models are chosen **only** in `src/ai/models.ts` |
 | AI dev, until Nov 1 | `AI_PROVIDER=google`, model `gemini-3.5-flash-lite` with automatic fallback to `gemini-3.1-flash-lite` when Google is busy (D-023, D-027: free tier, no billing, invented data only) |
@@ -63,7 +63,7 @@ charges approved purchases (Orders v2) and refunds them (Payments v2).
 | Catalog | Channel3 REST API (`POST /v1/search`, `GET /v1/products/{id}`), not the SDK, which ships without a licence (D-028). 6-hour search cache and a cap of 2,000 searches a month (no bills, D-031). The agent searches only inside the user's allowed categories and price limit (D-035). Spain + EUR only, never convert currencies. Local JSON fallback catalog, which includes the trap product |
 | PayPal SDK | `@paypal/paypal-server-sdk` (APIMatic), pinned. **Before writing SDK code, load the matching `paypal:typescript-*` skill** from the APIMatic Context Plugin (getting-started first). Client: `src/paypal/sdk.ts`; errors: `src/paypal/errors.ts` |
 | Payments | PayPal **sandbox only**: Vault (save PayPal, `usage_type` MERCHANT), Orders v2 (`payment_source.paypal.vault_id`, intent CAPTURE), Payments v2 refunds, `@paypal/agent-toolkit` (`sandbox: true`) behind "leashed tools" |
-| Data | SQLite + Drizzle ORM. The Render disk is wiped on restart, so demo data is re-seeded at boot |
+| Data | SQLite + Drizzle ORM. The Render disk is wiped on every sleep, restart or deploy; each visitor gets a fresh demo space with Marta's rules (D-040) |
 | Tests | Vitest. Sandbox integration tests run **locally only** (`npm run test:sandbox`) |
 | Node | 24 LTS, pinned in `.nvmrc` and `engines` (fnm switches to it automatically in this folder) |
 | Next.js | 16. **Before writing Next.js code, read the matching guide in `node_modules/next/dist/docs/`** (see `AGENTS.md`): APIs changed from older versions |

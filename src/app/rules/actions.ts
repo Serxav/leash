@@ -7,6 +7,7 @@ import { currentUserId } from "@/account/visitor";
 import { buildRules, MAX_RULES_TEXT_LENGTH, RulesBuilderError } from "@/rules/builder";
 import { describeRules } from "@/rules/describe";
 import { confirmDraft, discardDraft, PolicyError, saveDraft } from "@/rules/policies";
+import { rateLimitMessage, rulesConversions } from "@/security/rate-limit";
 import { RULES_PATH, type RulesFormState } from "./state";
 
 /**
@@ -26,6 +27,11 @@ export async function proposeRules(
 
   const db = getDb();
   const userId = await currentUserId();
+  // Before the AI call; a refused attempt keeps the current draft (D-041).
+  const limit = rulesConversions.take(userId, Date.now());
+  if (!limit.ok) {
+    return { kind: "error", text: shown, message: rateLimitMessage(limit) };
+  }
   discardDraft(db, userId);
   try {
     const result = await buildRules({ model: getModel("rules") }, text);

@@ -104,6 +104,17 @@ _Coming in phase F0/F5:_ requirements, environment variables (see
 [`.env.example`](.env.example)), installation, running locally, sandbox test credentials,
 and how to test each user story.
 
+### Hosted demo (Render)
+
+The demo runs on Render's **Free** plan from [`render.yaml`](render.yaml) (D-041). The first
+visit after 15 minutes without visitors takes about a minute while the service wakes up.
+Its disk is wiped when it sleeps, so every visitor starts from a fresh demo space.
+
+AI requests are limited per visitor and in total per hour, so the free AI and catalog
+quotas cannot be used up. To host your own copy, create a Render Blueprint from this
+repository and fill in the variables from [`.env.example`](.env.example) in the Render
+dashboard (sandbox keys only).
+
 ## Project docs
 
 - [docs/PROJECT_BRIEF.md](docs/PROJECT_BRIEF.md): full product specification
