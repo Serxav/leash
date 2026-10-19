@@ -586,3 +586,25 @@ One entry per session: date, what was done, what is left, blockers.
 - The old `demo-user` data (Sergi's earlier purchases) no longer shows in the app; it stays
   in the local database for the sandbox tests.
 - A test visitor created with curl stays in the local database until it expires.
+
+## 2026-10-19 · Session 6 (cont.) – Render deploy prep
+
+**Done**
+- Merged PR #31 (demo users).
+- Sergi: no paid hosting. `feat/f5-render-deploy` (D-041):
+  - `render.yaml` for Render **Free** (Frankfurt, deploys `main` after CI passes, health
+    check `/api/health`, every secret `sync: false`);
+  - rate limits on AI calls: agent 10 per visitor and 100 in total per hour; rules 20 and
+    200;
+  - PayPal's return URL from `APP_URL` or `RENDER_EXTERNAL_URL`, never the Host header;
+  - CLAUDE.md stack table, README "Hosted demo", `.env.example` (`APP_URL`).
+- The hackathon's Render page offers $50 of credits; using them likely needs a card, so
+  Free for now.
+- Tried the production build locally: health ok, lab 404, PayPal connect refused without
+  `APP_URL` (error case) and connected with it. Lint, typecheck, 543 unit tests and build
+  pass. Fixed a `try/catch` that caught Next.js's prerender signal in the PayPal return
+  route.
+
+**Left**
+- Sergi: create the service from the Blueprint in Render and fill in the variables. The
+  link stays private until the switch to Claude.

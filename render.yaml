@@ -1,0 +1,41 @@
+# Render Blueprint for the Leash demo (D-041). Docs: https://render.com/docs/blueprint-spec
+#
+# Free plan: no billing. The service sleeps after 15 minutes without visits
+# and takes about a minute to wake up, and its disk is wiped on every sleep,
+# restart or deploy. Leash is built for that: each visitor gets a fresh demo
+# space (D-040), and the SQLite database is created again at start.
+#
+# Secrets live only in the Render dashboard: every variable below except
+# PAYPAL_ENVIRONMENT has `sync: false`, so Render asks for it when the
+# Blueprint is created and this file never holds a value.
+services:
+  - type: web
+    name: leash
+    runtime: node # version from .nvmrc (24)
+    plan: free
+    region: frankfurt
+    branch: main
+    # Deploy a commit on main only after its GitHub checks pass.
+    autoDeployTrigger: checksPass
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      # Leash refuses to start with anything but the PayPal sandbox.
+      - key: PAYPAL_ENVIRONMENT
+        value: SANDBOX
+      - key: PAYPAL_CLIENT_ID
+        sync: false
+      - key: PAYPAL_CLIENT_SECRET
+        sync: false
+      - key: PAYPAL_MERCHANT_ID
+        sync: false
+      # google until the switch to Claude; anthropic in the public demo.
+      - key: AI_PROVIDER
+        sync: false
+      - key: GOOGLE_GENERATIVE_AI_API_KEY
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: CHANNEL3_API_KEY
+        sync: false

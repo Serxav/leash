@@ -7,6 +7,7 @@ import { setAgentPaused } from "@/account/settings";
 import { appDeps, deleteAccountForUser, resetDemoForUser, revokeMandateForUser } from "@/account/server";
 import { currentUserId } from "@/account/visitor";
 import { VISITOR_COOKIE, visitorCookieOptions } from "@/account/visitor-cookie";
+import { appOrigin } from "@/config/app-origin";
 import { getDb } from "@/db/client";
 import { startMandate } from "@/payments/mandate";
 import { PAYPAL_PATH, PERMISSIONS_PATH, type PermissionsFormState } from "./state";
@@ -86,13 +87,16 @@ export async function updatePermissions(
  */
 export async function connectPayPal(): Promise<void> {
   const requestHeaders = await headers();
-  const proto = requestHeaders.get("x-forwarded-proto") ?? "http";
-  const origin = `${proto}://${requestHeaders.get("host")}`;
+  const userId = await currentUserId();
 
   let destination: string;
   try {
+    const origin = appOrigin(process.env, {
+      host: requestHeaders.get("host"),
+      proto: requestHeaders.get("x-forwarded-proto"),
+    });
     const { approveUrl } = await startMandate(appDeps(), {
-      userId: await currentUserId(),
+      userId,
       returnUrl: `${origin}${PAYPAL_PATH}/return`,
       cancelUrl: `${origin}${PAYPAL_PATH}/cancel`,
     });

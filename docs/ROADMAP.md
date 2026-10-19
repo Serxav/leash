@@ -108,9 +108,11 @@ definition of done in `CLAUDE.md`. Tags close each phase.
 - [ ] Design and accessibility pass (contrast, keyboard, labels)
 - [x] `feat/f5-demo-users` (D-040): one anonymous demo user per visitor with Marta's rules,
       "Connect PayPal (sandbox)" outside the lab, "Reset demo", cleanup after 7 days
-- [ ] Deploy on Render Starter: sandbox env vars, `AI_PROVIDER=anthropic`, `/api/health`,
-      per-visitor rate limit, demo data re-seeded at boot, PayPal return URL from a fixed
-      app URL
+- [x] `feat/f5-render-deploy` (D-041): `render.yaml` for Render **Free** (no billing),
+      per-visitor and global AI rate limits, PayPal return URL from Render's address
+- [ ] Sergi: create the Render service from the Blueprint and fill in the variables; check
+      `/api/health` and one sandbox purchase there. Not shared until `AI_PROVIDER=anthropic`
+- [ ] Decide: stay on Free, or Starter with the hackathon's $50 Render credits (D-041)
 - [ ] Dedicated sandbox Personal account for judges, plus a backup account
 - [ ] README for judges: what it is, AI used, PayPal APIs and folders, requirements,
       variables, install, run, sandbox credentials, how to test each user story

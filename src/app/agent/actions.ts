@@ -14,6 +14,7 @@ import { proposeForUser } from "@/purchases/server";
 import { describeRules } from "@/rules/describe";
 import { getActivePolicy } from "@/rules/policies";
 import { injectionEvent, logInjection } from "@/security/events";
+import { agentRuns, rateLimitMessage } from "@/security/rate-limit";
 import { securityEvents } from "@/db/schema";
 import type { AgentFormState } from "./state";
 
@@ -41,6 +42,12 @@ export async function runAgent(
   }
   if (getMandateView(db, userId).status !== "ACTIVE") {
     return { kind: "error", request: shown, message: "Connect PayPal in Permissions first, so Leash can pay approved purchases." };
+  }
+
+  // Last check before spending AI calls and Channel3 credits (D-041).
+  const limit = agentRuns.take(userId, Date.now());
+  if (!limit.ok) {
+    return { kind: "error", request: shown, message: rateLimitMessage(limit) };
   }
 
   // Channel3 searches only what these rules could allow (D-035).

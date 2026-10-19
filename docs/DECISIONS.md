@@ -1096,3 +1096,49 @@ main page, the sponsor detail pages for Channel3 and APIMatic, the FAQ and the u
   tests.
 - **Status:** accepted ("como sea indicado y más fácil de usar": Marta's rules, option A,
   7 days).
+
+### D-041 · 2026-10-19 · Render Free instead of Starter, rate limits, fixed PayPal return URL
+
+- **What:** the demo is hosted on **Render Free**, not Starter. Sergi: "no puede ser de
+  pago". It replaces the brief's "Starter instance that does not sleep" (D-007 keeps Render
+  as the host, a sponsor with a prize).
+- **Render Free, from render.com/docs/free (read Oct 19):**
+  - 750 free instance hours a month, enough for one service all month;
+  - it sleeps after 15 minutes without visits; the next visit waits about a minute;
+  - no persistent disk: the SQLite file is lost on every sleep, restart or deploy. Leash
+    already starts every visitor from scratch (D-040), so a judge who comes back later
+    simply gets a new demo space;
+  - no payment method is needed to create it.
+- **Not chosen:**
+  - Render Starter with the hackathon's $50 Render credits
+    (`/details/render`): it would cover about two months, but credits are billed against an
+    account balance, which likely needs a card on file. Sergi decides; switching is one line
+    (`plan`) in `render.yaml`;
+  - a keep-awake ping: Render's free page does not mention it, so not without checking
+    their terms;
+  - another host (for example Vercel with an external database): a bigger stack change.
+- **`render.yaml`** (Blueprint, render.com/docs/blueprint-spec): `plan: free`,
+  `region: frankfurt` (EU), `branch: main`, `autoDeployTrigger: checksPass` (only after CI
+  is green), `npm ci && npm run build`, `npm start`, health check `/api/health`. Node comes
+  from `.nvmrc` (render.com/docs/node-version). Every variable has `sync: false` except
+  `PAYPAL_ENVIRONMENT=SANDBOX`, so no value is ever in the repo.
+- **Rate limits on AI calls** (`src/security/rate-limit.ts`), checked after the cheap checks
+  and before any AI call:
+  - agent runs: 10 per visitor and 100 in total per hour (they may also spend Channel3
+    credits, which keep their own monthly cap, D-031);
+  - rules conversions: 20 per visitor and 200 in total per hour;
+  - the global limit matters because clearing the cookie gives a new visitor ID;
+  - in memory: one instance, and a restart only resets the counts.
+- **PayPal's return URL** (`src/config/app-origin.ts`): built from `APP_URL` or Render's
+  `RENDER_EXTERNAL_URL`, never from the request's Host header, which the client controls.
+  In production without either, connecting PayPal fails instead of guessing. Development
+  still uses localhost.
+- **Tried (Oct 19, production build on this Mac, `npm start`):** `/api/health` answered
+  ok; `/lab/payments` gave 404; without `APP_URL`, "Connect PayPal" failed safely with
+  "PayPal could not be connected. Nothing was saved" and nothing went to PayPal; with
+  `APP_URL=http://localhost:3000`, PayPal sent the approved payer back to that address and
+  the visitor was connected. The production log showed no server action arguments.
+- **AI provider:** Gemini for now (Sergi: "lo de Claude más adelante"). CLAUDE.md says the
+  public demo uses Claude, so the Render link is for testing only and is not shared until
+  the switch.
+- **Status:** accepted ("ok pues render free").
