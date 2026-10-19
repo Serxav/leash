@@ -1143,7 +1143,7 @@ main page, the sponsor detail pages for Channel3 and APIMatic, the FAQ and the u
   the switch.
 - **Status:** accepted ("ok pues render free").
 
-### D-042 · 2026-10-19 · Pip, a Muse-style chat and an Apple-style look
+### D-042 · 2026-10-19 · Rex, a Muse-style chat and an Apple-style look
 
 - **What:** Sergi asked for the agent to look and behave like Meta's Muse: "una mascota
   interactiva", a chat page, and "modo Apple redondito minimalista moderno y liquid glass".
@@ -1157,15 +1157,15 @@ main page, the sponsor detail pages for Channel3 and APIMatic, the FAQ and the u
     (Allow / Deny);
   - a floating message box and a slim icon rail.
 - **What we did not take:** Meta's character (Jolly), names, logos or art. The rules forbid
-  third-party trademarks in the app and video, so the mascot is **Pip**, a puppy on a leash
+  third-party trademarks in the app and video, so the mascot is **Rex**, a puppy on a leash
   drawn for Leash in SVG (`src/components/mascot.tsx`). It fits the name and the principle:
   the AI proposes, the leash (the code) decides.
-- **Pip's moods** (`src/components/mascot-mood.ts`): it perks up while the user types
+- **Rex's moods** (`src/components/mascot-mood.ts`): it perks up while the user types
   ("Listening…"), types on a tiny laptop while the agent runs (the status walks through the
   run's steps), and afterwards mirrors **what the engine decided**: happy when everything
   was approved, waiting when something needs the user, held back by a taut leash when
   something was blocked. The mascot decides nothing, and the same outcome is always written
-  as text next to it. Tapping Pip pats it; its eyes follow the pointer.
+  as text next to it. Tapping Rex pats it; its eyes follow the pointer.
   - Not childish on purpose: Muse is criticised for a mascot that attracts children, and
     Leash handles money.
   - Animations stop for people who ask for reduced motion, and glass turns solid for
@@ -1191,5 +1191,19 @@ main page, the sponsor detail pages for Channel3 and APIMatic, the FAQ and the u
   shadows, pill buttons, Apple blue as the accent, translucent blurred "glass" for the
   floating parts (rail, tab bar, status, message box, panels). Colours were checked for
   WCAG AA contrast in light and dark mode.
+- **After Sergi's review:**
+  - the mascot is called **Rex** (Sergi's choice; we keep the dog, whose way of working
+    fits the agent: it sniffs the shops, follows a scent, finds something and brings it
+    back);
+  - Rex's status pill scrolls away with the top of the chat; while the agent works, a small
+    copy floats at the top so the user always knows it is working;
+  - while it works, the chat bubble says what the agent does ("Searching Channel3 offers
+    inside your rules…", "Paying approved purchases with PayPal (sandbox)…") and Rex's line
+    says it in a dog's words ("Sniffing around the shops…"). The run is not streamed, so
+    both follow the run's real order on a timer; the real decisions arrive with the reply;
+  - a simpler message box (white pill, small send button that turns blue when there is
+    text). The "AI agent" label stays next to Rex's name, so the AI notice is always visible;
+  - shorter notes on the home page. The AI notice stays: CLAUDE.md requires a visible notice
+    that purchases are proposed by an AI agent.
 - **Status:** accepted (Sergi chose the puppy and the chat; then "algo así" with the Muse
-  screenshot).
+  screenshot; then the name Rex).

@@ -30,7 +30,7 @@ layer between an AI shopping agent and the user's money:
    **Implemented:** the shopping agent (`src/agent/agent.ts`, page `/agent`). Its only tools
    are a catalog search and `propose_purchase`; the server re-reads price, shop and category,
    runs the engine and charges only approved purchases (`src/purchases/propose.ts`). On
-   `/agent` the user chats with **Pip**, the agent's puppy-on-a-leash mascot: it shows what
+   `/agent` the user chats with **Rex**, the agent's puppy-on-a-leash mascot: it shows what
    the agent is doing, and its mood only mirrors the engine's decisions (D-042).
    **Implemented:** prompt-injection defence (`src/security/`). Shop text that gives orders
    to AI agents is found by plain code, hidden from the agent and never bought, and each case

@@ -19,7 +19,7 @@ export function AnswerButtons({
   intentId: string;
   title: string;
   orderTotal: string | null;
-  /** Lets the chat update Pip once the user approved or rejected. */
+  /** Lets the chat update Rex once the user approved or rejected. */
   onAnswered?: (approved: boolean) => void;
 }) {
   const [state, formAction, pending] = useActionState<InboxFormState, FormData>(

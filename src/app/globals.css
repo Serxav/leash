@@ -171,114 +171,114 @@
   }
 }
 
-/* Pip, the agent's mascot (D-042). */
+/* Rex, the agent's mascot (D-042). */
 :root {
-  --pip-leash: #0071e3;
+  --leash-color: #0071e3;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --pip-leash: #4da3ff;
+    --leash-color: #4da3ff;
   }
 }
 
-.pip .pip-tail,
-.pip .pip-body,
-.pip .pip-eyes,
-.pip .pip-snout,
-.pip .pip-all,
-.pip .pip-heart,
-.pip .pip-head,
-.pip .pip-tap {
+.mascot .mascot-tail,
+.mascot .mascot-body,
+.mascot .mascot-eyes,
+.mascot .mascot-snout,
+.mascot .mascot-all,
+.mascot .mascot-heart,
+.mascot .mascot-head,
+.mascot .mascot-tap {
   transform-box: fill-box;
 }
 
-.pip .pip-tail {
+.mascot .mascot-tail {
   transform-origin: 0% 100%;
-  animation: pip-wag 1.6s ease-in-out infinite;
+  animation: mascot-wag 1.6s ease-in-out infinite;
 }
-.pip[data-mood="happy"] .pip-tail,
-.pip[data-patted] .pip-tail {
+.mascot[data-mood="happy"] .mascot-tail,
+.mascot[data-patted] .mascot-tail {
   animation-duration: 0.35s;
 }
-.pip[data-mood="stopped"] .pip-tail {
+.mascot[data-mood="stopped"] .mascot-tail {
   animation: none;
 }
-.pip .pip-body {
+.mascot .mascot-body {
   transform-origin: 50% 100%;
-  animation: pip-breathe 3s ease-in-out infinite;
+  animation: mascot-breathe 3s ease-in-out infinite;
 }
-.pip .pip-eyes {
+.mascot .mascot-eyes {
   transform-origin: center;
-  animation: pip-blink 5s infinite;
+  animation: mascot-blink 5s infinite;
 }
-.pip[data-mood="listening"] .pip-head {
+.mascot[data-mood="listening"] .mascot-head {
   transform-origin: 50% 100%;
-  animation: pip-perk 1.4s ease-in-out infinite;
+  animation: mascot-perk 1.4s ease-in-out infinite;
 }
-.pip[data-mood="listening"] .pip-tail {
+.mascot[data-mood="listening"] .mascot-tail {
   animation-duration: 0.7s;
 }
-.pip[data-mood="working"] .pip-tail {
+.mascot[data-mood="working"] .mascot-tail {
   animation-duration: 2.4s;
 }
-.pip .pip-tap {
-  animation: pip-tap 0.32s ease-in-out infinite alternate;
+.mascot .mascot-tap {
+  animation: mascot-tap 0.32s ease-in-out infinite alternate;
 }
-.pip .pip-tap-late {
+.mascot .mascot-tap-late {
   animation-delay: 0.16s;
 }
-.pip[data-mood="stopped"] .pip-all {
-  animation: pip-strain 0.7s ease-in-out infinite;
+.mascot[data-mood="stopped"] .mascot-all {
+  animation: mascot-strain 0.7s ease-in-out infinite;
 }
-.pip[data-patted] .pip-all {
-  animation: pip-bounce 0.5s ease-out 2;
+.mascot[data-patted] .mascot-all {
+  animation: mascot-bounce 0.5s ease-out 2;
 }
-.pip .pip-heart {
-  animation: pip-float 1.2s ease-out forwards;
+.mascot .mascot-heart {
+  animation: mascot-float 1.2s ease-out forwards;
 }
 
 /* Small avatars stay still, and so does everything for reduced motion. */
-.pip.pip-still *,
-.pip.pip-still {
+.mascot.mascot-still *,
+.mascot.mascot-still {
   animation: none !important;
 }
 @media (prefers-reduced-motion: reduce) {
-  .pip *,
-  .pip {
+  .mascot *,
+  .mascot {
     animation: none !important;
   }
 }
 
-@keyframes pip-wag {
+@keyframes mascot-wag {
   0%, 100% { transform: rotate(-12deg); }
   50% { transform: rotate(16deg); }
 }
-@keyframes pip-breathe {
+@keyframes mascot-breathe {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.025); }
 }
-@keyframes pip-blink {
+@keyframes mascot-blink {
   0%, 93%, 100% { transform: scaleY(1); }
   96% { transform: scaleY(0.1); }
 }
-@keyframes pip-perk {
+@keyframes mascot-perk {
   0%, 100% { transform: translateY(0) rotate(0deg); }
   50% { transform: translateY(-3px) rotate(2deg); }
 }
-@keyframes pip-tap {
+@keyframes mascot-tap {
   from { transform: translateY(0); }
   to { transform: translateY(-5px); }
 }
-@keyframes pip-strain {
+@keyframes mascot-strain {
   0%, 100% { transform: translateX(0); }
   50% { transform: translateX(-3px); }
 }
-@keyframes pip-bounce {
+@keyframes mascot-bounce {
   0%, 100% { transform: translateY(0); }
   40% { transform: translateY(-12px); }
 }
-@keyframes pip-float {
+@keyframes mascot-float {
   from { transform: translateY(0); opacity: 1; }
   to { transform: translateY(-26px); opacity: 0; }
 }
@@ -286,7 +286,7 @@
   0%, 60%, 100% { opacity: 0.3; transform: translateY(0); }
   30% { opacity: 1; transform: translateY(-3px); }
 }
-/* The three dots of "Pip is typing" in the chat. */
+/* The three dots of "Rex is typing" in the chat. */
 .typing-dot {
   animation: leash-typing 1.2s ease-in-out infinite;
 }

@@ -21,6 +21,13 @@ describe("agent summary text (D-042)", () => {
     ]);
   });
 
+  it("drops italic marks but keeps bold", () => {
+    expect(parseInline("*(Note: 1 product was hidden.)* and **Approved**")).toEqual([
+      plain("(Note: 1 product was hidden.) and "),
+      bold("Approved"),
+    ]);
+  });
+
   it("keeps a lone ** as typed", () => {
     expect(parseInline("2 ** 3")).toEqual([plain("2 ** 3")]);
   });

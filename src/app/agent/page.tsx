@@ -15,7 +15,7 @@ import { dateTime, proposalCard } from "../labels";
 import { AgentChat } from "./agent-chat";
 
 export const metadata: Metadata = {
-  title: "Pip, shopping agent – Leash",
+  title: "Rex, shopping agent – Leash",
 };
 
 const STAGE_LABELS: Record<SecurityEventView["stage"], string> = {
@@ -47,7 +47,7 @@ async function AgentState() {
     <>
       {!policy && (
         <Notice title="No spending rules yet" href="/rules" action="Write your rules">
-          Pip can only shop once you confirm your rules.
+          Rex can only shop once you confirm your rules.
         </Notice>
       )}
       {paused && (
@@ -89,7 +89,7 @@ async function AgentState() {
 
       <section aria-labelledby="about-heading" className="flex flex-col gap-1">
         <h2 id="about-heading" className="text-sm font-semibold">
-          About Pip
+          About Rex
         </h2>
         <p role="note" className="text-xs leading-5 text-muted">
           Purchases here are proposed by an AI agent. The agent cannot pay: Leash&apos;s code checks

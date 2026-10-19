@@ -31,18 +31,18 @@ export default function Home() {
         </p>
       </section>
 
-      <div className="card flex flex-col gap-3 p-5 text-sm leading-6">
+      {/* Required notice: purchases are proposed by an AI (CLAUDE.md, transparency). */}
+      <div className="flex flex-col gap-1 text-center text-sm leading-6 text-muted">
         <p role="note">
-          Purchases in Leash are proposed by an AI agent, {MASCOT_NAME}. Every purchase is checked
-          against your rules by code, not by the AI, before PayPal charges anything.
+          {MASCOT_NAME} is an AI agent: it proposes, and Leash&apos;s code checks every purchase
+          against your rules before PayPal charges anything.
         </p>
-        <p className="card-muted px-4 py-3 text-muted">
-          This is your own demo space, with no sign-up: it starts with the sample rules of Marta, an
-          invented office manager. Nobody else sees it, and you can start again with{" "}
+        <p>
+          Your own demo space, no sign-up, with the sample rules of Marta, an invented office
+          manager.{" "}
           <Link href="/permissions" className="text-accent">
             Reset demo
           </Link>
-          .
         </p>
       </div>
 

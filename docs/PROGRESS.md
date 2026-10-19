@@ -628,12 +628,12 @@ One entry per session: date, what was done, what is left, blockers.
 - Sergi: confirm no payment method is saved in the Channel3 dashboard; ask on Discord
   #channel3 whether retailer names may appear in the video.
 
-## 2026-10-19 · Session 7 – design pass (Pip and the Muse-style chat)
+## 2026-10-19 · Session 7 – design pass (Rex and the Muse-style chat)
 
 **Done**
 - `feat/f5-design-pass` (D-042). Sergi asked for an agent like Meta's Muse, "una mascota
   interactiva", and an Apple-style look with liquid glass; then a screenshot of Muse's chat.
-  - **Pip**, a puppy on a leash drawn for Leash in SVG (no Meta art). Small at the top of the
+  - **Rex**, a puppy on a leash drawn for Leash in SVG (no Meta art). Small at the top of the
     chat in a glass status pill: it perks up while you type, types on a tiny laptop while
     the agent works (the status walks through the steps), then mirrors the engine's
     decisions. Tap to pat it; eyes follow the pointer; still for reduced motion.
@@ -652,6 +652,12 @@ One entry per session: date, what was done, what is left, blockers.
   rejected in the chat, "Nothing was charged". Error cases: "Connect PayPal first" before
   connecting; rules with missing values → Leash's questions. Phone, desktop, light and dark,
   keyboard. Lint, typecheck, 560 unit tests and build pass.
+
+- After Sergi's review: the mascot is now **Rex**; its status pill scrolls away and floats
+  back only while it works; the chat bubble shows the agent's step and Rex's line the same in
+  a dog's words; simpler message box; shorter home notes. Tried again in the sandbox: sticky
+  notes €13.80 and pens €8.50 approved and charged, paper €5.49 charged, the floating pill
+  shown while scrolled down.
 
 **Next**
 - The Render setup (Sergi), the README for judges and the judges' sandbox account.

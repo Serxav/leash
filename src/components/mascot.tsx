@@ -4,12 +4,12 @@ import { useEffect, useRef, useState, type Ref } from "react";
 import { MASCOT_NAME, type MascotMood } from "./mascot-mood";
 
 /**
- * Pip, the shopping agent's mascot (D-042): a puppy on a leash, drawn for
+ * Rex, the shopping agent's mascot (D-042): a puppy on a leash, drawn for
  * Leash (no third-party art). It perks up while the user types, works at a
  * tiny laptop while the agent runs, and afterwards mirrors what Leash's
  * code decided. The status text next to it always says the same in words.
  *
- * Interactive version: the eyes follow the pointer and a tap pats Pip.
+ * Interactive version: the eyes follow the pointer and a tap pats Rex.
  * Both are off for people who ask the system for reduced motion.
  */
 export function Mascot({
@@ -21,7 +21,7 @@ export function Mascot({
 }: {
   mood: MascotMood;
   size?: number;
-  /** "tile" crops to Pip alone, for the small avatar at the top of the chat. */
+  /** "tile" crops to Rex alone, for the small avatar at the top of the chat. */
   framing?: "full" | "tile";
   interactive?: boolean;
   className?: string;
@@ -73,7 +73,7 @@ export function Mascot({
       height={Math.round((size * height) / width)}
       aria-hidden="true"
       focusable="false"
-      className={`pip ${interactive ? "" : "pip-still"} ${className}`}
+      className={`mascot ${interactive ? "" : "mascot-still"} ${className}`}
       data-mood={mood}
       data-patted={patted || undefined}
     >
@@ -81,7 +81,7 @@ export function Mascot({
       {patted && (
         <path
           key={pats}
-          className="pip-heart"
+          className="mascot-heart"
           d="M160 44c-4-8-16-6-16 3 0 7 9 12 16 18 7-6 16-11 16-18 0-9-12-11-16-3z"
           fill="#ff6b81"
         />
@@ -130,7 +130,7 @@ function Puppy({ mood, pupilsRef }: { mood: MascotMood; pupilsRef: Ref<SVGGEleme
         : held
           ? "rotate(-4 95 112)"
           : undefined;
-  // Ears: up while listening, down when the leash holds Pip back.
+  // Ears: up while listening, down when the leash holds Rex back.
   const earY = held ? 92 : perked ? 70 : 80;
   const earTurn = held ? 32 : perked ? 8 : 20;
 
@@ -140,19 +140,19 @@ function Puppy({ mood, pupilsRef }: { mood: MascotMood; pupilsRef: Ref<SVGGEleme
 
       {/* The lean is an attribute; the animation moves the inner group. */}
       <g transform={held ? "translate(-6 0) rotate(-5 95 186)" : undefined}>
-        {/* The leash: slack while Pip may go on, taut when Leash holds it back. */}
+        {/* The leash: slack while Rex may go on, taut when Leash holds it back. */}
         <path
           d={held ? "M100 128 L218 30" : "M100 128 C150 160 186 34 218 30"}
           fill="none"
-          stroke="var(--pip-leash)"
+          stroke="var(--leash-color)"
           strokeWidth="4"
           strokeLinecap="round"
         />
-        <rect x="208" y="22" width="12" height="18" rx="4" fill="var(--pip-leash)" />
+        <rect x="208" y="22" width="12" height="18" rx="4" fill="var(--leash-color)" />
 
-        <g className="pip-all">
+        <g className="mascot-all">
           <path
-            className="pip-tail"
+            className="mascot-tail"
             d={held ? "M128 166 C142 176 150 180 160 182" : "M128 160 C150 152 160 136 156 120"}
             fill="none"
             stroke={FUR_DARK}
@@ -160,7 +160,7 @@ function Puppy({ mood, pupilsRef }: { mood: MascotMood; pupilsRef: Ref<SVGGEleme
             strokeLinecap="round"
           />
 
-          <g className="pip-body">
+          <g className="mascot-body">
             <ellipse cx="95" cy="152" rx="42" ry="36" fill={FUR} />
             <ellipse cx="95" cy="160" rx="24" ry="22" fill={SNOUT} />
             <ellipse cx="77" cy="185" rx="13" ry="7" fill={FUR_DARK} />
@@ -168,7 +168,7 @@ function Puppy({ mood, pupilsRef }: { mood: MascotMood; pupilsRef: Ref<SVGGEleme
           </g>
 
           <g transform={headTilt}>
-            <g className="pip-head">
+            <g className="mascot-head">
               <ellipse cx="55" cy={earY} rx="15" ry="28" fill={EAR} transform={`rotate(${earTurn} 55 ${earY})`} />
               <ellipse cx="135" cy={earY} rx="15" ry="28" fill={EAR} transform={`rotate(${-earTurn} 135 ${earY})`} />
               <circle cx="95" cy="84" r="44" fill={FUR} />
@@ -179,7 +179,7 @@ function Puppy({ mood, pupilsRef }: { mood: MascotMood; pupilsRef: Ref<SVGGEleme
               <circle cx="66" cy="98" r="7" fill={CHEEK} opacity="0.7" />
               <circle cx="124" cy="98" r="7" fill={CHEEK} opacity="0.7" />
 
-              <g className="pip-snout">
+              <g className="mascot-snout">
                 <ellipse cx="95" cy="102" rx="20" ry="14" fill={SNOUT} />
                 <path d="M88 94 Q95 89 102 94 Q99 101 95 101 Q91 101 88 94 Z" fill={INK} />
                 <Mouth mood={mood} />
@@ -187,7 +187,7 @@ function Puppy({ mood, pupilsRef }: { mood: MascotMood; pupilsRef: Ref<SVGGEleme
             </g>
           </g>
 
-          <rect x="67" y="119" width="56" height="9" rx="4.5" fill="var(--pip-leash)" />
+          <rect x="67" y="119" width="56" height="9" rx="4.5" fill="var(--leash-color)" />
           <circle cx="100" cy="131" r="5" fill="#fbbf24" stroke={INK} strokeOpacity="0.3" />
 
           {mood === "working" && <Laptop />}
@@ -203,15 +203,15 @@ function Puppy({ mood, pupilsRef }: { mood: MascotMood; pupilsRef: Ref<SVGGEleme
   );
 }
 
-/** A tiny laptop seen from behind, with Pip's paws tapping the keys. */
+/** A tiny laptop seen from behind, with Rex's paws tapping the keys. */
 function Laptop() {
   return (
     <g>
       <rect x="60" y="132" width="70" height="42" rx="7" fill="#d1d1d6" stroke="#aeaeb2" strokeWidth="1.5" />
-      <circle cx="95" cy="152" r="5" fill="var(--pip-leash)" />
+      <circle cx="95" cy="152" r="5" fill="var(--leash-color)" />
       <rect x="52" y="172" width="86" height="8" rx="4" fill="#aeaeb2" />
-      <ellipse className="pip-tap" cx="70" cy="172" rx="10" ry="6" fill={FUR_DARK} />
-      <ellipse className="pip-tap pip-tap-late" cx="120" cy="172" rx="10" ry="6" fill={FUR_DARK} />
+      <ellipse className="mascot-tap" cx="70" cy="172" rx="10" ry="6" fill={FUR_DARK} />
+      <ellipse className="mascot-tap mascot-tap-late" cx="120" cy="172" rx="10" ry="6" fill={FUR_DARK} />
     </g>
   );
 }
@@ -236,7 +236,7 @@ function Eyes({ mood, pupilsRef }: { mood: MascotMood; pupilsRef: Ref<SVGGElemen
   // Round eyes, looking down at the keys or at the message while busy.
   const down = mood === "working" ? "translate(0 4)" : mood === "listening" ? "translate(1 3)" : undefined;
   return (
-    <g className="pip-eyes">
+    <g className="mascot-eyes">
       <g ref={pupilsRef} transform={down}>
         <circle cx="78" cy="80" r="7" fill={INK} />
         <circle cx="112" cy="80" r="7" fill={INK} />

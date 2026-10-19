@@ -9,7 +9,7 @@ import { RulesForm } from "./rules-form";
 
 /** The three steps, so nobody wonders what happens to their words. */
 const STEPS = [
-  { title: "Write", text: "Say in your own words what Pip may buy, and how much." },
+  { title: "Write", text: "Say in your own words what Rex may buy, and how much." },
   { title: "Check", text: "An AI turns your words into exact rules. You read them." },
   { title: "Confirm", text: "From then on, code, not the AI, checks every purchase with them." },
 ] as const;
@@ -43,7 +43,7 @@ export default function RulesPage({ searchParams }: PageProps<"/rules">) {
       <header className="flex flex-col gap-2">
         <h1 className="text-3xl font-semibold">Spending rules</h1>
         <p className="text-muted">
-          Your rules are Pip&apos;s leash: they decide what the AI shopping agent may buy, how much
+          Your rules are Rex&apos;s leash: they decide what the AI shopping agent may buy, how much
           and when it must ask you first.
         </p>
       </header>

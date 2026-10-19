@@ -5,7 +5,7 @@ const RULE_LABELS: Record<RuleTag["id"], string> = {
   max_per_order: "Each order",
   monthly_budget: "Each month",
   approval_threshold: "Ask me first",
-  allowed_categories: "What Pip may buy",
+  allowed_categories: "What Rex may buy",
   blocked_merchants: "Shops to avoid",
   max_units_per_item: "Units of one item",
   currency: "Currency",

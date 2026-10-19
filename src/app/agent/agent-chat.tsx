@@ -10,6 +10,7 @@ import {
   outcomeSummary,
   WORK_STEPS,
   type MascotMood,
+  type RestingMood,
 } from "@/components/mascot-mood";
 import { ProposalCard } from "@/components/proposal-card";
 import { SubmitButton } from "@/components/submit-button";
@@ -29,7 +30,7 @@ const SUGGESTIONS = [
 
 /** How long each work step shows in the status while the agent runs. */
 const STEP_MS = 3500;
-/** Pip stops "listening" this long after the last key. */
+/** Rex stops "listening" this long after the last key. */
 const TYPING_MS = 1500;
 
 const clock = new Intl.DateTimeFormat(undefined, { hour: "2-digit", minute: "2-digit" });
@@ -37,7 +38,7 @@ const clock = new Intl.DateTimeFormat(undefined, { hour: "2-digit", minute: "2-d
 type ChatTurn = { id: number; request: string; sentAt: Date; reply: AgentReply };
 
 /**
- * Chat with Pip, the shopping agent (US3, D-042), laid out like Muse: Pip
+ * Chat with Rex, the shopping agent (US3, D-042), laid out like Muse: Rex
  * small at the top with a live status, one message thread, permission
  * cards for the proposals and a floating message box. Each message runs
  * the agent once. The chat lives in this page only; the proposals
@@ -47,10 +48,13 @@ export function AgentChat({ activity, notices }: { activity: ReactNode; notices:
   const formRef = useRef<HTMLFormElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const typingTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const headerRef = useRef<HTMLElement>(null);
   const [typing, setTyping] = useState(false);
+  const [hasText, setHasText] = useState(false);
+  const [headerVisible, setHeaderVisible] = useState(true);
   const [sending, setSending] = useState({ text: "", at: new Date(0) });
   const [now, setNow] = useState(0);
-  // The user's answers on the chat's cards, so Pip stops waiting for them.
+  // The user's answers on the chat's cards, so Rex stops waiting for them.
   const [answers, setAnswers] = useState<Record<string, Outcome>>({});
   const [turns, send, pending] = useActionState(async (previous: ChatTurn[], formData: FormData) => {
     const raw = formData.get("request");
@@ -73,6 +77,16 @@ export function AgentChat({ activity, notices }: { activity: ReactNode; notices:
   }, [pending]);
   useEffect(() => () => clearTimeout(typingTimer.current), []);
 
+  // Rex scrolls away with the top of the chat; while it works, a small
+  // copy floats at the top so the user always knows (D-042).
+  useEffect(() => {
+    const header = headerRef.current;
+    if (!header) return;
+    const observer = new IntersectionObserver(([entry]) => setHeaderVisible(entry.isIntersecting));
+    observer.observe(header);
+    return () => observer.disconnect();
+  }, []);
+
   // Like any chat, show the newest message.
   useEffect(() => {
     if (turns.length === 0 && !pending) return;
@@ -83,21 +97,16 @@ export function AgentChat({ activity, notices }: { activity: ReactNode; notices:
   const last = turns.at(-1)?.reply;
   const lastOutcomes = (last?.proposals ?? []).map((card) => answers[card.intentId] ?? card.outcome);
   const lastMood = last && Object.keys(answers).length > 0 ? moodForOutcomes(lastOutcomes) : last?.mood;
-  const mood: MascotMood = pending ? "working" : typing ? "listening" : (lastMood ?? "idle");
-  const step = Math.min(Math.max(0, Math.floor((now - sending.at.getTime()) / STEP_MS)), WORK_STEPS.length - 1);
-  const status = pending
-    ? WORK_STEPS[step]
-    : typing
-      ? MOOD_STATUS.listening
-      : last
-        ? (outcomeSummary(lastOutcomes) ??
-          (last.kind === "error" ? "Could not finish" : "Done"))
-        : MOOD_STATUS.idle;
+  const restingMood: RestingMood = typing ? "listening" : (lastMood ?? "idle");
+  const mood: MascotMood = pending ? "working" : restingMood;
+  const step =
+    WORK_STEPS[Math.min(Math.max(0, Math.floor((now - sending.at.getTime()) / STEP_MS)), WORK_STEPS.length - 1)];
+  const summary = !typing && last ? outcomeSummary(lastOutcomes) : null;
+  const status = pending ? step.dog : `${MOOD_STATUS[restingMood]}${summary ? ` · ${summary}` : ""}`;
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col px-4">
-      {/* The top fades into the page, so messages scroll away under Pip. */}
-      <header className="sticky top-0 z-30 -mx-4 grid grid-cols-[1fr_auto_1fr] items-start bg-[linear-gradient(var(--background)_55%,transparent)] px-4 pt-4 pb-6">
+      <header ref={headerRef} className="relative z-30 grid grid-cols-[1fr_auto_1fr] items-start pt-4 pb-4">
         <details className="relative justify-self-start">
           <summary className="glass btn cursor-pointer list-none px-3.5 text-sm [&::-webkit-details-marker]:hidden">
             <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
@@ -114,14 +123,30 @@ export function AgentChat({ activity, notices }: { activity: ReactNode; notices:
         {/* Muse-style status pill: who is working and what it is doing. */}
         <div className="glass flex flex-col items-center gap-0.5 rounded-[26px] px-4 pt-2 pb-2.5 text-center">
           <Mascot mood={mood} framing="tile" size={48} interactive />
-          <p className="text-xs font-semibold">{MASCOT_NAME}</p>
+          <p className="flex items-center gap-1.5 text-xs font-semibold">
+            {MASCOT_NAME}
+            <span className="rounded-full bg-[var(--surface-muted)] px-1.5 py-px text-[10px] font-medium text-muted">
+              AI agent
+            </span>
+          </p>
           <p className="max-w-52 text-[11px] leading-4 text-muted">{status}</p>
         </div>
       </header>
 
+      {pending && !headerVisible && (
+        <div aria-hidden="true" className="pointer-events-none fixed inset-x-0 top-3 z-30 flex justify-center md:left-20">
+          <div className="glass flex items-center gap-2 rounded-full py-1 pr-4 pl-1.5">
+            <Mascot mood="working" framing="tile" size={30} />
+            <span className="text-xs">
+              <span className="font-semibold">{MASCOT_NAME}</span> <span className="text-muted">{step.dog}</span>
+            </span>
+          </div>
+        </div>
+      )}
+
       <h1 className="sr-only">Chat with {MASCOT_NAME}, the shopping agent</h1>
 
-      <div role="log" aria-label={`Chat with ${MASCOT_NAME}`} className="flex flex-col gap-3 pt-2 pb-60">
+      <div role="log" aria-label={`Chat with ${MASCOT_NAME}`} className="flex flex-col gap-3 pt-2 pb-48">
         {notices}
         {turns.length === 0 && !pending && (
           <AgentBubble>
@@ -161,10 +186,14 @@ export function AgentChat({ activity, notices }: { activity: ReactNode; notices:
             <UserBubble text={sending.text} />
             <AgentBubble>
               <span className="sr-only">{MASCOT_NAME} is working. This can take up to a minute.</span>
-              <span aria-hidden="true" className="flex h-5 items-center gap-1">
-                <span className="typing-dot size-1.5 rounded-full bg-current" />
-                <span className="typing-dot size-1.5 rounded-full bg-current" />
-                <span className="typing-dot size-1.5 rounded-full bg-current" />
+              {/* What the agent is doing now; not announced at every change. */}
+              <span aria-hidden="true" className="flex items-center gap-2.5">
+                <span className="flex items-center gap-1">
+                  <span className="typing-dot size-1.5 rounded-full bg-current" />
+                  <span className="typing-dot size-1.5 rounded-full bg-current" />
+                  <span className="typing-dot size-1.5 rounded-full bg-current" />
+                </span>
+                <span className="text-muted">{step.agent}</span>
               </span>
             </AgentBubble>
           </div>
@@ -182,6 +211,7 @@ export function AgentChat({ activity, notices }: { activity: ReactNode; notices:
                     onClick={() => {
                       if (!inputRef.current) return;
                       inputRef.current.value = suggestion;
+                      setHasText(true);
                       inputRef.current.focus();
                     }}
                     className="glass rounded-full px-3.5 py-2 text-left text-xs whitespace-nowrap"
@@ -198,6 +228,7 @@ export function AgentChat({ activity, notices }: { activity: ReactNode; notices:
             onSubmit={() => {
               clearTimeout(typingTimer.current);
               setTyping(false);
+              setHasText(false);
               const at = new Date();
               setNow(at.getTime());
               setSending({ text: inputRef.current?.value.trim() ?? "", at });
@@ -206,7 +237,7 @@ export function AgentChat({ activity, notices }: { activity: ReactNode; notices:
                 if (inputRef.current) inputRef.current.value = "";
               }, 0);
             }}
-            className="glass flex items-end gap-2 rounded-[26px] p-1.5 pl-4 has-[textarea:focus-visible]:outline-2 has-[textarea:focus-visible]:outline-offset-2 has-[textarea:focus-visible]:outline-[var(--accent)] has-[textarea:focus-visible]:outline-solid"
+            className="flex items-end gap-2 rounded-[24px] border border-[var(--border)] bg-[var(--surface)] p-1.5 pl-4 shadow-[var(--shadow)] has-[textarea:focus-visible]:border-[var(--accent)]"
           >
             <label htmlFor="agent-request" className="sr-only">
               Message to {MASCOT_NAME}
@@ -221,11 +252,12 @@ export function AgentChat({ activity, notices }: { activity: ReactNode; notices:
               aria-describedby="agent-request-hint"
               placeholder={`Message ${MASCOT_NAME}`}
               onInput={(event) => {
-                // Pip perks up while the user types.
-                const hasText = event.currentTarget.value.trim() !== "";
-                setTyping(hasText);
+                // Rex perks up while the user types.
+                const written = event.currentTarget.value.trim() !== "";
+                setHasText(written);
+                setTyping(written);
                 clearTimeout(typingTimer.current);
-                if (hasText) typingTimer.current = setTimeout(() => setTyping(false), TYPING_MS);
+                if (written) typingTimer.current = setTimeout(() => setTyping(false), TYPING_MS);
               }}
               onKeyDown={(event) => {
                 // Enter sends, like other chats; Shift+Enter adds a line.
@@ -233,20 +265,22 @@ export function AgentChat({ activity, notices }: { activity: ReactNode; notices:
                 event.preventDefault();
                 if (!pending) formRef.current?.requestSubmit();
               }}
-              className="max-h-40 min-h-10 flex-1 resize-none bg-transparent py-2 text-base leading-6 outline-none [field-sizing:content] placeholder:text-muted sm:text-sm"
+              className="max-h-40 min-h-8 flex-1 resize-none bg-transparent py-1 text-base leading-6 outline-none [field-sizing:content] placeholder:text-muted sm:text-sm"
             />
             <SubmitButton
               pending={pending}
               aria-label={pending ? `${MASCOT_NAME} is working` : `Send to ${MASCOT_NAME}`}
-              className="grid size-10 shrink-0 place-items-center rounded-full bg-[var(--accent-fill)] text-white"
+              className={`grid size-8 shrink-0 place-items-center rounded-full transition-colors ${
+                hasText || pending ? "bg-[var(--accent-fill)] text-white" : "bg-[var(--surface-muted)] text-muted"
+              }`}
             >
-              <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+              <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                 <path d="M10 16V4m0 0-5 5m5-5 5 5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </SubmitButton>
           </form>
-          <p id="agent-request-hint" className="text-center text-[11px] text-muted">
-            {MASCOT_NAME} is an AI agent: it proposes, Leash&apos;s code decides. Enter sends.
+          <p id="agent-request-hint" className="sr-only">
+            Enter sends, Shift+Enter adds a line.
           </p>
         </div>
       </div>

@@ -55,10 +55,10 @@ export function parseAgentText(text: string): Block[] {
 
 /**
  * `**bold**` becomes strong text; a lone `**` stays as typed. Code marks
- * (`shop.example`) are dropped and their text kept.
+ * (`shop.example`) and italic marks (*note*) are dropped and their text kept.
  */
 export function parseInline(raw: string): Inline[] {
-  const line = raw.replace(/`([^`]+)`/g, "$1");
+  const line = raw.replace(/`([^`]+)`/g, "$1").replace(/(^|[^*])\*([^*\s](?:[^*]*[^*\s])?)\*(?!\*)/g, "$1$2");
   const pieces: Inline[] = [];
   let last = 0;
   for (const match of line.matchAll(/\*\*(.+?)\*\*/g)) {
