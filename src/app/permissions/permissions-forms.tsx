@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { SubmitButton, useFocusOnAnswer } from "@/components/submit-button";
 import { updatePermissions } from "./actions";
 import type { PermissionsFormState } from "./state";
 
@@ -14,13 +15,14 @@ export type PermissionsView = {
 };
 
 const buttonClass =
-  "rounded-full border border-zinc-400 px-5 py-3 text-sm font-medium hover:bg-zinc-100 disabled:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 dark:border-zinc-600 dark:hover:bg-zinc-800";
+  "rounded-full border border-zinc-400 px-5 py-3 text-sm font-medium hover:bg-zinc-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 dark:border-zinc-600 dark:hover:bg-zinc-800";
 
 /** US7: the agent switch, the PayPal mandate and account deletion. */
 export function PermissionsForms({ view }: { view: PermissionsView }) {
   const [state, formAction, pending] = useActionState<PermissionsFormState, FormData>(updatePermissions, {
     kind: "idle",
   });
+  const answerRef = useFocusOnAnswer(state, !pending && state.kind === "answered");
 
   return (
     <div className="flex flex-col gap-8">
@@ -32,6 +34,8 @@ export function PermissionsForms({ view }: { view: PermissionsView }) {
         )}
         {!pending && state.kind === "answered" && (
           <p
+            ref={answerRef}
+            tabIndex={-1}
             role={state.ok ? "status" : "alert"}
             className={
               state.ok
@@ -56,9 +60,9 @@ export function PermissionsForms({ view }: { view: PermissionsView }) {
         </p>
         <form action={formAction}>
           <input type="hidden" name="action" value={view.agentPaused ? "resume" : "pause"} />
-          <button type="submit" disabled={pending} className={buttonClass}>
+          <SubmitButton pending={pending} className={buttonClass}>
             {view.agentPaused ? "Resume the agent" : "Pause the agent"}
-          </button>
+          </SubmitButton>
         </form>
       </section>
 
@@ -76,9 +80,9 @@ export function PermissionsForms({ view }: { view: PermissionsView }) {
             </p>
             <input type="hidden" name="action" value="revoke" />
             <div>
-              <button type="submit" disabled={pending} className={buttonClass}>
+              <SubmitButton pending={pending} className={buttonClass}>
                 {view.deletionPending ? "Try deleting it at PayPal again" : "Revoke the mandate"}
-              </button>
+              </SubmitButton>
             </div>
           </form>
         )}
@@ -96,17 +100,16 @@ export function PermissionsForms({ view }: { view: PermissionsView }) {
           </p>
           <input type="hidden" name="action" value="delete" />
           <label className="flex items-start gap-2">
-            <input type="checkbox" name="confirm" value="yes" required className="mt-1" />
+            <input type="checkbox" name="confirm" value="yes" required className="mt-0.5 size-5 shrink-0" />
             <span>I understand that this deletes everything Leash stores about me.</span>
           </label>
           <div>
-            <button
-              type="submit"
-              disabled={pending}
-              className="rounded-full border border-red-400 px-5 py-3 text-sm font-medium text-red-800 hover:bg-red-50 disabled:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 dark:border-red-700 dark:text-red-300 dark:hover:bg-red-950"
+            <SubmitButton
+              pending={pending}
+              className="rounded-full border border-red-400 px-5 py-3 text-sm font-medium text-red-800 hover:bg-red-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 dark:border-red-700 dark:text-red-300 dark:hover:bg-red-950"
             >
               Delete my account and data
-            </button>
+            </SubmitButton>
           </div>
         </form>
       </section>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { SubmitButton, useFocusOnAnswer } from "@/components/submit-button";
 import { refundPurchaseAction } from "./actions";
 import type { HistoryFormState } from "./state";
 
@@ -23,6 +24,7 @@ export function HistoryList({ rows }: { rows: HistoryRow[] }) {
   const [state, formAction, pending] = useActionState<HistoryFormState, FormData>(refundPurchaseAction, {
     kind: "idle",
   });
+  const answerRef = useFocusOnAnswer(state, !pending && state.kind === "answered");
 
   return (
     <div className="flex flex-col gap-4">
@@ -34,6 +36,8 @@ export function HistoryList({ rows }: { rows: HistoryRow[] }) {
         )}
         {!pending && state.kind === "answered" && (
           <p
+            ref={answerRef}
+            tabIndex={-1}
             role={state.ok ? "status" : "alert"}
             className={
               state.ok
@@ -69,13 +73,12 @@ export function HistoryList({ rows }: { rows: HistoryRow[] }) {
               {row.refundLabel && (
                 <form action={formAction} className="mt-3">
                   <input type="hidden" name="intentId" value={row.intentId} />
-                  <button
-                    type="submit"
-                    disabled={pending}
-                    className="rounded-full border border-zinc-400 px-5 py-3 text-sm font-medium hover:bg-zinc-100 disabled:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 dark:border-zinc-600 dark:hover:bg-zinc-800"
+                  <SubmitButton
+                    pending={pending}
+                    className="rounded-full border border-zinc-400 px-5 py-3 text-sm font-medium hover:bg-zinc-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 dark:border-zinc-600 dark:hover:bg-zinc-800"
                   >
                     {row.refundLabel}
-                  </button>
+                  </SubmitButton>
                 </form>
               )}
             </li>

@@ -1014,3 +1014,34 @@ main page, the sponsor detail pages for Channel3 and APIMatic, the FAQ and the u
     the lab.
 - **Status:** accepted (Sergi approved the F4 task list; "haz lo que necesites" for the
   live test).
+
+### D-039 · 2026-10-19 · Mobile and keyboard check: buttons keep the focus
+
+- **What:** every page checked at phone width (375 px) and with the keyboard only, with
+  real data: home, rules (with a draft), agent (with an answer), inbox, history,
+  permissions and the lab.
+- **Already fine:** no page scrolls sideways, every form field has a label, and every link
+  and button shows a clear focus ring.
+- **Fixed:**
+  - **Focus lost after every tap.** The buttons were `disabled` while saving, and a
+    disabled button drops the keyboard focus, so keyboard and screen reader users went
+    back to the top of the page. The new `SubmitButton` (`src/components/submit-button.tsx`)
+    is only `aria-disabled` while saving: it keeps the focus, looks disabled and ignores a
+    second submit. The server already refuses double answers (one queue per user).
+  - **Buttons that disappear.** An approved or rejected purchase leaves the inbox, a
+    refunded one loses its button, and a revoke removes its form. In the inbox, history
+    and permissions, the focus now moves to the answer message, so the next Tab continues
+    from there.
+  - **Zoom on iPhone.** Text boxes used 14 px text, and iPhone Safari zooms in on any field
+    under 16 px. They now use 16 px on phones (14 px from the `sm` width up).
+  - **Small targets.** The "Leash" and "Back to the shopping agent" links were 16–20 px
+    tall; they are now at least 24 px (WCAG 2.2 target size). The delete confirmation
+    checkbox is 20 px instead of 13 px.
+- **Tried (Oct 19, sandbox, keyboard only, at 375 px):** paused and resumed the agent; tried
+  to delete the account without ticking the box (the browser stops it, focus goes to the
+  box, nothing deleted); asked the agent for a toner (€24, needs approval) and rejected it
+  in the inbox; turned rules text into a draft without confirming it.
+- **Not in this task:** the agent's summary still shows Markdown marks, and engine
+  explanations repeat the status label ("Needs your approval: …"). Both go to the F5
+  design pass.
+- **Status:** accepted (Sergi approved the task).

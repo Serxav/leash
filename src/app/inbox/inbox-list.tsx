@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { SubmitButton, useFocusOnAnswer } from "@/components/submit-button";
 import { answerPurchase } from "./actions";
 import type { InboxFormState } from "./state";
 
@@ -23,6 +24,7 @@ export function InboxList({ items }: { items: PendingItem[] }) {
   const [state, formAction, pending] = useActionState<InboxFormState, FormData>(answerPurchase, {
     kind: "idle",
   });
+  const answerRef = useFocusOnAnswer(state, !pending && state.kind === "answered");
 
   return (
     <div className="flex flex-col gap-4">
@@ -34,6 +36,8 @@ export function InboxList({ items }: { items: PendingItem[] }) {
         )}
         {!pending && state.kind === "answered" && (
           <p
+            ref={answerRef}
+            tabIndex={-1}
             role={state.ok ? "status" : "alert"}
             className={
               state.ok
@@ -66,26 +70,24 @@ export function InboxList({ items }: { items: PendingItem[] }) {
               </p>
               <form action={formAction} className="mt-3 flex flex-wrap gap-2">
                 <input type="hidden" name="intentId" value={item.intentId} />
-                <button
-                  type="submit"
+                <SubmitButton
                   name="choice"
                   value="APPROVE"
-                  disabled={pending}
+                  pending={pending}
                   aria-label={`Approve and pay €${item.orderTotal ?? ""} for ${item.title}`}
-                  className="rounded-full bg-zinc-900 px-5 py-3 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
+                  className="rounded-full bg-zinc-900 px-5 py-3 text-sm font-medium text-white hover:bg-zinc-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
                 >
                   Approve and pay €{item.orderTotal ?? ""}
-                </button>
-                <button
-                  type="submit"
+                </SubmitButton>
+                <SubmitButton
                   name="choice"
                   value="REJECT"
-                  disabled={pending}
+                  pending={pending}
                   aria-label={`Reject ${item.title}`}
-                  className="rounded-full border border-zinc-400 px-5 py-3 text-sm font-medium hover:bg-zinc-100 disabled:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 dark:border-zinc-600 dark:hover:bg-zinc-800"
+                  className="rounded-full border border-zinc-400 px-5 py-3 text-sm font-medium hover:bg-zinc-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 dark:border-zinc-600 dark:hover:bg-zinc-800"
                 >
                   Reject
-                </button>
+                </SubmitButton>
               </form>
             </li>
           ))}
