@@ -1,4 +1,4 @@
-# Leash – Spending rules for AI agents
+# Leash – Spending rules for AI agents (UNDER CONSTRUCTION)
 
 > **Give your AI agent a budget, not your wallet.** Plain-language spending rules, one-tap
 > human approval and PayPal checkout, designed for EU payment rules.
