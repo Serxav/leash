@@ -17,7 +17,7 @@ Render. No real money ever moves.
 <table>
 <tr>
 <td width="50%"><img src="docs/media/chat.jpg" alt="Rex, the AI shopping agent, answering a request in the chat"><br><sub><b>Ask Rex</b> · the AI agent searches and proposes; it cannot pay</sub></td>
-<td width="50%"><img src="docs/media/cards.jpg" alt="Two purchase cards: one waiting for approval, one approved and charged"><br><sub><b>The code decides</b> · €8.50 charged at once, the €24 toner waits for your tap</sub></td>
+<td width="50%"><img src="docs/media/cards.jpg" alt="The €24 toner card waiting for approval, with Approve and Reject"><br><sub><b>The code decides</b> · paper and notes were charged at once; the €24 toner waits for your tap</sub></td>
 </tr>
 <tr>
 <td width="50%"><img src="docs/media/rules.jpg" alt="The confirmed spending rules as a list"><br><sub><b>Your rules</b> · written in plain words, confirmed as exact rules</sub></td>
