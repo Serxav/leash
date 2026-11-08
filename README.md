@@ -10,15 +10,20 @@ Render. No real money ever moves.
 <p>
 <a href="#"><b>▶ Watch the 3-minute video</b></a> <sub>(link added at submission)</sub> ·
 <a href="https://leash-crcx.onrender.com"><b>Open the live app</b></a> ·
+<a href="#see-it-move"><b>See it move</b></a> ·
 <a href="docs/TRY_IT.md"><b>Step-by-step for judges</b></a>
 </p>
 
-<table><tr>
-<td width="25%"><img src="docs/media/chat.jpg" alt="Rex, the AI shopping agent, answering a request in the chat"><br><sub><b>Ask Rex</b> · the AI agent searches and proposes; it cannot pay</sub></td>
-<td width="25%"><img src="docs/media/cards.jpg" alt="Two purchase cards: one waiting for approval, one approved and charged"><br><sub><b>The code decides</b> · €8.50 charged at once, €24 waits for you</sub></td>
-<td width="25%"><img src="docs/media/rules.jpg" alt="The confirmed spending rules as a list"><br><sub><b>Your rules</b> · written in plain words, confirmed as exact rules</sub></td>
-<td width="25%"><img src="docs/media/security-log.jpg" alt="Security log listing a product hidden from the agent"><br><sub><b>Trap product</b> · shop text that gives orders to AI is hidden and logged</sub></td>
-</tr></table>
+<table>
+<tr>
+<td width="50%"><img src="docs/media/chat.jpg" alt="Rex, the AI shopping agent, answering a request in the chat"><br><sub><b>Ask Rex</b> · the AI agent searches and proposes; it cannot pay</sub></td>
+<td width="50%"><img src="docs/media/cards.jpg" alt="Two purchase cards: one waiting for approval, one approved and charged"><br><sub><b>The code decides</b> · €8.50 charged at once, the €24 toner waits for your tap</sub></td>
+</tr>
+<tr>
+<td width="50%"><img src="docs/media/rules.jpg" alt="The confirmed spending rules as a list"><br><sub><b>Your rules</b> · written in plain words, confirmed as exact rules</sub></td>
+<td width="50%"><img src="docs/media/security-log.jpg" alt="Security log listing a product hidden from the agent"><br><sub><b>Trap product</b> · shop text that gives orders to AI is hidden from Rex and logged</sub></td>
+</tr>
+</table>
 
 <sub>Screenshots of the app itself. Every person and shop in them is invented.</sub>
 
@@ -40,6 +45,16 @@ The judges' sandbox login, every button and what each result means: **[docs/TRY_
 **Slow, not stuck.** The live app runs on Render's free plan. If nobody has visited for 15
 minutes, the first page takes about a minute while it wakes up, and it starts each visitor
 with a fresh demo space. Rex answers in 10 to 30 seconds and shows what it is doing meanwhile.
+
+## See it move
+
+<table><tr>
+<td width="40%"><img src="docs/media/rex-at-work.gif" alt="Rex receives a request, shows each step, and Leash approves two purchases and asks about the toner"><br><sub><b>Rex at work.</b> One request; while Rex works, the chat says what it is doing (Channel3 search, Leash's checks, PayPal). Paper and sticky notes are charged at once; the €24 toner waits for one tap.</sub></td>
+<td width="33%"><img src="docs/media/rules-in-plain-words.gif" alt="The user writes rules in plain words, Leash asks what is missing, then shows the exact rules to confirm"><br><sub><b>Rules in plain words.</b> Leash asks what is missing instead of guessing, then shows the exact rules; nothing changes until you confirm.</sub></td>
+<td width="27%"><img src="docs/media/phone-approval.gif" alt="On a phone: Rex proposes the toner, the user approves it in the inbox, and it appears in the history"><br><sub><b>On the phone.</b> One tap in the inbox; Leash re-checks, PayPal charges, the history shows it.</sub></td>
+</tr></table>
+
+<sub>Recorded on the app itself and sped up; the waiting is shorter than in real life.</sub>
 
 ## The problem
 

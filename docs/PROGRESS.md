@@ -720,3 +720,16 @@ One entry per session: date, what was done, what is left, blockers.
 3. Sergi: the judges' sandbox Personal account, then its login in README, TRY_IT and
    SUBMISSION; decide Render Free vs awake (750 free hours are shared with FixScribe).
 4. Video, Devpost form, v1.0.0, submit on Nov 11.
+
+## 2026-11-08 · Session 8 – README with moving pictures
+
+- `docs/f6-judges-readme`: three GIFs recorded on the app (Rex at work, rules in plain
+  words, one-tap approval on a phone) in a "See it move" section, and the top screenshots
+  cropped into a 2×2 grid, like FixScribe's README. Previewed with GitHub's own Markdown
+  renderer.
+- `feat/f5-design-polish` gained "a proposal card follows the user's answer". Its commit
+  message says the approved state was checked in the browser; what was actually checked
+  is the rejected state (toner rejected on its chat card → ✕ "You rejected this purchase",
+  "Nothing was charged"). The approved path goes through the same code.
+- Local demo data only: my local space's monthly budget was raised to €500 to test that
+  card after €150 had been spent in recordings.
