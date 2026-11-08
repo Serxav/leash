@@ -5,13 +5,13 @@ import { createModels, MODEL_IDS } from "./models";
 const FAKE_META_KEY = "test-meta-key";
 const FAKE_ANTHROPIC_KEY = "test-anthropic-key";
 
-type Captured = { url: string; headers: Headers };
+type Captured = { url: string; headers: Headers; body: string };
 
 /** Calls the model once with a fetch that records the request and stops. */
 async function captureRequest(build: (fetch: typeof globalThis.fetch) => LanguageModel) {
   const captured: Captured[] = [];
   const fakeFetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
-    captured.push({ url: String(input), headers: new Headers(init?.headers) });
+    captured.push({ url: String(input), headers: new Headers(init?.headers), body: String(init?.body ?? "") });
     throw new Error("network disabled in tests");
   }) as typeof globalThis.fetch;
   await expect(
@@ -60,6 +60,14 @@ describe("createModels", () => {
     );
     expect(request.url).toBe("https://api.meta.ai/v1/chat/completions");
     expect(request.headers.get("authorization")).toBe(`Bearer ${FAKE_META_KEY}`);
+  });
+
+  it("asks Meta to think less for rule conversion, but not for the agent", async () => {
+    const env = { AI_PROVIDER: "meta" as const, META_MODEL_API_KEY: FAKE_META_KEY };
+    const rules = await captureRequest((fetch) => createModels(env, { fetch }).rules);
+    expect(JSON.parse(rules.body)).toMatchObject({ model: "muse-spark-1.3", reasoning_effort: "low" });
+    const agent = await captureRequest((fetch) => createModels(env, { fetch }).agent);
+    expect(JSON.parse(agent.body)).not.toHaveProperty("reasoning_effort");
   });
 
   it("talks directly to Anthropic with the key from the validated env", async () => {
