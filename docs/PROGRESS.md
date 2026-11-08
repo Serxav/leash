@@ -627,3 +627,70 @@ One entry per session: date, what was done, what is left, blockers.
   `v0.4.0`.
 - Sergi: confirm no payment method is saved in the Channel3 dashboard; ask on Discord
   #channel3 whether retailer names may appear in the video.
+
+## 2026-10-19 · Session 7 – design pass (Rex and the Muse-style chat)
+
+**Done**
+- `feat/f5-design-pass` (D-042). Sergi asked for an agent like Meta's Muse, "una mascota
+  interactiva", and an Apple-style look with liquid glass; then a screenshot of Muse's chat.
+  - **Rex**, a puppy on a leash drawn for Leash in SVG (no Meta art). Small at the top of the
+    chat in a glass status pill: it perks up while you type, types on a tiny laptop while
+    the agent works (the status walks through the steps), then mirrors the engine's
+    decisions. Tap to pat it; eyes follow the pointer; still for reduced motion.
+  - **Chat** on `/agent`: one thread, timestamps, blue and grey bubbles, permission cards
+    with Approve / Reject right in the chat (same server action as the inbox), floating
+    message box, "Rules & activity" panel for rules, latest proposals and the security log.
+  - **Look:** white, system font, rounded cards with soft shadows, pill buttons, Apple blue,
+    glass for floating parts; icon rail on wide screens and a tab bar on phones.
+  - **Rules page:** three steps, "What to include" with one-tap example sentences, two full
+    examples, rules shown as a settings-style list.
+  - Fixes: agent summary Markdown (bold, lists, code marks) without HTML; the status label is
+    no longer repeated on cards; "in your inbox" removed from answers given in the chat.
+- Tried in the sandbox (Personal account, Gemini): toner €24.00 → "Approve this purchase?"
+  → approved in the chat, charged (PayPal transaction in the history); paper €5.49 and sticky
+  notes €6.90 approved and charged; office chair not proposed (above €40); toner again →
+  rejected in the chat, "Nothing was charged". Error cases: "Connect PayPal first" before
+  connecting; rules with missing values → Leash's questions. Phone, desktop, light and dark,
+  keyboard. Lint, typecheck, 560 unit tests and build pass.
+
+- After Sergi's review: the mascot is now **Rex**; its status pill scrolls away and floats
+  back only while it works; the chat bubble shows the agent's step and Rex's line the same in
+  a dog's words; simpler message box; shorter home notes. Tried again in the sandbox: sticky
+  notes €13.80 and pens €8.50 approved and charged, paper €5.49 charged, the floating pill
+  shown while scrolled down.
+
+**Next**
+- The Render setup (Sergi), the README for judges and the judges' sandbox account.
+
+## 2026-10-19 · Session 7 – end
+
+**Done**
+- `feat/f5-design-pass` has 3 local commits (Rex, the Muse-style chat, the Apple-style look,
+  the guided rules page, Rex's minimal header). Lint, typecheck, 561 unit tests and build
+  pass; tried in the sandbox. **Not pushed yet**: Sergi reviews the design first.
+
+**Next (start of session 8)**
+1. Sergi looks at the design in the browser; then push `feat/f5-design-pass`, open the PR
+   and merge it with green CI.
+2. Render: guide Sergi to create the Free service from the Blueprint and fill in the
+   variables himself; check `/api/health` and one sandbox purchase there.
+3. README for judges and the judges' sandbox account.
+- Small idea: when the user rejects on a card, Rex's line says "1 blocked"; "1 rejected by
+  you" would be clearer.
+
+## 2026-10-20 · Session 8 – second design pass
+
+**Done**
+- On `feat/f5-design-pass` (D-042, "Second design pass"): the same page frame everywhere
+  (title, one-line purpose, "how it works" steps), empty states with a next step, loading
+  placeholders, the inbox on the chat's cards, a history with coloured marks and amounts,
+  Permissions grouped like iOS Settings, page transitions and rise-in motion, Rex redrawn,
+  the Permissions icon moved up, and a home page without the hackathon line.
+- Tried in the browser: toner €24 → "Approve this purchase?" in the chat and in the inbox;
+  rejected in the inbox → "Rejected. Nothing was charged.", empty inbox state, ✕ in the
+  history. Desktop and phone, light and dark. Lint, typecheck, 561 unit tests and build
+  pass.
+
+**Next**
+- Sergi reviews the new design; then push, PR and merge with green CI.
+- Render setup, README for judges and the judges' sandbox account.

@@ -1142,3 +1142,100 @@ main page, the sponsor detail pages for Channel3 and APIMatic, the FAQ and the u
   public demo uses Claude, so the Render link is for testing only and is not shared until
   the switch.
 - **Status:** accepted ("ok pues render free").
+
+### D-042 · 2026-10-19 · Rex, a Muse-style chat and an Apple-style look
+
+- **What:** Sergi asked for the agent to look and behave like Meta's Muse: "una mascota
+  interactiva", a chat page, and "modo Apple redondito minimalista moderno y liquid glass".
+  He shared a screenshot of the Muse chat.
+- **What we took from Muse** (screenshot and press: Axios, Fortune, iMasters' interview with
+  its designer): the patterns only.
+  - one message thread, like a text chat;
+  - the agent small at the top centre, with its name and a status line; the character
+    moves while the agent works ("tapping away at a keyboard");
+  - permission cards with the request on top, a grey summary box and pill buttons
+    (Allow / Deny);
+  - a floating message box and a slim icon rail.
+- **What we did not take:** Meta's character (Jolly), names, logos or art. The rules forbid
+  third-party trademarks in the app and video, so the mascot is **Rex**, a puppy on a leash
+  drawn for Leash in SVG (`src/components/mascot.tsx`). It fits the name and the principle:
+  the AI proposes, the leash (the code) decides.
+- **Rex's moods** (`src/components/mascot-mood.ts`): it perks up while the user types
+  ("Listening…"), types on a tiny laptop while the agent runs (the status walks through the
+  run's steps), and afterwards mirrors **what the engine decided**: happy when everything
+  was approved, waiting when something needs the user, held back by a taut leash when
+  something was blocked. The mascot decides nothing, and the same outcome is always written
+  as text next to it. Tapping Rex pats it; its eyes follow the pointer.
+  - Not childish on purpose: Muse is criticised for a mascot that attracts children, and
+    Leash handles money.
+  - Animations stop for people who ask for reduced motion, and glass turns solid for
+    reduced transparency.
+- **The chat** (`src/app/agent/agent-chat.tsx`): each message runs the agent once; the reply
+  carries that run's proposals (`listProposalsByIds`) as permission cards. A waiting
+  purchase can be approved or rejected right on its card, with the same server action as the
+  inbox (US5), so Leash still checks the price and the rules again before charging. Rules,
+  latest proposals and the security log moved to a "Rules & activity" panel. The chat itself
+  is not stored: the proposals are.
+- **Design pass fixes:**
+  - the agent's summary shows **bold** and lists instead of `**` marks, without rendering
+    model text as HTML (`src/lib/agent-text.ts`);
+  - cards no longer repeat the status ("Needs your approval: Needs your approval…"):
+    `reasonText` drops the engine's leading word on screen; stored decisions keep the full
+    sentence.
+- **Rules page** (Sergi: "ha de ser muy bien hecha para que la gente sepa cómo hacerlo"):
+  the three steps (write, check, confirm); "What to include", one tip per rule with an
+  example sentence the user can add with one tap; two full examples; and the exact rules as
+  a settings-style list, both in use and before confirming. The AI and the checks did not
+  change: missing values are still asked by Leash's own questions.
+- **Look:** white surfaces, system font (SF on Apple devices), 20 px rounded cards with soft
+  shadows, pill buttons, Apple blue as the accent, translucent blurred "glass" for the
+  floating parts (rail, tab bar, status, message box, panels). Colours were checked for
+  WCAG AA contrast in light and dark mode.
+- **After Sergi's review:**
+  - the mascot is called **Rex** (Sergi's choice; we keep the dog, whose way of working
+    fits the agent: it sniffs the shops, follows a scent, finds something and brings it
+    back);
+  - Rex's status pill scrolls away with the top of the chat; while the agent works, a small
+    copy floats at the top so the user always knows it is working;
+  - while it works, the chat bubble says what the agent does ("Searching Channel3 offers
+    inside your rules…", "Paying approved purchases with PayPal (sandbox)…") and Rex's line
+    says it in a dog's words ("Sniffing around the shops…"). The run is not streamed, so
+    both follow the run's real order on a timer; the real decisions arrive with the reply;
+  - a simpler message box (white pill, small send button that turns blue when there is
+    text). The "AI agent" label stays next to Rex's name, so the AI notice is always visible;
+  - Rex's header is now as quiet as Muse's: a small white avatar tile, the name and one
+    line ("AI shopping agent" at rest, the dog's step while it works);
+  - shorter notes on the home page. The AI notice stays: CLAUDE.md requires a visible notice
+    that purchases are proposed by an AI agent.
+- **Second design pass (session 8).** Sergi wanted it more fluid, easier to understand on
+  every page, a better Rex, the settings icon clear of the corner, and a home page like a
+  real product:
+  - **Same frame on every page** (`src/components/page.tsx`): a title, one sentence on what
+    the page is for, and numbered "how it works" steps where a page needs them (rules,
+    inbox, home). The grey explanation boxes and the "Back to the shopping agent" links are
+    gone; the nav already does that job;
+  - **Empty lists explain themselves**: a small Rex, why the list is empty and a button to
+    the next step ("Chat with Rex"). Grey placeholder cards replace "Loading…";
+  - **The inbox shows the same card as the chat** (`ProposalCard`), with the inbox's own
+    Approve and Reject. The **history** gives each purchase a coloured mark (paid, waiting,
+    blocked or rejected, refunded) and the amount on the right; the words still say it;
+  - **Permissions** is grouped like iOS Settings: Shopping agent, PayPal (sandbox), Demo and
+    Your data, each with a green or grey state ("Rex is active", "Connected") and its
+    button. "Revoke the mandate" is now "Disconnect"; the sentence under it still says it
+    revokes the mandate;
+  - **Motion**: pages fade and rise a little on navigation with React's `<ViewTransition>`
+    (Next.js guide "View transitions"); new messages, cards and Rex's status rise in.
+    Everything is short (about 0.3 s) and off with reduced motion;
+  - **Rex redrawn**: soft shading, shiny eyes, eyebrows that show the mood (focused while
+    working, worried while waiting), floppy ears, and a cleaner leash: slack on the ground,
+    or pulled taut from outside the picture when Leash holds Rex back. The small avatar is
+    Rex's head and chest, like an app icon, without the leash;
+  - **Nav**: the Permissions icon sits under the others, after a thin line, instead of in
+    the bottom corner, where the dev-only Next.js button covered it. That button now sits
+    top right (`devIndicators` in `next.config.ts`; it never shows in production);
+  - **Home page as a real product**: no "under construction for the hackathon" line. The
+    official rules ask nothing of the app itself (only of the README, video and Devpost
+    text), so the page keeps only what Leash's own rules need: the AI notice (CLAUDE.md,
+    transparency) and the sandbox / demo note (no real money, Marta's invented rules).
+- **Status:** accepted (Sergi chose the puppy and the chat; then "algo así" with the Muse
+  screenshot; then the name Rex; the second pass follows his session 8 list).

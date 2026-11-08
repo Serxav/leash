@@ -105,7 +105,9 @@ definition of done in `CLAUDE.md`. Tags close each phase.
 
 ## F5 · Polish (Nov 6–8) → `v0.9.0` · feature freeze on Nov 8
 
-- [ ] Design and accessibility pass (contrast, keyboard, labels)
+- [x] `feat/f5-design-pass` (D-042): design and accessibility pass. Rex, the agent's mascot;
+      Muse-style chat with permission cards; Apple-style look with liquid glass; guided rules
+      page; agent summary Markdown; status label no longer repeated
 - [x] `feat/f5-demo-users` (D-040): one anonymous demo user per visitor with Marta's rules,
       "Connect PayPal (sandbox)" outside the lab, "Reset demo", cleanup after 7 days
 - [x] `feat/f5-render-deploy` (D-041): `render.yaml` for Render **Free** (no billing),

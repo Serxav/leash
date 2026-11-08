@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Suspense } from "react";
 import { getDb } from "@/db/client";
 import { currentUserId } from "@/account/visitor";
 import { listHistory, type HistoryItem } from "@/purchases/history";
-import { outcomeLabel, PAYMENT_LABELS, SOURCE_LABELS } from "../labels";
-import { HistoryList, type HistoryRow } from "./history-list";
+import { outcomeLabel, PAYMENT_LABELS, reasonText, SOURCE_LABELS } from "../labels";
+import { LoadingCards, Page } from "@/components/page";
+import { HistoryList, type HistoryRow, type HistoryTone } from "./history-list";
 
 export const metadata: Metadata = {
   title: "Purchase history – Leash",
@@ -20,33 +20,26 @@ const date = new Intl.DateTimeFormat("en-GB", { dateStyle: "medium", timeZone: "
 
 export default function HistoryPage() {
   return (
-    <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-8 px-6 py-12">
-      <header className="flex flex-col gap-2">
-        <Link href="/" className="inline-block py-1 text-sm text-zinc-600 underline dark:text-zinc-400">
-          Leash
-        </Link>
-        <h1 className="text-3xl font-semibold tracking-tight">Purchase history</h1>
-        <p
-          role="note"
-          className="rounded-lg border border-zinc-300 p-4 text-sm leading-6 text-zinc-700 dark:border-zinc-700 dark:text-zinc-300"
-        >
-          Every purchase the AI agent proposed, with the decision and the rule behind it. Charged
-          purchases have a 14-day return window: until it closes, you can refund one in full to
-          your PayPal (sandbox). Only you can start a refund; the agent cannot.
-        </p>
-      </header>
-
-      <Suspense fallback={<p className="text-sm text-zinc-600">Loading…</p>}>
+    <Page
+      title="Purchase history"
+      intro="Every purchase Rex proposed, what Leash decided and why. You can refund a paid purchase for 14 days; Rex cannot."
+    >
+      <Suspense fallback={<LoadingCards label="Loading your purchases…" count={3} />}>
         <Purchases />
       </Suspense>
-
-      <p className="text-sm">
-        <Link href="/agent" className="inline-block py-1 underline">
-          Back to the shopping agent
-        </Link>
-      </p>
-    </main>
+    </Page>
   );
+}
+
+function toneOf(item: HistoryItem): HistoryTone {
+  if (item.refundPending || item.paymentStatus === "REFUNDED" || item.paymentStatus === "PARTIALLY_REFUNDED") {
+    return "refunded";
+  }
+  if (item.outcome === "BLOCK" || item.paymentStatus === "DECLINED" || item.paymentStatus === "FAILED") {
+    return "stopped";
+  }
+  if (item.paymentStatus === "COMPLETED") return "paid";
+  return "waiting";
 }
 
 function statusText(item: HistoryItem): string {
@@ -70,17 +63,14 @@ async function Purchases() {
   const userId = await currentUserId(); // reads the visitor cookie: always render at request time
   const rows: HistoryRow[] = listHistory(getDb(), userId, new Date()).map((item) => ({
     intentId: item.intentId,
+    tone: toneOf(item),
     title: `${item.quantity} × ${item.productTitle ?? "Unknown product"}`,
-    details: [
-      SOURCE_LABELS[item.source],
-      item.merchantDomain,
-      item.orderTotal ? `€${item.orderTotal}` : null,
-      dateTime.format(item.createdAt),
-    ]
+    amount: item.orderTotal ? `€${item.orderTotal}` : null,
+    details: [SOURCE_LABELS[item.source], item.merchantDomain, dateTime.format(item.createdAt)]
       .filter(Boolean)
       .join(" · "),
     status: statusText(item),
-    explanation: item.explanation,
+    explanation: reasonText(item.explanation),
     agentReason: item.agentReason,
     paypalReference: item.paypalReference,
     returnWindow: windowText(item),

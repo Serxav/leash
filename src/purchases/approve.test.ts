@@ -114,7 +114,7 @@ describe("approval inbox: approve (US5)", () => {
       intentId,
       outcome: "APPROVE",
       decidedBy: "USER",
-      explanation: "You approved €24.00 in your inbox, after Leash checked the price and your rules again.",
+      explanation: "You approved €24.00 yourself, after Leash checked the price and your rules again.",
       paymentStatus: "COMPLETED",
     });
   });

@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Suspense } from "react";
 import { isAgentPaused } from "@/account/settings";
 import { currentUserId } from "@/account/visitor";
 import { getDb } from "@/db/client";
 import { getMandateView, type MandateView } from "@/payments/mandate";
+import { LoadingCards, Page } from "@/components/page";
 import { PermissionsForms, type PermissionsView } from "./permissions-forms";
 
 export const metadata: Metadata = {
@@ -15,28 +15,25 @@ const date = new Intl.DateTimeFormat("en-GB", { dateStyle: "medium", timeZone: "
 
 export default function PermissionsPage({ searchParams }: PageProps<"/permissions">) {
   return (
-    <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-8 px-6 py-12">
-      <header className="flex flex-col gap-2">
-        <Link href="/" className="inline-block py-1 text-sm text-zinc-600 underline dark:text-zinc-400">
-          Leash
-        </Link>
-        <h1 className="text-3xl font-semibold tracking-tight">Permissions</h1>
-        <p
-          role="note"
-          className="rounded-lg border border-zinc-300 p-4 text-sm leading-6 text-zinc-700 dark:border-zinc-700 dark:text-zinc-300"
-        >
-          You stay in control of the AI agent: pause it, disconnect PayPal, or delete everything
-          Leash stores about you. Each switch works at once, for purchases the agent has not made
-          yet.
-        </p>
-      </header>
-
-      <Suspense fallback={<p className="text-sm text-zinc-600">Loading…</p>}>
+    <Page
+      title="Permissions"
+      intro="You stay in control of Rex: pause it, disconnect PayPal, or delete your data. Each switch works at once."
+    >
+      <Suspense fallback={<LoadingCards label="Loading your permissions…" count={3} />}>
         <Permissions searchParams={searchParams} />
       </Suspense>
-    </main>
+    </Page>
   );
 }
+
+/** A short state for the PayPal row, next to the full sentence. */
+const MANDATE_LABELS: Record<MandateView["status"], string> = {
+  ACTIVE: "Connected",
+  PAUSED: "Paused",
+  PENDING: "Waiting for PayPal",
+  REVOKED: "Revoked",
+  NONE: "Not connected",
+};
 
 function mandateText(mandate: MandateView): string {
   switch (mandate.status) {
@@ -67,6 +64,8 @@ async function Permissions({ searchParams }: { searchParams: PageProps<"/permiss
   const mandate = getMandateView(db, userId);
   const view: PermissionsView = {
     agentPaused: isAgentPaused(db, userId),
+    mandateLabel: MANDATE_LABELS[mandate.status],
+    paypalConnected: mandate.status === "ACTIVE",
     mandateText: mandateText(mandate),
     canRevoke: mandate.status === "ACTIVE" || mandate.status === "PAUSED",
     canConnect: mandate.status === "NONE" || mandate.status === "PENDING" || (mandate.status === "REVOKED" && !mandate.deletionPending),

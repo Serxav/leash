@@ -29,12 +29,15 @@ layer between an AI shopping agent and the user's money:
    rules as readable tags and confirms them as a new version (`src/rules/policies.ts`).
    **Implemented:** the shopping agent (`src/agent/agent.ts`, page `/agent`). Its only tools
    are a catalog search and `propose_purchase`; the server re-reads price, shop and category,
-   runs the engine and charges only approved purchases (`src/purchases/propose.ts`).
+   runs the engine and charges only approved purchases (`src/purchases/propose.ts`). On
+   `/agent` the user chats with **Rex**, the agent's puppy-on-a-leash mascot: it shows what
+   the agent is doing, and its mood only mirrors the engine's decisions (D-042).
    **Implemented:** prompt-injection defence (`src/security/`). Shop text that gives orders
    to AI agents is found by plain code, hidden from the agent and never bought, and each case
-   appears in the security log on `/agent`.
+   appears in the security log under "Rules & activity" on `/agent`.
    **Implemented:** the approval inbox (`/inbox`, `src/purchases/approve.ts`). Purchases
-   above the user's approval amount wait there; one tap approves or rejects. Approving does
+   above the user's approval amount wait there (and on their card in the chat); one tap
+   approves or rejects. Approving does
    not skip the checks: Leash re-reads the price and runs the engine again with the current
    rules and budget, blocks it if the price went up or a rule now fails, and only then
    charges (D-036).

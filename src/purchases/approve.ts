@@ -70,7 +70,7 @@ export async function answerApproval(
         decision: {
           outcome: "BLOCK",
           ruleIds: ["approval_threshold"],
-          explanation: "You rejected it in your inbox, so Leash did not buy it.",
+          explanation: "You rejected it, so Leash did not buy it.",
           orderTotal: pending.orderTotal,
         },
         decidedBy: "USER",
@@ -106,7 +106,7 @@ export async function answerApproval(
     deps.db.transaction((tx) => {
       storeDecision(tx, intent.id, {
         decision: approved
-          ? { outcome: "APPROVE", ruleIds: [], explanation: `You approved €${total} in your inbox, after Leash checked the price and your rules again.`, orderTotal: total }
+          ? { outcome: "APPROVE", ruleIds: [], explanation: `You approved €${total} yourself, after Leash checked the price and your rules again.`, orderTotal: total }
           : decision,
         // A block found now is the engine's; only a yes is the user's.
         decidedBy: approved ? "USER" : "ENGINE",

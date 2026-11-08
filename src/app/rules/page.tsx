@@ -1,11 +1,19 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Suspense } from "react";
 import { getDb } from "@/db/client";
 import { currentUserId } from "@/account/visitor";
 import { describeRules } from "@/rules/describe";
 import { getActivePolicy, listPolicyVersions } from "@/rules/policies";
+import { LoadingCards, Page, Steps } from "@/components/page";
+import { RuleList } from "./rule-list";
 import { RulesForm } from "./rules-form";
+
+/** The three steps, so nobody wonders what happens to their words. */
+const STEPS = [
+  { title: "Write", text: "Say in your own words what Rex may buy, and how much." },
+  { title: "Check", text: "An AI turns your words into exact rules. You read them." },
+  { title: "Confirm", text: "From then on, code, not the AI, checks every purchase with them." },
+] as const;
 
 export const metadata: Metadata = {
   title: "Spending rules – Leash",
@@ -32,23 +40,17 @@ function first(value: string | string[] | undefined): string | undefined {
 
 export default function RulesPage({ searchParams }: PageProps<"/rules">) {
   return (
-    <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-8 px-6 py-12">
-      <header className="flex flex-col gap-2">
-        <Link href="/" className="inline-block py-1 text-sm text-zinc-600 underline dark:text-zinc-400">
-          Leash
-        </Link>
-        <h1 className="text-3xl font-semibold tracking-tight">Your spending rules</h1>
-        <p className="text-zinc-700 dark:text-zinc-300">
-          Write your rules in plain language. An AI turns them into exact rules, and you
-          check and confirm them. Then code, not the AI, applies them to every purchase.
-        </p>
-      </header>
+    <Page
+      title="Spending rules"
+      intro="Your rules are Rex's leash: they decide what the AI shopping agent may buy, how much and when it must ask you first."
+    >
+      <Steps label="How it works" steps={STEPS} />
 
       {/* Static shell above; request-time data streams in below (Cache Components). */}
-      <Suspense fallback={<p className="text-sm text-zinc-600">Loading your rules…</p>}>
+      <Suspense fallback={<LoadingCards label="Loading your rules…" />}>
         <RulesState searchParams={searchParams} />
       </Suspense>
-    </main>
+    </Page>
   );
 }
 
@@ -69,11 +71,7 @@ async function RulesState({
       {message && (
         <p
           role="status"
-          className={`rounded-lg border p-4 text-sm ${
-            message.error
-              ? "border-red-300 text-red-800 dark:border-red-800 dark:text-red-300"
-              : "border-zinc-300 text-zinc-800 dark:border-zinc-700 dark:text-zinc-200"
-          }`}
+          className={`card p-4 text-sm ${message.error ? "text-danger" : ""}`}
         >
           {message.text}
         </p>
@@ -81,32 +79,21 @@ async function RulesState({
 
       <section
         aria-labelledby="active-heading"
-        className="flex flex-col gap-4 rounded-lg border border-zinc-300 p-6 dark:border-zinc-700"
+        className="card flex flex-col gap-4 p-5 sm:p-6"
       >
         <h2 id="active-heading" className="text-xl font-semibold">
           Rules in use
         </h2>
         {active ? (
           <>
-            <p className="text-sm text-zinc-700 dark:text-zinc-300">
+            <p className="text-sm text-muted">
               Version {active.version} · confirmed {dateTime.format(active.confirmedAt)}
             </p>
-            <ul aria-label="Rules in use" className="flex flex-wrap gap-2">
-              {describeRules(active.rules).map((tag) => (
-                <li
-                  key={tag.id}
-                  className="rounded-full border border-zinc-400 px-3 py-1 text-sm dark:border-zinc-600"
-                >
-                  {tag.text}
-                </li>
-              ))}
-            </ul>
-            <p className="text-xs text-zinc-600 dark:text-zinc-400">
-              You wrote: “{active.sourceText}”
-            </p>
+            <RuleList tags={describeRules(active.rules)} label="Rules in use" />
+            <p className="text-xs leading-5 text-muted">You wrote: “{active.sourceText}”</p>
           </>
         ) : (
-          <p className="text-sm text-zinc-700 dark:text-zinc-300">
+          <p className="card-muted px-4 py-3 text-sm text-muted">
             No rules yet. Leash buys nothing until you confirm your rules.
           </p>
         )}
@@ -114,7 +101,7 @@ async function RulesState({
 
       <section
         aria-labelledby="write-heading"
-        className="flex flex-col gap-4 rounded-lg border border-zinc-300 p-6 dark:border-zinc-700"
+        className="card flex flex-col gap-4 p-5 sm:p-6"
       >
         <h2 id="write-heading" className="text-xl font-semibold">
           {active ? "Change your rules" : "Write your rules"}
@@ -128,7 +115,7 @@ async function RulesState({
           <h2 id="versions-heading" className="text-base font-semibold">
             Earlier versions
           </h2>
-          <ul className="text-sm text-zinc-700 dark:text-zinc-300">
+          <ul className="text-sm text-muted">
             {versions.slice(1).map((version) => (
               <li key={version.version}>
                 Version {version.version} · confirmed {dateTime.format(version.confirmedAt)}

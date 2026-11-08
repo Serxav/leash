@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { asc, desc, eq, inArray, sql } from "drizzle-orm";
+import { and, asc, desc, eq, inArray, sql } from "drizzle-orm";
 import { z } from "zod";
 import { isAgentPaused } from "@/account/settings";
 import type { Catalog } from "@/catalog/catalog";
@@ -324,6 +324,21 @@ export function listProposals(db: Db, userId: string, limit = 20): ProposalView[
     .limit(limit)
     .all();
   return toProposalViews(db, intents);
+}
+
+/**
+ * The proposals of one agent run, in the order the agent made them, for the
+ * chat (D-042). Only this user's: other IDs are ignored.
+ */
+export function listProposalsByIds(db: Db, userId: string, intentIds: string[]): ProposalView[] {
+  if (intentIds.length === 0) return [];
+  const intents = db
+    .select()
+    .from(purchaseIntents)
+    .where(and(eq(purchaseIntents.userId, userId), inArray(purchaseIntents.id, intentIds)))
+    .all();
+  const byId = new Map(toProposalViews(db, intents).map((view) => [view.intentId, view]));
+  return intentIds.flatMap((id) => byId.get(id) ?? []);
 }
 
 /**
