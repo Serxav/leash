@@ -158,3 +158,22 @@ are not in the official rules, so read them before using a sponsor tool.
 - [ ] Release v1.0.0 created on GitHub, and `main` frozen until Dec 15
 - [ ] Name and pitch reviewed in the form
 - [ ] **Submitted**, not just saved as a draft
+
+### Status on Nov 8 (before ticking on Nov 11)
+
+- **Done:** public repo with MIT detected by GitHub; README for judges with the AI, the PayPal
+  parts and their folders, requirements, variables, install and run (`docs/f6-judges-readme`),
+  plus `docs/TRY_IT.md`; `.env.example` complete and gitleaks green on every PR; green CI on
+  `main`; the new dependency (`@ai-sdk/openai-compatible`) is Apache-2.0.
+- **Open, Sergi:** the judges' sandbox Personal account (and a backup), then its login in
+  `README.md`, `docs/TRY_IT.md` and `docs/SUBMISSION.md`; the video; the Devpost form.
+- **Open, blocked:** the live app's AI fails on Render ("The AI could not run right now")
+  while the same code and key work locally (dev and production builds). Render's log line
+  `[agent] AI call failed: …` (PR #37) names the cause.
+- **Risk: "a plan that never sleeps".** Render Free sleeps after 15 minutes. An uptime
+  monitor can keep it awake, but Render Free gives 750 instance hours a month per workspace,
+  and FixScribe already runs on the same account: two services awake all month need about
+  1,460 hours, so both would be suspended. Options: a second Render account for Leash, accept
+  the one-minute wake-up (stated in the README and TRY_IT), or Starter with the hackathon
+  credits (D-041). Sergi decides.
+- **Open:** `INSTRUMENT_DECLINED` with the Business account check, run again before Nov 11.

@@ -68,7 +68,7 @@ definition of done in `CLAUDE.md`. Tags close each phase.
       when a rule is ambiguous
 - [x] `feat/f2-rules-confirmation` (D-026): confirmation screen with readable tags and policy
       versions
-- [ ] *(Can move earlier, D-006)* UI shells for the approval inbox and history
+- [x] *(Can move earlier, D-006)* UI shells for the approval inbox and history (done in F4)
 
 ## F3 · Agent (Oct 26–Nov 1, low pace) → `v0.3.0`
 
@@ -93,8 +93,8 @@ definition of done in `CLAUDE.md`. Tags close each phase.
 
 ## F4 · Control (Nov 2–5) → `v0.4.0`
 
-- [ ] `chore/f4-switch-to-meta` (D-043, was "switch to Claude"): `AI_PROVIDER=meta`, pass the
-      rules and agent tests, tune the prompts
+- [x] `chore/f4-switch-to-meta` (D-043, was "switch to Claude", PR #36): `AI_PROVIDER=meta`,
+      Google removed; rules builder, prompt-injection and a full sandbox purchase pass on Meta
 - [x] `feat/f4-approval-inbox`: one-tap approve/reject, where approving triggers the charge (D-036)
 - [x] `feat/f4-history`: status, amount, rule, PayPal reference, "14-day return window"
       countdown (D-008), refund button through the Agent Toolkit (D-037)
@@ -113,20 +113,25 @@ definition of done in `CLAUDE.md`. Tags close each phase.
 - [x] `feat/f5-render-deploy` (D-041): `render.yaml` for Render **Free** (no billing),
       per-visitor and global AI rate limits, PayPal return URL from Render's address
 - [ ] Sergi: create the Render service from the Blueprint and fill in the variables; check
-      `/api/health` and one sandbox purchase there. Not shared until `AI_PROVIDER=meta`
+      `/api/health` and one sandbox purchase there. Created on Nov 8
+      (https://leash-crcx.onrender.com): `/api/health` and Connect PayPal work, but the AI
+      fails there while it works locally; Render's log line (PR #37) names the cause
 - [ ] Decide: stay on Free, or Starter with the hackathon's $50 Render credits (D-041)
 - [ ] Dedicated sandbox Personal account for judges, plus a backup account
 - [ ] README for judges: what it is, AI used, PayPal APIs and folders, requirements,
-      variables, install, run, sandbox credentials, how to test each user story
+      variables, install, run, sandbox credentials, how to test each user story. Written on
+      Nov 8 in FixScribe's style with screenshots, plus `docs/TRY_IT.md`; the judges'
+      sandbox login is still missing
 - [ ] Instructions tested from scratch on a clean machine
 
 ## F6 · Submission (Nov 9–11) → `v1.0.0`
 
 - [ ] Claim the APIMatic free subscription (Sergi; the form is on the Devpost APIMatic page). Name the APIMatic Context Plugin on Devpost
 
-- [ ] Final `docs/DEMO_SCRIPT.md`, ≤ 2:45
+- [ ] Final `docs/DEMO_SCRIPT.md`, ≤ 2:45 (narration written on Nov 8; Sergi reviews it)
 - [ ] Record the video on the real device, upload it to YouTube as **public**
-- [ ] `docs/SUBMISSION.md`: Devpost texts in English
+- [ ] `docs/SUBMISSION.md`: Devpost texts in English (drafted on Nov 8; "What we learned" is
+      Sergi's, plus the judges' login)
 - [ ] Go through the compliance checklist in `docs/HACKATHON_RULES.md`
 - [ ] Release `v1.0.0`; `main` frozen until Dec 15; new work on `next`
 - [ ] **Submit on Devpost on Nov 11** (it closes Nov 12, 21:00 Madrid)
