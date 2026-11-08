@@ -161,8 +161,10 @@ data/
 *.sqlite-shm
 *.sqlite3
 
-# Personal study notes (Spanish, kept local)
+# Local working notes and agent settings (kept off GitHub)
 docs/LEARNING.md
+.claude/*
+!.claude/settings.json
 
 # Next.js extras (from create-next-app)
 /build

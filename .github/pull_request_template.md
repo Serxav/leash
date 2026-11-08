@@ -4,7 +4,7 @@
 
 ## Why
 
-<!-- Which ROADMAP task, and the reason. Link decisions in docs/DECISIONS.md. -->
+<!-- Which task, and the reason. -->
 
 ## How it was tested
 
@@ -24,5 +24,4 @@
 - [ ] Everything in the repo is in English
 - [ ] README and `.env.example` updated if something changed
 - [ ] Works exactly as the README and video describe it
-- [ ] `docs/PROGRESS.md` updated and box ticked in `docs/ROADMAP.md`
 - [ ] Third-party code (if any) has a compatible licence and is credited in the README
