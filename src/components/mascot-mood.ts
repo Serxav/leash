@@ -12,11 +12,16 @@ export type RestingMood = Exclude<MascotMood, "working">;
 
 export const MASCOT_NAME = "Rex";
 
+/** An engine outcome, or the user's own "no" on a card that waited for them. */
+export type CardOutcome = Outcome | "REJECTED";
+
 /**
  * The mood after an agent run. A blocked proposal wins, because it shows
  * the leash working; then one waiting for the user; then approved ones.
+ * The user's own rejections are their choice, not the leash, so they do
+ * not change the mood.
  */
-export function moodForOutcomes(outcomes: readonly Outcome[]): RestingMood {
+export function moodForOutcomes(outcomes: readonly CardOutcome[]): RestingMood {
   if (outcomes.includes("BLOCK")) return "stopped";
   if (outcomes.includes("NEEDS_APPROVAL")) return "waiting";
   if (outcomes.includes("APPROVE")) return "happy";
@@ -50,12 +55,13 @@ export const WORK_STEPS = [
 ] as const;
 
 /** A short count of the decisions, for the status line after a run. */
-export function outcomeSummary(outcomes: readonly Outcome[]): string | null {
-  const count = (outcome: Outcome) => outcomes.filter((each) => each === outcome).length;
+export function outcomeSummary(outcomes: readonly CardOutcome[]): string | null {
+  const count = (outcome: CardOutcome) => outcomes.filter((each) => each === outcome).length;
   const parts = [
     count("APPROVE") && `${count("APPROVE")} approved`,
     count("NEEDS_APPROVAL") && `${count("NEEDS_APPROVAL")} waiting for you`,
     count("BLOCK") && `${count("BLOCK")} blocked`,
+    count("REJECTED") && `${count("REJECTED")} rejected by you`,
   ].filter(Boolean);
   return parts.length > 0 ? parts.join(" · ") : null;
 }
