@@ -7,12 +7,12 @@ import {
 } from "./env";
 
 // Fake placeholder values only: never real credentials in tests.
-const validGoogleEnv = {
+const validEnv = {
   PAYPAL_ENVIRONMENT: "SANDBOX",
   PAYPAL_CLIENT_ID: "test-client-id",
   PAYPAL_CLIENT_SECRET: "test-client-secret",
-  AI_PROVIDER: "google",
-  GOOGLE_GENERATIVE_AI_API_KEY: "test-google-key",
+  AI_PROVIDER: "meta",
+  META_MODEL_API_KEY: "test-meta-key",
   ANTHROPIC_API_KEY: "",
   CHANNEL3_API_KEY: "test-channel3-key",
 };
@@ -28,70 +28,74 @@ function problemsOf(source: Record<string, string | undefined>): string[] {
 }
 
 describe("parseServerEnv", () => {
-  it("accepts a valid sandbox + Gemini configuration", () => {
-    const env = parseServerEnv(validGoogleEnv);
+  it("accepts a valid sandbox + Meta configuration", () => {
+    const env = parseServerEnv(validEnv);
     expect(env.PAYPAL_ENVIRONMENT).toBe("SANDBOX");
-    expect(env.AI_PROVIDER).toBe("google");
+    expect(env.AI_PROVIDER).toBe("meta");
     expect(env.paypalApiBase).toBe(PAYPAL_SANDBOX_API_BASE);
   });
 
-  it("does not require ANTHROPIC_API_KEY while AI_PROVIDER=google", () => {
+  it("does not require ANTHROPIC_API_KEY while AI_PROVIDER=meta", () => {
     expect(() =>
-      parseServerEnv({ ...validGoogleEnv, ANTHROPIC_API_KEY: undefined }),
+      parseServerEnv({ ...validEnv, ANTHROPIC_API_KEY: undefined }),
     ).not.toThrow();
   });
 
   it("treats empty values as missing", () => {
     expect(
-      problemsOf({ ...validGoogleEnv, PAYPAL_CLIENT_SECRET: "  " }),
+      problemsOf({ ...validEnv, PAYPAL_CLIENT_SECRET: "  " }),
     ).toEqual(["PAYPAL_CLIENT_SECRET is missing"]);
   });
 
   it("refuses live PayPal", () => {
-    expect(problemsOf({ ...validGoogleEnv, PAYPAL_ENVIRONMENT: "LIVE" })).toEqual(
+    expect(problemsOf({ ...validEnv, PAYPAL_ENVIRONMENT: "LIVE" })).toEqual(
       ["PAYPAL_ENVIRONMENT must be SANDBOX (Leash never uses live PayPal)"],
     );
   });
 
   it("refuses a missing PAYPAL_ENVIRONMENT", () => {
     expect(
-      problemsOf({ ...validGoogleEnv, PAYPAL_ENVIRONMENT: undefined }),
+      problemsOf({ ...validEnv, PAYPAL_ENVIRONMENT: undefined }),
     ).toHaveLength(1);
   });
 
-  it("requires the Gemini key when AI_PROVIDER=google", () => {
-    expect(
-      problemsOf({ ...validGoogleEnv, GOOGLE_GENERATIVE_AI_API_KEY: "" }),
-    ).toEqual([
-      "GOOGLE_GENERATIVE_AI_API_KEY is required when AI_PROVIDER=google",
+  it("requires the Meta key when AI_PROVIDER=meta (D-043)", () => {
+    expect(problemsOf({ ...validEnv, META_MODEL_API_KEY: "" })).toEqual([
+      "META_MODEL_API_KEY is required when AI_PROVIDER=meta",
     ]);
   });
 
   it("requires the Anthropic key when AI_PROVIDER=anthropic", () => {
     expect(
-      problemsOf({ ...validGoogleEnv, AI_PROVIDER: "anthropic" }),
+      problemsOf({ ...validEnv, AI_PROVIDER: "anthropic" }),
     ).toEqual(["ANTHROPIC_API_KEY is required when AI_PROVIDER=anthropic"]);
   });
 
-  it("accepts AI_PROVIDER=anthropic with its key and no Gemini key", () => {
+  it("accepts AI_PROVIDER=anthropic with its key and no Meta key", () => {
     const env = parseServerEnv({
-      ...validGoogleEnv,
+      ...validEnv,
       AI_PROVIDER: "anthropic",
       ANTHROPIC_API_KEY: "test-anthropic-key",
-      GOOGLE_GENERATIVE_AI_API_KEY: "",
+      META_MODEL_API_KEY: "",
     });
     expect(env.AI_PROVIDER).toBe("anthropic");
   });
 
+  it("rejects google, which Leash no longer uses (D-043)", () => {
+    expect(problemsOf({ ...validEnv, AI_PROVIDER: "google" })).toEqual([
+      "AI_PROVIDER must be meta or anthropic",
+    ]);
+  });
+
   it("rejects an unknown AI provider", () => {
-    expect(problemsOf({ ...validGoogleEnv, AI_PROVIDER: "openai" })).toEqual([
-      "AI_PROVIDER must be google or anthropic",
+    expect(problemsOf({ ...validEnv, AI_PROVIDER: "openai" })).toEqual([
+      "AI_PROVIDER must be meta or anthropic",
     ]);
   });
 
   it("allows a missing Channel3 key (local catalog fallback)", () => {
     expect(() =>
-      parseServerEnv({ ...validGoogleEnv, CHANNEL3_API_KEY: "" }),
+      parseServerEnv({ ...validEnv, CHANNEL3_API_KEY: "" }),
     ).not.toThrow();
   });
 
@@ -101,7 +105,7 @@ describe("parseServerEnv", () => {
 
   it("never includes secret values in error messages", () => {
     const leaky = {
-      ...validGoogleEnv,
+      ...validEnv,
       PAYPAL_ENVIRONMENT: "LIVE",
       AI_PROVIDER: "anthropic",
     };
@@ -109,7 +113,7 @@ describe("parseServerEnv", () => {
     for (const secret of [
       "test-client-id",
       "test-client-secret",
-      "test-google-key",
+      "test-meta-key",
       "test-channel3-key",
     ]) {
       expect(message).not.toContain(secret);
@@ -145,19 +149,19 @@ describe("assertSandboxApiBase", () => {
 
 describe("PAYPAL_MERCHANT_ID", () => {
   it("is optional", () => {
-    expect(parseServerEnv(validGoogleEnv).PAYPAL_MERCHANT_ID).toBeUndefined();
+    expect(parseServerEnv(validEnv).PAYPAL_MERCHANT_ID).toBeUndefined();
   });
 
   it("accepts a PayPal Merchant ID", () => {
     expect(
-      parseServerEnv({ ...validGoogleEnv, PAYPAL_MERCHANT_ID: "ABCDEFGH12345" })
+      parseServerEnv({ ...validEnv, PAYPAL_MERCHANT_ID: "ABCDEFGH12345" })
         .PAYPAL_MERCHANT_ID,
     ).toBe("ABCDEFGH12345");
   });
 
   it("rejects values that are not a Merchant ID", () => {
     expect(
-      problemsOf({ ...validGoogleEnv, PAYPAL_MERCHANT_ID: "sb-xyz@business.example.com" }),
+      problemsOf({ ...validEnv, PAYPAL_MERCHANT_ID: "sb-xyz@business.example.com" }),
     ).toEqual([
       "PAYPAL_MERCHANT_ID must be the PayPal Merchant ID (letters and digits)",
     ]);

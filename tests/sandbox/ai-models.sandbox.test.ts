@@ -2,7 +2,7 @@ import { generateText } from "ai";
 import { describe, expect, it } from "vitest";
 import { describeModels, getModel } from "@/ai/models";
 
-// One tiny real call to the configured provider (free tier, invented data).
+// One tiny real call to the configured provider (invented data).
 describe("AI provider", () => {
   it("answers with the configured rules model", async () => {
     const { text } = await generateText({
@@ -11,6 +11,6 @@ describe("AI provider", () => {
       maxRetries: 1,
     });
     expect(text.trim().toUpperCase()).toContain("OK");
-    expect(describeModels().rules).toMatch(/^(gemini|claude)-/);
+    expect(describeModels().rules).toMatch(/^(muse|claude)-/);
   });
 });

@@ -81,12 +81,12 @@ PayPal** in Claude Code.
 
 | Model | Used for |
 |---|---|
-| Claude `claude-sonnet-5-5` (Anthropic API) | Shopping agent: searches and compares products, proposes purchases |
-| Claude `claude-haiku-5-5` (Anthropic API) | Rule conversion (plain language → JSON) and summaries |
+| Meta `muse-spark-1.3` (Meta Model API) | Shopping agent: searches and compares products, proposes purchases |
+| Meta `muse-spark-1.3` (Meta Model API) | Rule conversion (plain language → JSON) and summaries |
 
 The AI never receives a tool that moves money, never sees credentials or tokens, and treats
-product text as data, never as instructions. During early development, a free Gemini model
-is used with invented data only. The public demo always uses Claude. The provider and models
+product text as data, never as instructions. Leash uses Meta's Model API in Standard mode,
+where Meta does not train on the requests. The provider and models
 are chosen in one place: `src/ai/models.ts`.
 
 ## Sponsor tools

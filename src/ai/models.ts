@@ -1,17 +1,18 @@
 import "server-only";
 import { createAnthropic } from "@ai-sdk/anthropic";
-import { createGoogle } from "@ai-sdk/google";
-import { APICallError, wrapLanguageModel, type LanguageModel, type LanguageModelMiddleware } from "ai";
+import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
+import type { LanguageModel } from "ai";
 import { getServerEnv, type ServerEnv } from "@/config/env";
 
 /**
  * The only place where Leash chooses the AI provider and models (CLAUDE.md).
  *
- * - Until Nov 1: AI_PROVIDER=google, gemini-3.5-flash-lite for everything,
- *   on the free tier with invented data only (D-023, D-027). When Google
- *   says that model is busy, the same call goes to gemini-3.1-flash-lite.
- * - From Nov 2 and always in the public demo, video and submission:
- *   AI_PROVIDER=anthropic, Sonnet for the agent and Haiku for rules.
+ * - AI_PROVIDER=meta (D-043): Meta's muse-spark-1.3 through Meta's Model
+ *   API, in Standard mode (Meta does not train on the requests), paid with
+ *   Sergi's Meta credits. Model API speaks the OpenAI Chat Completions
+ *   protocol at https://api.meta.ai/v1.
+ * - AI_PROVIDER=anthropic (Sonnet for the agent, Haiku for rules) stays
+ *   available, but is not used.
  *
  * Security:
  * - Server only: importing this file from browser code fails the build, so
@@ -30,48 +31,14 @@ export type ModelRole =
   | "rules";
 
 export const MODEL_IDS = {
-  google: { agent: "gemini-3.5-flash-lite", rules: "gemini-3.5-flash-lite" },
+  meta: { agent: "muse-spark-1.3", rules: "muse-spark-1.3" },
   anthropic: { agent: "claude-sonnet-5-5", rules: "claude-haiku-5-5" },
 } as const satisfies Record<ServerEnv["AI_PROVIDER"], Record<ModelRole, string>>;
 
-/**
- * Free-tier Gemini models are often "experiencing high demand" (D-027). If
- * Google answers busy (503) or over the free rate limit (429), the call is
- * sent once to this other free model. Both are free tier: no bills.
- */
-export const GOOGLE_FALLBACK_MODEL_ID = "gemini-3.1-flash-lite";
+/** Meta's Model API, OpenAI-compatible (dev.meta.ai/docs/quickstart). */
+export const META_API_BASE = "https://api.meta.ai/v1";
 
-/** Google's "model busy" (503) and "free rate limit reached" (429) answers. */
-export function isBusyError(error: unknown): boolean {
-  return APICallError.isInstance(error) && (error.statusCode === 503 || error.statusCode === 429);
-}
-
-type GoogleModel = ReturnType<ReturnType<typeof createGoogle>>;
-
-/** `primary`, but a busy answer sends the same call to `fallback` instead. */
-function withFallback(primary: GoogleModel, fallback: GoogleModel): LanguageModel {
-  const middleware: LanguageModelMiddleware = {
-    wrapGenerate: async ({ doGenerate, params }) => {
-      try {
-        return await doGenerate();
-      } catch (error) {
-        if (!isBusyError(error)) throw error;
-        return fallback.doGenerate(params);
-      }
-    },
-    wrapStream: async ({ doStream, params }) => {
-      try {
-        return await doStream();
-      } catch (error) {
-        if (!isBusyError(error)) throw error;
-        return fallback.doStream(params);
-      }
-    },
-  };
-  return wrapLanguageModel({ model: primary, middleware });
-}
-
-type AiEnv = Pick<ServerEnv, "AI_PROVIDER" | "GOOGLE_GENERATIVE_AI_API_KEY" | "ANTHROPIC_API_KEY">;
+type AiEnv = Pick<ServerEnv, "AI_PROVIDER" | "META_MODEL_API_KEY" | "ANTHROPIC_API_KEY">;
 
 export type Models = Record<ModelRole, LanguageModel>;
 
@@ -79,14 +46,18 @@ export type Models = Record<ModelRole, LanguageModel>;
 export function createModels(env: AiEnv, options: { fetch?: typeof fetch } = {}): Models {
   const ids = MODEL_IDS[env.AI_PROVIDER];
 
-  if (env.AI_PROVIDER === "google") {
-    if (!env.GOOGLE_GENERATIVE_AI_API_KEY) throw new Error("The Google AI key is missing.");
-    const google = createGoogle({ apiKey: env.GOOGLE_GENERATIVE_AI_API_KEY, fetch: options.fetch });
-    const fallback = google(GOOGLE_FALLBACK_MODEL_ID);
-    return {
-      agent: withFallback(google(ids.agent), fallback),
-      rules: withFallback(google(ids.rules), fallback),
-    };
+  if (env.AI_PROVIDER === "meta") {
+    if (!env.META_MODEL_API_KEY) throw new Error("The Meta key is missing.");
+    const meta = createOpenAICompatible({
+      name: "meta",
+      baseURL: META_API_BASE,
+      apiKey: env.META_MODEL_API_KEY,
+      // Model API returns JSON that matches a schema (response_format
+      // json_schema); the rules converter relies on it.
+      supportsStructuredOutputs: true,
+      fetch: options.fetch,
+    });
+    return { agent: meta(ids.agent), rules: meta(ids.rules) };
   }
 
   if (!env.ANTHROPIC_API_KEY) throw new Error("The Anthropic key is missing.");
