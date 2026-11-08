@@ -32,6 +32,7 @@ export function ProposalCard({
   const outcome = answer === null ? card.outcome : answer ? "APPROVE" : "BLOCK";
   const headline =
     answer === null ? card.headline : answer ? "You approved this purchase" : "You rejected this purchase";
+  const status = answer === null ? card.status : answer ? "Approved by you" : "Rejected by you";
   const mark = MARKS[outcome];
   return (
     <article className="card rise-in flex flex-col gap-3 p-4 text-sm">
@@ -48,7 +49,7 @@ export function ProposalCard({
         {card.orderTotal && <p className="shrink-0 font-semibold tabular-nums">€{card.orderTotal}</p>}
       </div>
       <div className="card-muted flex flex-col gap-1 px-3.5 py-3">
-        <p className="text-xs text-muted">{card.status}</p>
+        <p className="text-xs text-muted">{status}</p>
         {/* Product and shop text, rendered as plain text (React escapes it). */}
         <h3 className="font-medium">{card.title}</h3>
         <p className="text-xs text-muted">{card.details}</p>

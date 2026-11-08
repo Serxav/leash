@@ -25,4 +25,10 @@ describe("Rex's mood follows the engine", () => {
     expect(outcomeSummary(["BLOCK"])).toBe("1 blocked");
     expect(outcomeSummary([])).toBeNull();
   });
+
+  it("tells the user's own rejection apart from a block", () => {
+    expect(outcomeSummary(["APPROVE", "REJECTED"])).toBe("1 approved · 1 rejected by you");
+    expect(moodForOutcomes(["APPROVE", "REJECTED"])).toBe("happy");
+    expect(moodForOutcomes(["REJECTED"])).toBe("idle");
+  });
 });

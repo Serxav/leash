@@ -9,13 +9,13 @@ import {
   MOOD_STATUS,
   outcomeSummary,
   WORK_STEPS,
+  type CardOutcome,
   type MascotMood,
   type RestingMood,
 } from "@/components/mascot-mood";
 import { ProposalCard } from "@/components/proposal-card";
 import { SubmitButton } from "@/components/submit-button";
 import { runAgent } from "./actions";
-import type { Outcome } from "@/rules/engine";
 import type { AgentReply } from "./state";
 
 /** Keep in sync with MAX_REQUEST_LENGTH in src/agent/agent.ts. */
@@ -56,7 +56,7 @@ export function AgentChat({ activity, notices }: { activity: ReactNode; notices:
   const [sending, setSending] = useState({ text: "", at: new Date(0) });
   const [now, setNow] = useState(0);
   // The user's answers on the chat's cards, so Rex stops waiting for them.
-  const [answers, setAnswers] = useState<Record<string, Outcome>>({});
+  const [answers, setAnswers] = useState<Record<string, CardOutcome>>({});
   const [turns, send, pending] = useActionState(async (previous: ChatTurn[], formData: FormData) => {
     const raw = formData.get("request");
     const request = (typeof raw === "string" ? raw : "").trim().slice(0, MAX_REQUEST_LENGTH);
@@ -207,7 +207,7 @@ export function AgentChat({ activity, notices }: { activity: ReactNode; notices:
                     <ProposalCard
                       card={card}
                       onAnswered={(approved) =>
-                        setAnswers((all) => ({ ...all, [card.intentId]: approved ? "APPROVE" : "BLOCK" }))
+                        setAnswers((all) => ({ ...all, [card.intentId]: approved ? "APPROVE" : "REJECTED" }))
                       }
                     />
                   </li>
@@ -238,7 +238,8 @@ export function AgentChat({ activity, notices }: { activity: ReactNode; notices:
         )}
       </div>
 
-      <div className="fixed inset-x-0 bottom-[5.5rem] z-20 px-4 md:bottom-4 md:left-20">
+      {/* The page colour behind the message box, so the chat never shows through. */}
+      <div className="fixed inset-x-0 bottom-0 z-20 bg-linear-to-t from-[var(--background)] from-80% to-transparent px-4 pt-6 pb-[5.5rem] md:left-20 md:pb-4">
         <div className="mx-auto flex max-w-3xl flex-col gap-2">
           {turns.length === 0 && !pending && (
             <ul aria-label="Try one of these" className="flex gap-2 overflow-x-auto [scrollbar-width:none]">
@@ -247,10 +248,10 @@ export function AgentChat({ activity, notices }: { activity: ReactNode; notices:
                   <button
                     type="button"
                     onClick={() => {
+                      // A tap sends it, as in other chat apps.
                       if (!inputRef.current) return;
                       inputRef.current.value = suggestion;
-                      setHasText(true);
-                      inputRef.current.focus();
+                      formRef.current?.requestSubmit();
                     }}
                     className="glass rounded-full px-3.5 py-2 text-left text-xs whitespace-nowrap transition-transform active:scale-95"
                   >
