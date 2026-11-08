@@ -28,15 +28,16 @@ export function ProposalCard({
   const mark = MARKS[card.outcome];
   return (
     <article className="card rise-in flex flex-col gap-3 p-4 text-sm">
-      <p className="flex items-center gap-2 font-medium">
+      <div className="flex items-center gap-2">
         <span
           aria-hidden="true"
           className={`grid size-5 shrink-0 place-items-center rounded-full text-[11px] font-bold ${mark.className}`}
         >
           {mark.symbol}
         </span>
-        {card.headline}
-      </p>
+        <p className="flex-1 font-medium">{card.headline}</p>
+        {card.orderTotal && <p className="shrink-0 font-semibold tabular-nums">€{card.orderTotal}</p>}
+      </div>
       <div className="card-muted flex flex-col gap-1 px-3.5 py-3">
         <p className="text-xs text-muted">{card.status}</p>
         {/* Product and shop text, rendered as plain text (React escapes it). */}

@@ -354,3 +354,22 @@
     animation: none;
   }
 }
+
+/* The side sheet (Rules & activity): slides in from the right over a dim backdrop. */
+.sheet[open] {
+  animation: leash-sheet-in 280ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.sheet::backdrop {
+  background: rgb(0 0 0 / 0.25);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+}
+@keyframes leash-sheet-in {
+  from { translate: 100% 0; }
+  to { translate: 0 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sheet[open] {
+    animation: none;
+  }
+}

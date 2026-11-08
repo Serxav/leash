@@ -1237,6 +1237,13 @@ main page, the sponsor detail pages for Channel3 and APIMatic, the FAQ and the u
     official rules ask nothing of the app itself (only of the README, video and Devpost
     text), so the page keeps only what Leash's own rules need: the AI notice (CLAUDE.md,
     transparency) and the sandbox / demo note (no real money, Marta's invented rules).
+- **Polish on Nov 8** (Sergi: "te pones con el diseño de la app, mejorar"): "Rules &
+  activity" is a side sheet (a native `<dialog>`: Esc and the backdrop close it, the focus
+  stays inside and returns to the button) instead of a narrow popover over Rex; Rex's
+  status stays on one line; every proposal card shows its amount at the top right, like the
+  history; and Rex's summary is one plain sentence per purchase ("charged", "waiting for
+  your OK", "blocked"), without the engine's codes or IDs. The prompt-injection test passes
+  on Meta with the new instructions.
 - **Status:** accepted (Sergi chose the puppy and the chat; then "algo así" with the Muse
   screenshot; then the name Rex; the second pass follows his session 8 list).
 

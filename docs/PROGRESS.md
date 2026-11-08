@@ -694,3 +694,11 @@ One entry per session: date, what was done, what is left, blockers.
 **Next**
 - Sergi reviews the new design; then push, PR and merge with green CI.
 - Render setup, README for judges and the judges' sandbox account.
+
+## 2026-11-08 · Session 8 – design polish
+
+- Branch `feat/f5-design-polish` (local, not pushed): "Rules & activity" as a side sheet,
+  one-line status under Rex, amounts on proposal cards, plain-language summaries from Rex
+  (D-042). Lint, typecheck, 563 unit tests and build pass; the real prompt-injection test
+  passes on Meta; tried in the browser: paper €10.98 and sticky notes €6.90 charged, the
+  summary in plain words, the sheet on desktop and phone, light and dark, Esc closes it.

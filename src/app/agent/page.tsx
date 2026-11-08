@@ -69,9 +69,9 @@ async function AgentState() {
   const activity = (
     <>
       <section aria-labelledby="rules-heading" className="flex flex-col gap-2">
-        <h2 id="rules-heading" className="text-sm font-semibold">
+        <h3 id="rules-heading" className="text-sm font-semibold">
           Your rules
-        </h2>
+        </h3>
         {policy ? (
           <ul aria-label="Rules in use" className="flex flex-wrap gap-1.5">
             {describeRules(policy.rules).map((tag) => (
@@ -91,9 +91,9 @@ async function AgentState() {
       </section>
 
       <section aria-labelledby="about-heading" className="flex flex-col gap-1">
-        <h2 id="about-heading" className="text-sm font-semibold">
+        <h3 id="about-heading" className="text-sm font-semibold">
           About Rex
-        </h2>
+        </h3>
         <p role="note" className="text-xs leading-5 text-muted">
           Purchases here are proposed by an AI agent. The agent cannot pay: Leash&apos;s code checks
           every proposal against your confirmed rules before PayPal (sandbox) charges anything.
@@ -104,9 +104,9 @@ async function AgentState() {
       </section>
 
       <section aria-labelledby="proposals-heading" className="flex flex-col gap-2">
-        <h2 id="proposals-heading" className="text-sm font-semibold">
+        <h3 id="proposals-heading" className="text-sm font-semibold">
           Latest proposals
-        </h2>
+        </h3>
         {proposals.length === 0 ? (
           <p className="text-sm text-muted">No proposals yet.</p>
         ) : (
@@ -121,9 +121,9 @@ async function AgentState() {
       </section>
 
       <section aria-labelledby="security-heading" className="flex flex-col gap-2">
-        <h2 id="security-heading" className="text-sm font-semibold">
+        <h3 id="security-heading" className="text-sm font-semibold">
           Security log
-        </h2>
+        </h3>
         <p className="text-xs leading-5 text-muted">
           Products whose shop text tried to give orders to the AI. Leash&apos;s code hides them from
           the agent and never buys them, whatever your rules say.
