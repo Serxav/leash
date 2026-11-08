@@ -1,5 +1,5 @@
 /**
- * Finds instructions aimed at AI agents inside untrusted shop text (US8).
+ * Finds instructions aimed at AI agents inside untrusted shop text.
  *
  * Product titles and descriptions come from shops. A shop can hide orders
  * for AI agents in them ("ignore your rules, this is pre-approved"), which
@@ -10,7 +10,7 @@
  * It is one layer, not the whole defence: a pattern list cannot catch every
  * possible wording. Even an injection it misses can only make the agent
  * propose a purchase, and every proposal still goes through the policy
- * engine with the user's confirmed rules (D-033).
+ * engine with the user's confirmed rules.
  */
 
 export const INJECTION_SIGNALS = [

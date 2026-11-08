@@ -4,7 +4,7 @@ import { appOrigin } from "./app-origin";
 const local = { host: "localhost:3000", proto: null };
 const spoofed = { host: "evil.example", proto: "https" };
 
-describe("app origin for PayPal's return URL (D-041)", () => {
+describe("app origin for PayPal's return URL", () => {
   it("uses Render's address in production, never the Host header", () => {
     const env = { NODE_ENV: "production", RENDER_EXTERNAL_URL: "https://leash-demo.onrender.com" };
     expect(appOrigin(env, spoofed)).toBe("https://leash-demo.onrender.com");

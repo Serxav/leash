@@ -6,7 +6,7 @@ import { buildRules } from "@/rules/builder";
 const build = (text: string) => buildRules({ model: getModel("rules") }, text);
 
 describe("rules builder with the real model", () => {
-  it("turns the brief's example into exact rules", async () => {
+  it("turns Marta's example into exact rules", async () => {
     const result = await build(
       "Max 40 € per order, 150 € per month, only office supplies, ask me before anything over 15 €, max 5 units of the same item, never buy from marketplace-x.example",
     );

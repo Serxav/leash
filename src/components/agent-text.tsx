@@ -2,7 +2,7 @@ import { parseAgentText, type Inline } from "@/lib/agent-text";
 
 /**
  * The agent's summary with its bold text and lists, never as HTML: every
- * piece is model text that React escapes (D-042).
+ * piece is model text that React escapes.
  */
 export function AgentText({ text }: { text: string }) {
   return (

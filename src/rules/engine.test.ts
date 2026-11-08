@@ -8,7 +8,7 @@ import {
 } from "./engine";
 import type { SpendingRules } from "./schema";
 
-/** Marta's rules from the brief: max €40 per order, €150 per month, only
+/** Marta's rules (the demo persona): max €40 per order, €150 per month, only
  * office supplies, ask above €15, max 5 units, never marketplace X. */
 const rules: SpendingRules = {
   formatVersion: 1,

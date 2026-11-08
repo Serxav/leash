@@ -13,7 +13,7 @@ import { mandates, type MandateStatus } from "@/db/schema";
 import { callPayPal, PayPalRequestError } from "@/paypal/errors";
 
 /**
- * US1 Mandate: the user saves their PayPal once in the PayPal vault
+ * Mandate: the user saves their PayPal once in the PayPal vault
  * ("Save PayPal for purchase later", Payment Method Tokens API v3):
  *   1. create a setup token → PayPal returns an `approve` link;
  *   2. the payer approves on www.sandbox.paypal.com and comes back;
@@ -110,7 +110,7 @@ export async function startMandate(
             usageType: PaypalPaymentTokenUsageType.Merchant,
             customerType: PaypalPaymentTokenCustomerType.Consumer,
             // Every demo visitor is a different Leash customer, even when
-            // several judges approve with the same sandbox account (D-040):
+            // several judges approve with the same sandbox account:
             // "Use this also when multiple payment tokens are required for
             // the same payer, different customer at merchant/platform."
             // So one visitor revoking never deletes another visitor's token.
@@ -245,7 +245,7 @@ export type RevokeResult =
   | "NOT_CONNECTED";
 
 /**
- * US7: the user revokes the mandate (D-038).
+ * The user revokes the mandate.
  * Docs: DELETE /v3/vault/payment-tokens/{id} (204, no body),
  * https://developer.paypal.com/docs/api/payment-tokens/v3/
  *

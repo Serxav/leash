@@ -9,7 +9,7 @@ import { getLocalProduct, isLocalProductId, searchLocal } from "./local";
 import { catalogProductSchema, cleanText, type CatalogProduct } from "./product";
 
 /**
- * The catalog the agent searches (D-028, D-029, D-035). Every search returns
+ * The catalog the agent searches. Every search returns
  * real Channel3 offers (when available) plus matches from Leash's demo
  * catalog of invented shops; each product says where it comes from. The
  * agent's Channel3 searches stay inside the user's allowed categories and
@@ -20,7 +20,7 @@ import { catalogProductSchema, cleanText, type CatalogProduct } from "./product"
  *
  * No bills: Leash counts its Channel3 searches per Madrid month and stops
  * at CHANNEL3_MONTHLY_SEARCH_CAP. Even at the cap every month until judging
- * ends, Leash stays far below the 20,000 hackathon credits (D-031). A search
+ * ends, Leash stays far below the 20,000 hackathon credits. A search
  * is counted before it is sent, so failed calls count too (never under).
  * Re-reading a product is free on Channel3 and is not counted.
  */
@@ -38,7 +38,7 @@ export type SearchResult = {
 };
 
 /**
- * What the user's confirmed rules could ever allow (D-035). Channel3
+ * What the user's confirmed rules could ever allow. Channel3
  * searches the whole of its catalog, so without this a search for a stapler
  * returned cables and €300 pens, which the rules block. Built by server code
  * from the rules, never by the model, and only narrows Channel3: every
@@ -52,7 +52,7 @@ export type SearchScope = {
 };
 
 export type Catalog = {
-  /** Without a scope, Channel3 searches everything (tests, the lab). */
+  /** Without a scope, Channel3 searches everything (tests). */
   search(query: string, scope?: SearchScope): Promise<SearchResult>;
   /**
    * The product with fresh prices, or null if it cannot be checked right

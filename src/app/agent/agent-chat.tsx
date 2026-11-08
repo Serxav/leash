@@ -38,7 +38,7 @@ const clock = new Intl.DateTimeFormat(undefined, { hour: "2-digit", minute: "2-d
 type ChatTurn = { id: number; request: string; sentAt: Date; reply: AgentReply };
 
 /**
- * Chat with Rex, the shopping agent (US3, D-042), laid out like Muse: Rex
+ * Chat with Rex, the shopping agent, laid out like Muse: Rex
  * small at the top with a live status, one message thread, permission
  * cards for the proposals and a floating message box. Each message runs
  * the agent once. The chat lives in this page only; the proposals
@@ -79,7 +79,7 @@ export function AgentChat({ activity, notices }: { activity: ReactNode; notices:
   useEffect(() => () => clearTimeout(typingTimer.current), []);
 
   // Rex scrolls away with the top of the chat; while it works, a small
-  // copy floats at the top so the user always knows (D-042).
+  // copy floats at the top so the user always knows.
   useEffect(() => {
     const header = headerRef.current;
     if (!header) return;

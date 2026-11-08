@@ -6,7 +6,7 @@ import { refundForUser } from "@/purchases/server";
 import type { HistoryFormState } from "./state";
 
 /**
- * US6: the user refunds one purchase in full. The user comes from the
+ * The user refunds one purchase in full. The user comes from the
  * server, never from the form; the purchase must be theirs, charged and
  * inside its return window (checked in refundPurchase).
  */

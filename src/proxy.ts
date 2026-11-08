@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { isVisitorId, VISITOR_COOKIE, visitorCookieOptions } from "@/account/visitor-cookie";
 
 /**
- * Gives every visitor an anonymous demo user (D-040): a random ID in an
+ * Gives every visitor an anonymous demo user: a random ID in an
  * httpOnly cookie, renewed on each visit. A new ID is also added to this
  * request, so the very first page already sees it. No database work here:
  * pages create the demo user when they first read it (`currentUserId`).

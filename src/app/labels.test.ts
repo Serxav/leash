@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { ProposalView } from "@/purchases/propose";
 import { proposalCard, reasonText } from "./labels";
 
-describe("reason text on cards (D-042)", () => {
+describe("reason text on cards", () => {
   it("drops the status word the badge already shows", () => {
     expect(reasonText("Needs your approval: €24.00 is above €15.00, the amount you asked to approve.")).toBe(
       "€24.00 is above €15.00, the amount you asked to approve.",
@@ -20,7 +20,7 @@ describe("reason text on cards (D-042)", () => {
   });
 });
 
-describe("proposal cards (D-042)", () => {
+describe("proposal cards", () => {
   const view: ProposalView = {
     intentId: "i1",
     productTitle: "Toner",

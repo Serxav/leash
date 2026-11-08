@@ -4,7 +4,7 @@ import { parseAgentText, parseInline } from "./agent-text";
 const plain = (text: string) => ({ text, strong: false });
 const bold = (text: string) => ({ text, strong: true });
 
-describe("agent summary text (D-042)", () => {
+describe("agent summary text", () => {
   it("turns **bold** into strong text instead of printing the marks", () => {
     expect(parseInline("Paper is **approved**, toner **needs you**.")).toEqual([
       plain("Paper is "),

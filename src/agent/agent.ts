@@ -8,7 +8,7 @@ import type { PurchaseStatus } from "./leashed-tools";
 import { screenProduct, type InjectionSignal } from "@/security/untrusted-text";
 
 /**
- * The shopping agent (US3). THE AI PROPOSES, THE CODE DECIDES:
+ * The shopping agent. THE AI PROPOSES, THE CODE DECIDES:
  * - it has exactly three tools: search the catalog (read only), propose a
  *   purchase, and check a purchase at PayPal (read only, a leashed Agent
  *   Toolkit tool). None can pay or refund: every proposal goes through the
@@ -16,9 +16,9 @@ import { screenProduct, type InjectionSignal } from "@/security/untrusted-text";
  * - it never sends a price: the server takes it from the catalog;
  * - product text is untrusted data, labelled as such in every tool result;
  * - a product whose text carries instructions for AI agents is hidden from
- *   the model by code and reported to the security log (US8);
+ *   the model by code and reported to the security log;
  * - it sees the user's rules as readable tags, product data and decisions,
- *   never credentials, tokens, emails or PayPal IDs (CLAUDE.md).
+ *   never credentials, tokens, emails or PayPal IDs.
  */
 
 export const MAX_REQUEST_LENGTH = 500;

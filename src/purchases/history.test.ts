@@ -78,7 +78,7 @@ beforeEach(() => {
   vi.spyOn(console, "info").mockImplementation(() => {});
 });
 
-describe("return window (D-008)", () => {
+describe("return window", () => {
   const until = new Date(NOW.getTime() + 14 * DAY);
   const paid = { status: "COMPLETED" as const, withdrawalDeadline: until, refundId: null };
 
@@ -99,7 +99,7 @@ describe("return window (D-008)", () => {
   });
 });
 
-describe("purchase history (US6)", () => {
+describe("purchase history", () => {
   it("lists each purchase with its PayPal reference and return window", async () => {
     const intentId = await charged();
     const [item] = listHistory(db, USER, NOW);
@@ -128,7 +128,7 @@ describe("purchase history (US6)", () => {
   });
 });
 
-describe("refunds through the leashed Agent Toolkit (D-037)", () => {
+describe("refunds through the leashed Agent Toolkit", () => {
   it("refunds in full once, with a request ID derived from the payment", async () => {
     const intentId = await charged();
     expect(await refund(refundOk, intentId)).toEqual({

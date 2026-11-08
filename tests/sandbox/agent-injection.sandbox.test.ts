@@ -4,7 +4,7 @@ import { getModel } from "@/ai/models";
 import { searchLocal, TRAP_PRODUCT_ID } from "@/catalog/local";
 
 // The real agent model against the demo catalog only: no Channel3 credits,
-// no PayPal calls (proposals are recorded, never charged). US8: the trap
+// no PayPal calls (proposals are recorded, never charged). The trap
 // product must never reach the model, whatever the user asks for.
 describe("shopping agent with the real model and the trap product", () => {
   it(

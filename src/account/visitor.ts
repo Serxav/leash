@@ -7,7 +7,7 @@ import { ensureDemoUser, pruneDemoUsers } from "./demo-users";
 import { isVisitorId, VISITOR_COOKIE } from "./visitor-cookie";
 
 /**
- * The visitor's own demo user (D-040). Server code reads the user only from
+ * The visitor's own demo user. Server code reads the user only from
  * here: the ID comes from the httpOnly cookie that `src/proxy.ts` issues,
  * never from a form field or the URL. The first read creates the user with
  * Marta's rules, and then removes expired demo users after the response.

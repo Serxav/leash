@@ -22,7 +22,7 @@ async function captureRequest(build: (fetch: typeof globalThis.fetch) => Languag
 }
 
 describe("createModels", () => {
-  it("uses Meta's muse-spark-1.3 for every role with AI_PROVIDER=meta (D-043)", () => {
+  it("uses Meta's muse-spark-1.3 for every role with AI_PROVIDER=meta", () => {
     const models = createModels({ AI_PROVIDER: "meta", META_MODEL_API_KEY: FAKE_META_KEY });
     expect(models.agent).toMatchObject({ modelId: "muse-spark-1.3" });
     expect(models.rules).toMatchObject({ modelId: "muse-spark-1.3" });
@@ -98,7 +98,7 @@ describe("MODEL_IDS", () => {
     }
   });
 
-  it("uses Meta's Standard mode, where Meta does not train on the requests (D-043)", () => {
+  it("uses Meta's Standard mode, where Meta does not train on the requests", () => {
     for (const id of Object.values(MODEL_IDS.meta)) {
       expect(id).not.toMatch(/contributor/);
     }

@@ -4,7 +4,7 @@ import { Mascot } from "./mascot";
 import type { RestingMood } from "./mascot-mood";
 
 /**
- * Every page's frame (D-042): the same width, a title with one sentence on
+ * Every page's frame: the same width, a title with one sentence on
  * what the page is for, and a soft fade and rise when you move between
  * pages. The animation only plays on navigation, and never for people who
  * ask the system for reduced motion (globals.css).

@@ -1,11 +1,11 @@
 /**
- * Rate limits for the AI calls of the public demo (D-041).
+ * Rate limits for the AI calls of the public demo.
  *
  * Every agent run and every rules conversion calls the AI model, and agent
  * runs may also spend Channel3 credits. On a free plan with no billing, a
  * visitor (or a script) must not be able to use them up. Two limits, each
  * over a sliding window:
- *   - per visitor: the visitor's anonymous ID (D-040);
+ *   - per visitor: the visitor's anonymous ID;
  *   - global: all visitors together, because clearing the cookie gives a
  *     new visitor ID.
  *

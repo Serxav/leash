@@ -14,7 +14,7 @@ import { revokeMandate, type RevokeDeps, type RevokeResult } from "@/payments/ma
 import { oneAtATime } from "@/purchases/propose";
 
 /**
- * The permissions panel (US7, D-038): revoke the mandate and delete the
+ * The permissions panel: revoke the mandate and delete the
  * account. Both run in the user's purchase queue, so they never interleave
  * with a decision and its charge: a purchase that started before finishes
  * first, and none starts after.

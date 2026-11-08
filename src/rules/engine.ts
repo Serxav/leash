@@ -15,7 +15,7 @@ import {
  * no network and no clock of its own: the same input always gives the same
  * decision. It fails closed: anything it cannot check is blocked.
  *
- * Order (brief §4):
+ * Order:
  * 1. state: an active mandate and an agent that is not paused;
  * 2. hard blocks: category, merchant, units, limit per order, monthly budget;
  * 3. the approval threshold;
@@ -26,7 +26,7 @@ export type Outcome = "APPROVE" | "NEEDS_APPROVAL" | "BLOCK";
 
 /**
  * A purchase to decide. The caller fills it from the catalog, never from
- * the model (brief §4: the server re-reads price, merchant and category).
+ * the model (the server re-reads price, merchant and category).
  */
 export type PurchaseRequest = {
   /** Price of one unit, e.g. "6.00". */
@@ -75,14 +75,14 @@ const madridMonthFormat = new Intl.DateTimeFormat("en-CA", {
   month: "2-digit",
 });
 
-/** The calendar month of a moment in Madrid, e.g. "2026-10" (brief §4.7). */
+/** The calendar month of a moment in Madrid, e.g. "2026-10". */
 export function madridMonth(date: Date): string {
   return madridMonthFormat.format(date);
 }
 
 /**
  * Which payments use up the monthly budget. PENDING counts because its
- * outcome may still be a charge (D-018); refunded or failed ones do not.
+ * outcome may still be a charge; refunded or failed ones do not.
  */
 export function countsTowardBudget(status: PaymentStatus): boolean {
   return status === "COMPLETED" || status === "PENDING" || status === "PARTIALLY_REFUNDED";

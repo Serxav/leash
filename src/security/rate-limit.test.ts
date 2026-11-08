@@ -4,7 +4,7 @@ import { RateLimiter, rateLimitMessage } from "./rate-limit";
 const MIN = 60_000;
 const limiter = () => new RateLimiter({ max: 2, windowMs: 60 * MIN }, { max: 3, windowMs: 60 * MIN });
 
-describe("AI rate limit (D-041)", () => {
+describe("AI rate limit", () => {
   it("allows a visitor up to the limit, then says when to try again", () => {
     const limits = limiter();
     expect(limits.take("a", 0)).toEqual({ ok: true });

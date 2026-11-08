@@ -17,7 +17,7 @@ const texts = (changes: Partial<SpendingRules> = {}) =>
   describeRules({ ...rules, ...changes }).map((tag) => tag.text);
 
 describe("describeRules", () => {
-  it("shows the brief's example as readable tags", () => {
+  it("shows Marta's example as readable tags", () => {
     expect(describeRules(rules)).toEqual([
       { id: "max_per_order", text: "Up to €40.00 per order" },
       { id: "monthly_budget", text: "Up to €150.00 per month" },

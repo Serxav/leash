@@ -7,7 +7,7 @@ import type { SpendingRules } from "@/rules/schema";
 import { deleteAccount, type DeleteResult } from "./account";
 
 /**
- * Anonymous demo users (brief §5 "Access", D-040).
+ * Anonymous demo users.
  *
  * Every visitor gets an isolated space of their own, so two judges at once
  * never step on each other. The user is a random ID in an httpOnly cookie
@@ -27,7 +27,7 @@ export const MAX_DEMO_USERS = 500;
 /** `lastSeenAt` is written at most this often per user, not on every request. */
 const LAST_SEEN_PRECISION_MS = HOUR_MS;
 
-/** The demo persona's rules (brief §2): Marta, office manager in Barcelona. */
+/** The demo persona's rules: Marta, office manager in Barcelona. */
 export const MARTA_RULES_TEXT =
   "Max 40 € per order, 150 € per month, only office supplies, ask me before anything over 15 €, " +
   "max 5 units of the same item, never buy from marketplace-x.example";

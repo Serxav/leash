@@ -23,7 +23,7 @@ const PAYPAL_FIRST_FAILED =
   "PayPal could not delete your saved PayPal first, so nothing changed. Try again in a moment.";
 
 /**
- * US7: pause or resume the agent, revoke the mandate, reset the demo,
+ * Pause or resume the agent, revoke the mandate, reset the demo,
  * delete the account. The user comes from the visitor cookie, never from
  * the form.
  */
@@ -82,7 +82,7 @@ export async function updatePermissions(
 }
 
 /**
- * US1: save PayPal (sandbox) for this visitor. Sends the payer to PayPal's
+ * Save PayPal (sandbox) for this visitor. Sends the payer to PayPal's
  * sandbox page to approve; PayPal sends them back to PAYPAL_PATH.
  */
 export async function connectPayPal(): Promise<void> {

@@ -24,16 +24,16 @@ export const MAX_ALLOWED_CATEGORIES = 20;
 export const MAX_BLOCKED_MERCHANTS = 50;
 
 /**
- * Stable IDs of the rules, in the order the engine checks them (brief §4).
+ * Stable IDs of the rules, in the order the engine checks them.
  * Decisions store these IDs to say which rule applied.
  */
 export const RULE_IDS = [
   "valid_request",
   // A fixed protection, not a user rule: the product's shop text carries
-  // instructions for AI agents (US8, D-033).
+  // instructions for AI agents.
   "untrusted_instructions",
   // A fixed protection, not a user rule: the price rose after the user saw
-  // it in the inbox, so their approval does not cover it (D-036).
+  // it in the inbox, so their approval does not cover it.
   "approved_amount",
   "mandate_active",
   "agent_active",

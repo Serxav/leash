@@ -4,7 +4,7 @@ import { useEffect, useId, useRef, useState, type Ref } from "react";
 import { MASCOT_NAME, type MascotMood } from "./mascot-mood";
 
 /**
- * Rex, the shopping agent's mascot (D-042): a puppy on a leash, drawn for
+ * Rex, the shopping agent's mascot: a puppy on a leash, drawn for
  * Leash (no third-party art). It perks up while the user types, works at a
  * tiny laptop while the agent runs, and afterwards mirrors what Leash's
  * code decided. The status text next to it always says the same in words.

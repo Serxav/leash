@@ -16,8 +16,8 @@ import {
 
 const USER = "user-1";
 const urls = {
-  returnUrl: "http://localhost:3000/lab/payments/return",
-  cancelUrl: "http://localhost:3000/lab/payments",
+  returnUrl: "http://localhost:3000/permissions/paypal/return",
+  cancelUrl: "http://localhost:3000/permissions/paypal/cancel",
 };
 
 const setupTokenCreated: StubReply = {
@@ -201,7 +201,7 @@ describe("cancelPendingMandate", () => {
   });
 });
 
-describe("revokeMandate (US7, D-038)", () => {
+describe("revokeMandate", () => {
   const connected = (status: "ACTIVE" | "PAUSED" = "ACTIVE", id = "m1", at = new Date("2026-10-20T10:00:00Z")) =>
     db.insert(mandates).values({
       id, userId: USER, status, vaultTokenRef: `PAYTOKEN-${id}`, createdAt: at, updatedAt: at,

@@ -24,16 +24,16 @@ import { injectionEvent, logInjection } from "@/security/events";
 import { screenProduct, type InjectionSignal } from "@/security/untrusted-text";
 
 /**
- * The purchase flow (brief §4). THE AI PROPOSES, THE CODE DECIDES:
+ * The purchase flow. THE AI PROPOSES, THE CODE DECIDES:
  * 1. the agent proposes a product, an offer (its merchant), a quantity and
  *    a reason — never a price;
  * 2. the server re-reads price, merchant and category from the catalog;
  *    a product whose shop text carries instructions for AI agents is
- *    blocked here, whatever the rules say (US8);
+ *    blocked here, whatever the rules say;
  * 3. the policy engine decides with the user's confirmed rules;
  * 4. the intent and the decision are stored;
  * 5. only APPROVE charges, with the saved PayPal, merchant-initiated.
- *    NEEDS_APPROVAL waits for the user (inbox, F4); BLOCK is only stored.
+ *    NEEDS_APPROVAL waits for the user (inbox); BLOCK is only stored.
  *
  * One user's proposals run one at a time, so two at once can never both
  * pass the budget: a charge is recorded before the next decision starts.
@@ -88,7 +88,7 @@ const blocked = (explanation: string): Decision => ({
 });
 
 /**
- * Runs one user's work one at a time (single server process, D-029):
+ * Runs one user's work one at a time (single server process):
  * proposals and the user's answers in the inbox share this queue.
  */
 const queues = new Map<string, Promise<unknown>>();
@@ -218,7 +218,7 @@ export type PurchaseReview = {
 /**
  * Re-reads a product from the catalog (never trusting the model's numbers)
  * and decides it with the user's current confirmed rules. Writes nothing.
- * Used for new proposals and again when the user approves one (D-036).
+ * Used for new proposals and again when the user approves one.
  * Its only await is the catalog re-read, before the decision.
  */
 export async function reviewPurchase(
@@ -293,7 +293,7 @@ export type ProposalView = {
   outcome: Outcome;
   ruleIds: RuleId[];
   explanation: string;
-  /** The engine, or the user answering in the inbox (D-036). */
+  /** The engine, or the user answering in the inbox. */
   decidedBy: DecisionRow["decidedBy"];
   orderTotal: string | null;
   paymentStatus: PaymentStatus | null;
@@ -301,7 +301,7 @@ export type ProposalView = {
 
 /**
  * Each intent's latest decision. An intent has one engine decision, and a
- * second one once the user answers it in the inbox (D-036).
+ * second one once the user answers it in the inbox.
  */
 export function latestDecisions(db: Db, intentIds: string[]): Map<string, DecisionRow> {
   if (intentIds.length === 0) return new Map();
@@ -328,7 +328,7 @@ export function listProposals(db: Db, userId: string, limit = 20): ProposalView[
 
 /**
  * The proposals of one agent run, in the order the agent made them, for the
- * chat (D-042). Only this user's: other IDs are ignored.
+ * chat. Only this user's: other IDs are ignored.
  */
 export function listProposalsByIds(db: Db, userId: string, intentIds: string[]): ProposalView[] {
   if (intentIds.length === 0) return [];
@@ -342,7 +342,7 @@ export function listProposalsByIds(db: Db, userId: string, intentIds: string[]):
 }
 
 /**
- * Proposals waiting for the user (US5): the engine said NEEDS_APPROVAL and
+ * Proposals waiting for the user: the engine said NEEDS_APPROVAL and
  * nobody has answered yet. Oldest first, all of them.
  */
 export function listPendingApprovals(db: Db, userId: string): ProposalView[] {

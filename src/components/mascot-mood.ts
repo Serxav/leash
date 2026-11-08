@@ -1,7 +1,7 @@
 import type { Outcome } from "@/rules/engine";
 
 /**
- * How Rex, the agent's mascot, looks (D-042). It perks up while the user
+ * How Rex, the agent's mascot, looks. It perks up while the user
  * types and works at a tiny laptop while the agent runs; after a run, the
  * mood only follows what Leash's code decided. The mascot decides nothing.
  */
@@ -36,7 +36,7 @@ export const MOOD_STATUS: Record<RestingMood, string> = {
 };
 
 /**
- * What the agent does in a run, in order (D-042): in plain words for the
+ * What the agent does in a run, in order: in plain words for the
  * chat, and in a dog's words under Rex. The chat moves through them while
  * the agent runs; the real decisions arrive with the reply.
  */

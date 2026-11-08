@@ -16,7 +16,7 @@ const USER = "user-1";
 const NOW = new Date("2026-10-20T10:00:00Z");
 const LATER = new Date("2026-10-20T12:00:00Z");
 
-/** Marta's rules from the brief: above €15.00 she approves. */
+/** Marta's rules (the demo persona): above €15.00 she approves. */
 const rules: SpendingRules = {
   formatVersion: 1,
   currency: "EUR",
@@ -94,7 +94,7 @@ beforeEach(() => {
   vi.spyOn(console, "warn").mockImplementation(() => {});
 });
 
-describe("approval inbox: approve (US5)", () => {
+describe("approval inbox: approve", () => {
   it("charges a pending purchase once, as the user's decision", async () => {
     const intentId = await pendingToner();
     expect(charged).toEqual([]);
@@ -133,7 +133,7 @@ describe("approval inbox: approve (US5)", () => {
     expect(charged[0].amount).toBe("19.99");
   });
 
-  it("blocks when the price went up after the user saw it (D-036)", async () => {
+  it("blocks when the price went up after the user saw it", async () => {
     const intentId = await pendingToner();
     catalogProduct = () => withPrice("26.00");
     const result = await answer(intentId, "APPROVE");
@@ -167,7 +167,7 @@ describe("approval inbox: approve (US5)", () => {
     expect(charged).toEqual([]);
   });
 
-  it("blocks approvals too while the agent is paused (US7)", async () => {
+  it("blocks approvals too while the agent is paused", async () => {
     const intentId = await pendingToner();
     setAgentPaused(db, USER, true, NOW);
     expect(await answer(intentId, "APPROVE")).toEqual({ result: "BLOCKED", message: "Blocked: you paused the agent." });

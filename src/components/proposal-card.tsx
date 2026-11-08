@@ -13,7 +13,7 @@ const MARKS: Record<ProposalCardData["outcome"], { symbol: string; className: st
 
 /**
  * One proposal and Leash's decision, as a permission card in Muse's style
- * (D-042): a question or result on top, the details in a grey box, and
+ *: a question or result on top, the details in a grey box, and
  * Approve or Reject when Leash waits for the user. The chat and the inbox
  * show the same card. Once the user answers on the card, its mark and
  * headline follow the answer.

@@ -45,7 +45,7 @@ function Group({ id, title, children }: { id: string; title: string; children: R
   );
 }
 
-/** US7: the agent switch, the PayPal mandate, the demo reset and account deletion. */
+/** The agent switch, the PayPal mandate, the demo reset and account deletion. */
 export function PermissionsForms({ view }: { view: PermissionsView }) {
   const [state, formAction, pending] = useActionState<PermissionsFormState, FormData>(updatePermissions, {
     kind: "idle",

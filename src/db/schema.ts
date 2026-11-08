@@ -7,7 +7,7 @@ import { integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core
  * - ACTIVE: approved; Leash holds a vault payment token it can charge.
  * - PAUSED: kept for a future pause of the mandate itself (the engine blocks
  *   it); today the user pauses the agent instead (userSettings).
- * - REVOKED: the user revoked it (US7, D-038). Leash never charges it again;
+ * - REVOKED: the user revoked it. Leash never charges it again;
  *   `vaultTokenRef` is cleared once PayPal has deleted the token.
  *
  * `vaultTokenRef` is the PayPal payment token. It is server-only data: never
@@ -40,7 +40,7 @@ export type MandateStatus = Mandate["status"];
 export const payments = sqliteTable("payments", {
   id: text("id").primaryKey(),
   userId: text("user_id").notNull(),
-  /** The purchase intent this pays for (F2/F3); null for lab charges. */
+  /** The purchase intent this pays for; null for a direct test charge. */
   intentId: text("intent_id"),
   /** Decimal string exactly as sent to PayPal, e.g. "5.00". */
   amount: text("amount").notNull(),
@@ -55,7 +55,7 @@ export const payments = sqliteTable("payments", {
   /** details[0].issue of a failed attempt, e.g. INSTRUMENT_DECLINED. */
   failureIssue: text("failure_issue"),
   debugId: text("debug_id"),
-  /** End of the 14-day return window (D-008). */
+  /** End of the 14-day return window. */
   withdrawalDeadline: integer("withdrawal_deadline", { mode: "timestamp_ms" }),
   createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
   updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull(),
@@ -65,7 +65,7 @@ export type Payment = typeof payments.$inferSelect;
 export type PaymentStatus = Payment["status"];
 
 /**
- * The user's spending rules, versioned (US2). A row starts as a draft
+ * The user's spending rules, versioned. A row starts as a draft
  * (`version` and `confirmedAt` are null) holding what the AI turned the
  * user's text into. Nothing applies until the user confirms it: then it
  * gets the next version number and becomes the active policy. Confirmed
@@ -91,7 +91,7 @@ export const policies = sqliteTable(
 export type Policy = typeof policies.$inferSelect;
 
 /**
- * Channel3 search results kept for a few hours (D-028), so the same search
+ * Channel3 search results kept for a few hours, so the same search
  * does not spend another credit. Prices are re-read (free) before any
  * decision, so a cached price never decides a purchase.
  */
@@ -104,7 +104,7 @@ export const catalogSearches = sqliteTable("catalog_searches", {
 });
 
 /**
- * Channel3 searches made per calendar month in Madrid (D-028, D-031). Leash
+ * Channel3 searches made per calendar month in Madrid. Leash
  * stops calling Channel3 search at a cap far below its free credits, so no
  * bill can ever come; the local catalog is used instead.
  */
@@ -115,7 +115,7 @@ export const catalogUsage = sqliteTable("catalog_usage", {
 });
 
 /**
- * A purchase the agent proposed (brief §4.1). Price, merchant and category
+ * A purchase the agent proposed. Price, merchant and category
  * are what the server re-read from the catalog, never the model's numbers;
  * they are null when the product could not be re-read.
  */
@@ -123,7 +123,7 @@ export const purchaseIntents = sqliteTable("purchase_intents", {
   id: text("id").primaryKey(),
   userId: text("user_id").notNull(),
   productId: text("product_id").notNull(),
-  /** The offer, identified by its merchant (D-028). */
+  /** The offer, identified by its merchant. */
   merchantDomain: text("merchant_domain").notNull(),
   quantity: integer("quantity").notNull(),
   productTitle: text("product_title"),
@@ -137,7 +137,7 @@ export const purchaseIntents = sqliteTable("purchase_intents", {
 
 export type PurchaseIntent = typeof purchaseIntents.$inferSelect;
 
-/** What decided a purchase intent, and why (brief §4.4). */
+/** What decided a purchase intent, and why. */
 export const decisions = sqliteTable("decisions", {
   id: text("id").primaryKey(),
   intentId: text("intent_id").notNull(),
@@ -156,7 +156,7 @@ export type DecisionRow = typeof decisions.$inferSelect;
 
 /**
  * Products Leash refused because their shop text carried instructions for
- * AI agents (US8, D-033). SEARCH: hidden from the agent before it saw them.
+ * AI agents. SEARCH: hidden from the agent before it saw them.
  * PROPOSAL: the agent proposed one anyway and the server blocked it. Stores
  * the signals found, never the injected text itself.
  */
@@ -180,7 +180,7 @@ export const securityEvents = sqliteTable("security_events", {
 export type SecurityEventRow = typeof securityEvents.$inferSelect;
 
 /**
- * Per-user switches (US7, D-038). No row means the defaults: the agent is
+ * Per-user switches. No row means the defaults: the agent is
  * active.
  */
 export const userSettings = sqliteTable("user_settings", {
@@ -191,7 +191,7 @@ export const userSettings = sqliteTable("user_settings", {
 });
 
 /**
- * Anonymous demo users (D-040). Every visitor gets one, keyed by a random
+ * Anonymous demo users. Every visitor gets one, keyed by a random
  * ID in an httpOnly cookie: no name, email or password. Users not seen for
  * a week are deleted, with their saved PayPal.
  */

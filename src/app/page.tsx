@@ -36,7 +36,7 @@ export default function Home() {
               Set your spending rules
             </Link>
           </p>
-          {/* Required notice: purchases are proposed by an AI (CLAUDE.md, transparency). */}
+          {/* Required notice: purchases are proposed by an AI (transparency). */}
           <p role="note" className="max-w-md text-sm leading-6 text-muted">
             {MASCOT_NAME} is an AI agent: it proposes, and Leash&apos;s code checks every purchase
             against your rules before PayPal charges anything.

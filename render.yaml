@@ -1,9 +1,9 @@
-# Render Blueprint for the Leash demo (D-041). Docs: https://render.com/docs/blueprint-spec
+# Render Blueprint for the Leash demo. Docs: https://render.com/docs/blueprint-spec
 #
 # Free plan: no billing. The service sleeps after 15 minutes without visits
 # and takes about a minute to wake up, and its disk is wiped on every sleep,
 # restart or deploy. Leash is built for that: each visitor gets a fresh demo
-# space (D-040), and the SQLite database is created again at start.
+# space, and the SQLite database is created again at start.
 #
 # Secrets live only in the Render dashboard: every variable below except
 # PAYPAL_ENVIRONMENT has `sync: false`, so Render asks for it when the
@@ -28,9 +28,7 @@ services:
         sync: false
       - key: PAYPAL_CLIENT_SECRET
         sync: false
-      - key: PAYPAL_MERCHANT_ID
-        sync: false
-      # Meta's Model API (D-043).
+      # Meta's Model API.
       - key: AI_PROVIDER
         value: meta
       - key: META_MODEL_API_KEY

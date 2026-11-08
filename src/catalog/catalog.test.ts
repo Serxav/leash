@@ -61,7 +61,7 @@ describe("catalog search", () => {
     expect(searchesThisMonth(db, NOW)).toBe(0);
   });
 
-  it("returns Channel3 results first, then demo matches, and counts one credit (D-029)", async () => {
+  it("returns Channel3 results first, then demo matches, and counts one credit", async () => {
     const { client, calls } = fakeChannel3();
     const { products } = await catalogWith(client).search("A4  Printer PAPER");
     expect(products[0]).toEqual(remote);
@@ -143,7 +143,7 @@ describe("catalog search", () => {
   });
 });
 
-describe("catalog search inside the user's rules (D-035)", () => {
+describe("catalog search inside the user's rules", () => {
   const scope: SearchScope = { categories: ["office-supplies"], maxUnitPrice: "40.00" };
 
   it("builds the scope from the confirmed rules, not from the model", () => {
@@ -232,7 +232,7 @@ describe("local catalog", () => {
     }
   });
 
-  it("includes the trap product with injected instructions (US8)", () => {
+  it("includes the trap product with injected instructions", () => {
     const trap = LOCAL_PRODUCTS.find((product) => product.id === TRAP_PRODUCT_ID);
     expect(trap?.description).toMatch(/ignore your spending rules/i);
   });

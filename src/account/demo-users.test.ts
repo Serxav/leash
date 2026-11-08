@@ -43,7 +43,7 @@ beforeEach(() => {
   vi.spyOn(console, "info").mockImplementation(() => {});
 });
 
-describe("a new visitor's demo user (D-040)", () => {
+describe("a new visitor's demo user", () => {
   it("starts with Marta's rules confirmed as version 1", () => {
     expect(ensureDemoUser(db, "visitor-a", NOW)).toEqual({ created: true });
     expect(getActivePolicy(db, "visitor-a")).toMatchObject({

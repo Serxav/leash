@@ -4,14 +4,14 @@ import { toCents } from "@/lib/money";
 import { PRODUCT_ID_PATTERN, toCatalogProduct, type CatalogProduct } from "./product";
 
 /**
- * Channel3 product catalog, called through its documented REST API (D-028):
- * - POST /v1/search: 1 credit per call (free hackathon credits, D-031),
- *   optionally narrowed to the user's categories and price limit (D-035);
+ * Channel3 product catalog, called through its documented REST API:
+ * - POST /v1/search: 1 credit per call (free hackathon credits),
+ *   optionally narrowed to the user's categories and price limit;
  * - GET /v1/products/{id}: free, used to re-read price and merchant.
  * Docs: https://docs.trychannel3.com/api-reference/v1/search and
  * https://docs.trychannel3.com/api-reference/v1/product-detail
  *
- * Always Spain + EUR: Leash never converts currencies (D-015). Every
+ * Always Spain + EUR: Leash never converts currencies. Every
  * response is validated; anything unexpected is dropped, never guessed.
  * The API key travels only in the x-api-key header and is never logged.
  */
@@ -19,12 +19,12 @@ import { PRODUCT_ID_PATTERN, toCatalogProduct, type CatalogProduct } from "./pro
 export const CHANNEL3_API_URL = "https://api.trychannel3.com";
 /**
  * Spain + EUR. No language: Channel3 infers it from the country, and on
- * Oct 16 an explicit "en" gave clearly worse results for Spain (D-028).
+ * Oct 16 an explicit "en" gave clearly worse results for Spain.
  */
 export const CHANNEL3_LOCALE = { country: "ES", currency: "EUR" } as const;
 const TIMEOUT_MS = 10_000;
 
-/** Narrows a search with Channel3's documented filters (D-035). */
+/** Narrows a search with Channel3's documented filters. */
 export type Channel3SearchFilters = {
   /** Category slugs; results also come from their subcategories. */
   categoryIds: string[];
