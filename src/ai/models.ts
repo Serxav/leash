@@ -1,7 +1,7 @@
 import "server-only";
 import { createAnthropic } from "@ai-sdk/anthropic";
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
-import type { LanguageModel } from "ai";
+import { defaultSettingsMiddleware, wrapLanguageModel, type LanguageModel } from "ai";
 import { getServerEnv, type ServerEnv } from "@/config/env";
 
 /**
@@ -38,6 +38,17 @@ export const MODEL_IDS = {
 /** Meta's Model API, OpenAI-compatible (dev.meta.ai/docs/quickstart). */
 export const META_API_BASE = "https://api.meta.ai/v1";
 
+/**
+ * How hard Muse Spark thinks before answering (`reasoning_effort`, Meta's
+ * Chat Completions docs). Rule conversion only extracts values, and at the
+ * default effort it sometimes took over 60 s, so it thinks less. The agent
+ * keeps Meta's default: it compares offers and plans tool calls.
+ */
+export const META_REASONING_EFFORT: Record<ModelRole, string | undefined> = {
+  agent: undefined,
+  rules: "low",
+};
+
 type AiEnv = Pick<ServerEnv, "AI_PROVIDER" | "META_MODEL_API_KEY" | "ANTHROPIC_API_KEY">;
 
 export type Models = Record<ModelRole, LanguageModel>;
@@ -57,7 +68,15 @@ export function createModels(env: AiEnv, options: { fetch?: typeof fetch } = {})
       supportsStructuredOutputs: true,
       fetch: options.fetch,
     });
-    return { agent: meta(ids.agent), rules: meta(ids.rules) };
+    const withEffort = (role: ModelRole) => {
+      const reasoningEffort = META_REASONING_EFFORT[role];
+      if (!reasoningEffort) return meta(ids[role]);
+      return wrapLanguageModel({
+        model: meta(ids[role]),
+        middleware: defaultSettingsMiddleware({ settings: { providerOptions: { meta: { reasoningEffort } } } }),
+      });
+    };
+    return { agent: withEffort("agent"), rules: withEffort("rules") };
   }
 
   if (!env.ANTHROPIC_API_KEY) throw new Error("The Anthropic key is missing.");

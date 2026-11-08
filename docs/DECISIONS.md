@@ -1279,4 +1279,12 @@ main page, the sponsor detail pages for Channel3 and APIMatic, the FAQ and the u
   the `google` provider, the busy-model fallback (D-027), `GOOGLE_GENERATIVE_AI_API_KEY`
   and the `@ai-sdk/google` package. Development uses Meta too. D-023 and D-027 are
   superseded. `anthropic` stays in the code but is not planned.
+- **Speed (later on Nov 8).** At Meta's default reasoning effort, rule conversion sometimes
+  took more than 30 s, and even more than 60 s for the "hidden instructions" test, so users
+  would see "The AI could not read your rules". Meta's Chat Completions accept
+  `reasoning_effort` (`minimal` to `xhigh`; `none` is refused by Muse Spark). Rule conversion
+  only extracts values, so it now sends `low` (`META_REASONING_EFFORT` in
+  `src/ai/models.ts`), and its time limit is 60 s. The agent keeps Meta's default. With
+  `low`, the four real rules tests passed three runs in a row in about 30 s each (before:
+  48–91 s, with timeouts), and the whole real sandbox suite passes (18 tests).
 - **Status:** accepted ("tengo créditos de Meta, los usaremos para esto").

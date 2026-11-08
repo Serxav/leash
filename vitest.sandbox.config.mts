@@ -15,6 +15,6 @@ export default defineConfig({
     environment: "node",
     include: ["tests/sandbox/**/*.sandbox.test.ts"],
     setupFiles: ["tests/sandbox/load-env.ts"],
-    testTimeout: 30_000,
+    testTimeout: 150_000, // the AI may take up to 60 s for rules and 120 s for the agent
   },
 });
