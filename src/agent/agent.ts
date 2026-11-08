@@ -1,4 +1,5 @@
 import { generateText, isStepCount, tool, type LanguageModel } from "ai";
+import { describeAiError } from "@/ai/errors";
 import { z } from "zod";
 import type { Catalog } from "@/catalog/catalog";
 import type { CatalogProduct } from "@/catalog/product";
@@ -220,7 +221,8 @@ export async function runShoppingAgent(
       summary: summary || "The agent finished without a summary. See the proposals below.",
       proposals,
     };
-  } catch {
+  } catch (error) {
+    console.error("[agent] AI call failed:", describeAiError(error));
     // Proposals already made stay stored and decided; only the summary is lost.
     throw new AgentError(
       "AI_UNAVAILABLE",
