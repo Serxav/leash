@@ -695,6 +695,32 @@ One entry per session: date, what was done, what is left, blockers.
 - Sergi reviews the new design; then push, PR and merge with green CI.
 - Render setup, README for judges and the judges' sandbox account.
 
+## 2026-11-08 · Session 8 – freeze day: design merged, Meta, Render, judges' docs
+
+**Done**
+- PR #35 merged: the second design pass (D-042).
+- PR #36 merged: the AI is now Meta's `muse-spark-1.3` through the Meta Model API, Standard
+  mode (D-043); Google removed. With Sergi's key: model check, rules builder and
+  prompt-injection tests pass; in the browser, paper €10.98 and sticky notes €6.90 approved
+  and charged, the banned shop skipped, the trap hidden; toner €24 approved in the inbox and
+  charged; error case: "Connect PayPal first".
+- Render service created by Sergi: https://leash-crcx.onrender.com. `/api/health` is ok and
+  Connect PayPal works, but the agent answers "The AI could not run right now" there, while
+  the same code works locally in dev and production builds.
+- PR #37 merged: the AI error type and HTTP status are logged (never details), so Render's
+  log shows the cause.
+- Branch `docs/f6-judges-readme` (local, not pushed): README in FixScribe's style with seven
+  screenshots of the app (`docs/media/`, demo shops only), `docs/TRY_IT.md` for judges,
+  demo script with narration, Devpost texts, compliance status.
+
+**Next**
+1. Sergi: read Render's `[agent] AI call failed: …` line (or re-paste `META_MODEL_API_KEY`
+   there) so the live AI works.
+2. Sergi: approve push and PR of `docs/f6-judges-readme`.
+3. Sergi: the judges' sandbox Personal account, then its login in README, TRY_IT and
+   SUBMISSION; decide Render Free vs awake (750 free hours are shared with FixScribe).
+4. Video, Devpost form, v1.0.0, submit on Nov 11.
+
 ## 2026-11-08 · Session 8 – rule conversion speed on Meta
 
 - Branch `fix/f5-rules-timeout` (local, not pushed): rule conversion sends Meta
@@ -709,3 +735,16 @@ One entry per session: date, what was done, what is left, blockers.
   (D-042). Lint, typecheck, 563 unit tests and build pass; the real prompt-injection test
   passes on Meta; tried in the browser: paper €10.98 and sticky notes €6.90 charged, the
   summary in plain words, the sheet on desktop and phone, light and dark, Esc closes it.
+
+## 2026-11-08 · Session 8 – README with moving pictures
+
+- `docs/f6-judges-readme`: three GIFs recorded on the app (Rex at work, rules in plain
+  words, one-tap approval on a phone) in a "See it move" section, and the top screenshots
+  cropped into a 2×2 grid, like FixScribe's README. Previewed with GitHub's own Markdown
+  renderer.
+- `feat/f5-design-polish` gained "a proposal card follows the user's answer". Its commit
+  message says the approved state was checked in the browser; what was actually checked
+  is the rejected state (toner rejected on its chat card → ✕ "You rejected this purchase",
+  "Nothing was charged"). The approved path goes through the same code.
+- Local demo data only: my local space's monthly budget was raised to €500 to test that
+  card after €150 had been spent in recordings.
