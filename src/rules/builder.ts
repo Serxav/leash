@@ -1,4 +1,5 @@
 import { generateText, Output, type LanguageModel } from "ai";
+import { describeAiError } from "@/ai/errors";
 import { z } from "zod";
 import { MAX_RULES_TEXT_LENGTH } from "./limits";
 import { MAX_ALLOWED_CATEGORIES, MAX_BLOCKED_MERCHANTS, parseRules, RULES_FORMAT_VERSION, type SpendingRules } from "./schema";
@@ -230,8 +231,10 @@ export async function buildRules(
       abortSignal: deps.abortSignal ?? AbortSignal.timeout(30_000),
     });
     draft = result.output;
-  } catch {
-    // Provider errors are not shown: they can carry request details.
+  } catch (error) {
+    // Provider errors are not shown: they can carry request details. The log
+    // gets only the error type and HTTP status (src/ai/errors.ts).
+    console.error("[rules] AI call failed:", describeAiError(error));
     throw new RulesBuilderError(
       "AI_UNAVAILABLE",
       "The AI could not read your rules right now. Please try again in a moment.",
