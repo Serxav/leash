@@ -88,13 +88,13 @@ definition of done in `CLAUDE.md`. Tags close each phase.
 - [ ] Sergi: confirm no payment method is saved in the Channel3 dashboard
 - [x] Sergi: check in the sandbox Business account that the agent's charges arrived. Checked
       on Oct 18: the latest charges (€24.00, €3.00, €1.00) appear in its recent activity
-- [ ] Anthropic: workspace "leash", spending limit, `leash-dev` key (Sergi, end of
-      October). Run the rules-conversion tests with both providers
+- [x] ~~Anthropic: workspace "leash", spending limit, `leash-dev` key~~ Replaced by Meta's
+      Model API with Sergi's Meta credits (D-043): Sergi adds `META_MODEL_API_KEY`
 
 ## F4 · Control (Nov 2–5) → `v0.4.0`
 
-- [ ] `chore/f4-switch-to-claude`: `AI_PROVIDER=anthropic`, pass the rules and agent tests,
-      tune the prompts
+- [ ] `chore/f4-switch-to-meta` (D-043, was "switch to Claude"): `AI_PROVIDER=meta`, pass the
+      rules and agent tests, tune the prompts
 - [x] `feat/f4-approval-inbox`: one-tap approve/reject, where approving triggers the charge (D-036)
 - [x] `feat/f4-history`: status, amount, rule, PayPal reference, "14-day return window"
       countdown (D-008), refund button through the Agent Toolkit (D-037)
@@ -113,7 +113,7 @@ definition of done in `CLAUDE.md`. Tags close each phase.
 - [x] `feat/f5-render-deploy` (D-041): `render.yaml` for Render **Free** (no billing),
       per-visitor and global AI rate limits, PayPal return URL from Render's address
 - [ ] Sergi: create the Render service from the Blueprint and fill in the variables; check
-      `/api/health` and one sandbox purchase there. Not shared until `AI_PROVIDER=anthropic`
+      `/api/health` and one sandbox purchase there. Not shared until `AI_PROVIDER=meta`
 - [ ] Decide: stay on Free, or Starter with the hackathon's $50 Render credits (D-041)
 - [ ] Dedicated sandbox Personal account for judges, plus a backup account
 - [ ] README for judges: what it is, AI used, PayPal APIs and folders, requirements,

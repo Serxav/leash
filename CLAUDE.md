@@ -57,8 +57,7 @@ charges approved purchases (Orders v2) and refunds them (Payments v2).
 | App | Next.js (App Router) + TypeScript, deployed on Render **Free** (no billing; it sleeps after 15 minutes and wakes in about a minute, D-041). Endpoint `/api/health`, per-visitor and global rate limits on AI calls |
 | UI | Tailwind CSS, mobile first, accessible (contrast, keyboard, form labels) |
 | AI | Vercel AI SDK. The provider and models are chosen **only** in `src/ai/models.ts` |
-| AI dev, until Nov 1 | `AI_PROVIDER=google`, model `gemini-3.5-flash-lite` with automatic fallback to `gemini-3.1-flash-lite` when Google is busy (D-023, D-027: free tier, no billing, invented data only) |
-| AI from Nov 2, and always in the public demo, video and submission | `AI_PROVIDER=anthropic`: `claude-sonnet-5-5` for the agent, `claude-haiku-5-5` for rule conversion and summaries |
+| AI (development, demo, video and submission) | `AI_PROVIDER=meta`: Meta's `muse-spark-1.3` (Model API, Standard mode, no training on requests) for the agent and rule conversion, paid with Sergi's Meta credits (D-043). Google/Gemini was removed; `anthropic` stays in the code but is not used |
 | Validation | Zod for env vars, rules and every structured AI output |
 | Catalog | Channel3 REST API (`POST /v1/search`, `GET /v1/products/{id}`), not the SDK, which ships without a licence (D-028). 6-hour search cache and a cap of 2,000 searches a month (no bills, D-031). The agent searches only inside the user's allowed categories and price limit (D-035). Spain + EUR only, never convert currencies. Local JSON fallback catalog, which includes the trap product |
 | PayPal SDK | `@paypal/paypal-server-sdk` (APIMatic), pinned. **Before writing SDK code, load the matching `paypal:typescript-*` skill** from the APIMatic Context Plugin (getting-started first). Client: `src/paypal/sdk.ts`; errors: `src/paypal/errors.ts` |
@@ -149,7 +148,7 @@ charges approved purchases (Orders v2) and refunds them (Payments v2).
 | Oct 18–21 | F1 End-to-end payment |
 | Oct 22–25 | F2 Rules |
 | Oct 26–Nov 1 | F3 Agent (low pace: Meta hackathon until Nov 4) |
-| Nov 2–5 | F4 Control (switch to Claude) |
+| Nov 2–5 | F4 Control (switch to Meta, D-043) |
 | Nov 6–8 | F5 Polish. **Feature freeze on Nov 8** |
 | Nov 9–11 | F6 Submission. **Internal deadline: submit on Nov 11** |
 | Nov 12, 21:00 | Devpost closes (12:00 PT) |

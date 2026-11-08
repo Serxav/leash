@@ -30,10 +30,10 @@ services:
         sync: false
       - key: PAYPAL_MERCHANT_ID
         sync: false
-      # google until the switch to Claude; anthropic in the public demo.
+      # Meta's Model API (D-043).
       - key: AI_PROVIDER
-        sync: false
-      - key: GOOGLE_GENERATIVE_AI_API_KEY
+        value: meta
+      - key: META_MODEL_API_KEY
         sync: false
       - key: ANTHROPIC_API_KEY
         sync: false

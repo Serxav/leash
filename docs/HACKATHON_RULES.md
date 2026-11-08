@@ -43,7 +43,7 @@ Our internal deadline is to submit on **Nov 11**, with the feature freeze on **N
   without permission.
 - **Language.** All submission material in English, or with English translations of
   everything submitted.
-- **Integrations.** Third-party SDKs, APIs and data (Channel3, Anthropic, Google, Render)
+- **Integrations.** Third-party SDKs, APIs and data (Channel3, Meta, Render)
   used according to their terms.
 - **Funding.** The project must not have financial or preferential support from PayPal or
   Devpost.
@@ -132,7 +132,7 @@ are not in the official rules, so read them before using a sponsor tool.
 ## Rule-compliance checklist (tick on Nov 11)
 
 - [ ] Public GitHub repo with the MIT licence visible in About
-- [ ] README in English: what it is, AI used (Claude via the Anthropic API) and for what,
+- [ ] README in English: what it is, AI used (Meta's muse-spark-1.3 via the Meta Model API, D-043) and for what,
       PayPal parts used (Vault, Orders v2, refunds, Agent Toolkit) and their folders,
       requirements, variables, install and run
 - [ ] Sandbox test credentials in the README and how to get any special access. The rules

@@ -1239,3 +1239,35 @@ main page, the sponsor detail pages for Channel3 and APIMatic, the FAQ and the u
     transparency) and the sandbox / demo note (no real money, Marta's invented rules).
 - **Status:** accepted (Sergi chose the puppy and the chat; then "algo así" with the Muse
   screenshot; then the name Rex; the second pass follows his session 8 list).
+
+### D-043 · 2026-11-08 · Meta's Model API instead of Claude for the public demo
+
+- **Context.** The plan (D-023) was to switch from free Gemini to Claude for the public
+  demo, video and submission. The Anthropic API is paid, and Sergi does not want paid
+  services (D-041). Sergi has credits for Meta's Model API, so that cost is covered.
+- **Decision.** `AI_PROVIDER=meta`: Meta's `muse-spark-1.3` for the agent and for rule
+  conversion, through Meta's Model API (`https://api.meta.ai/v1`), in **Standard** mode.
+- **Why these choices (from Meta's docs at dev.meta.ai, read on Nov 8):**
+  - Model API is "drop-in compatible with the OpenAI SDK", so Leash uses Vercel's official
+    `@ai-sdk/openai-compatible` package (pinned to 3.0.65, the version that shares
+    `@ai-sdk/provider` 4.0.24 and `provider-utils` 5.0.56 with our `ai` package). No
+    hand-written HTTP client.
+  - It supports tool calling on Chat Completions, but only with `tool_choice: "auto"`.
+    Leash's agent already uses the default "auto", and its arguments are validated by
+    Zod and by the policy engine anyway (Meta's docs say arguments are not guaranteed
+    to match the schema).
+  - It supports structured output (`response_format: json_schema`), which the rules
+    converter uses (`supportsStructuredOutputs: true`). Leash still validates the result
+    with Zod.
+  - **Standard mode, not Contributor.** Contributor mode is cheaper, but Meta may then
+    train on "the prompts, code, files, and context you send, plus the model responses".
+    In Standard mode, content "is not used to train Meta models". The model ID must
+    never end in `-contributor` (a unit test checks it).
+- **Security.** Same rules as the other providers: the key is server-only, read from the
+  validated env (`META_MODEL_API_KEY`), never sent to another provider (tested), never in
+  logs or prompts. The model still has no tool that moves money.
+- **Google removed.** At Sergi's request ("eliminamos por completo google"), Gemini is gone:
+  the `google` provider, the busy-model fallback (D-027), `GOOGLE_GENERATIVE_AI_API_KEY`
+  and the `@ai-sdk/google` package. Development uses Meta too. D-023 and D-027 are
+  superseded. `anthropic` stays in the code but is not planned.
+- **Status:** accepted ("tengo créditos de Meta, los usaremos para esto").

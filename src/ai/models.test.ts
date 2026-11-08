@@ -1,8 +1,8 @@
 import { generateText, type LanguageModel } from "ai";
 import { describe, expect, it } from "vitest";
-import { createModels, GOOGLE_FALLBACK_MODEL_ID, MODEL_IDS } from "./models";
+import { createModels, MODEL_IDS } from "./models";
 
-const FAKE_GOOGLE_KEY = "test-google-key";
+const FAKE_META_KEY = "test-meta-key";
 const FAKE_ANTHROPIC_KEY = "test-anthropic-key";
 
 type Captured = { url: string; headers: Headers };
@@ -22,10 +22,10 @@ async function captureRequest(build: (fetch: typeof globalThis.fetch) => Languag
 }
 
 describe("createModels", () => {
-  it("uses gemini-3.5-flash-lite for every role with AI_PROVIDER=google (D-027)", () => {
-    const models = createModels({ AI_PROVIDER: "google", GOOGLE_GENERATIVE_AI_API_KEY: FAKE_GOOGLE_KEY });
-    expect(models.agent).toMatchObject({ provider: "google.generative-ai", modelId: "gemini-3.5-flash-lite" });
-    expect(models.rules).toMatchObject({ modelId: "gemini-3.5-flash-lite" });
+  it("uses Meta's muse-spark-1.3 for every role with AI_PROVIDER=meta (D-043)", () => {
+    const models = createModels({ AI_PROVIDER: "meta", META_MODEL_API_KEY: FAKE_META_KEY });
+    expect(models.agent).toMatchObject({ modelId: "muse-spark-1.3" });
+    expect(models.rules).toMatchObject({ modelId: "muse-spark-1.3" });
   });
 
   it("uses Sonnet for the agent and Haiku for rules with AI_PROVIDER=anthropic", () => {
@@ -36,7 +36,7 @@ describe("createModels", () => {
 
   it("returns provider instances, never gateway model-ID strings", () => {
     for (const env of [
-      { AI_PROVIDER: "google" as const, GOOGLE_GENERATIVE_AI_API_KEY: FAKE_GOOGLE_KEY },
+      { AI_PROVIDER: "meta" as const, META_MODEL_API_KEY: FAKE_META_KEY },
       { AI_PROVIDER: "anthropic" as const, ANTHROPIC_API_KEY: FAKE_ANTHROPIC_KEY },
     ]) {
       const models = createModels(env);
@@ -46,34 +46,26 @@ describe("createModels", () => {
   });
 
   it("refuses to build models without the selected provider's key", () => {
-    expect(() => createModels({ AI_PROVIDER: "google", ANTHROPIC_API_KEY: FAKE_ANTHROPIC_KEY })).toThrow(
-      "The Google AI key is missing.",
+    expect(() => createModels({ AI_PROVIDER: "meta", ANTHROPIC_API_KEY: FAKE_ANTHROPIC_KEY })).toThrow(
+      "The Meta key is missing.",
     );
-    expect(() => createModels({ AI_PROVIDER: "anthropic", GOOGLE_GENERATIVE_AI_API_KEY: FAKE_GOOGLE_KEY })).toThrow(
+    expect(() => createModels({ AI_PROVIDER: "anthropic", META_MODEL_API_KEY: FAKE_META_KEY })).toThrow(
       "The Anthropic key is missing.",
     );
   });
 
-  it("talks directly to Google with the key from the validated env", async () => {
+  it("talks directly to Meta's Model API with the key from the validated env", async () => {
     const request = await captureRequest(
-      (fetch) =>
-        createModels(
-          { AI_PROVIDER: "google", GOOGLE_GENERATIVE_AI_API_KEY: FAKE_GOOGLE_KEY },
-          { fetch },
-        ).rules,
+      (fetch) => createModels({ AI_PROVIDER: "meta", META_MODEL_API_KEY: FAKE_META_KEY }, { fetch }).agent,
     );
-    expect(new URL(request.url).origin).toBe("https://generativelanguage.googleapis.com");
-    expect(request.url).toContain("gemini-3.5-flash-lite");
-    expect(request.headers.get("x-goog-api-key")).toBe(FAKE_GOOGLE_KEY);
+    expect(request.url).toBe("https://api.meta.ai/v1/chat/completions");
+    expect(request.headers.get("authorization")).toBe(`Bearer ${FAKE_META_KEY}`);
   });
 
   it("talks directly to Anthropic with the key from the validated env", async () => {
     const request = await captureRequest(
       (fetch) =>
-        createModels(
-          { AI_PROVIDER: "anthropic", ANTHROPIC_API_KEY: FAKE_ANTHROPIC_KEY },
-          { fetch },
-        ).agent,
+        createModels({ AI_PROVIDER: "anthropic", ANTHROPIC_API_KEY: FAKE_ANTHROPIC_KEY }, { fetch }).agent,
     );
     expect(new URL(request.url).origin).toBe("https://api.anthropic.com");
     expect(request.headers.get("x-api-key")).toBe(FAKE_ANTHROPIC_KEY);
@@ -83,11 +75,7 @@ describe("createModels", () => {
     const request = await captureRequest(
       (fetch) =>
         createModels(
-          {
-            AI_PROVIDER: "google",
-            GOOGLE_GENERATIVE_AI_API_KEY: FAKE_GOOGLE_KEY,
-            ANTHROPIC_API_KEY: FAKE_ANTHROPIC_KEY,
-          },
+          { AI_PROVIDER: "meta", META_MODEL_API_KEY: FAKE_META_KEY, ANTHROPIC_API_KEY: FAKE_ANTHROPIC_KEY },
           { fetch },
         ).agent,
     );
@@ -95,60 +83,16 @@ describe("createModels", () => {
   });
 });
 
-describe("busy Gemini fallback (D-027)", () => {
-  /** A fake Google API: the main model answers `mainStatus`, the fallback answers OK. */
-  function fakeGoogle(mainStatus: number) {
-    const calls: string[] = [];
-    const fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
-      const url = String(input);
-      calls.push(url.includes(GOOGLE_FALLBACK_MODEL_ID) ? "fallback" : "main");
-      expect(new Headers(init?.headers).get("x-goog-api-key")).toBe(FAKE_GOOGLE_KEY);
-      if (!url.includes(GOOGLE_FALLBACK_MODEL_ID)) {
-        return Response.json(
-          { error: { code: mainStatus, message: "This model is currently experiencing high demand." } },
-          { status: mainStatus },
-        );
-      }
-      return Response.json({
-        candidates: [{ content: { role: "model", parts: [{ text: "OK" }] }, finishReason: "STOP" }],
-        usageMetadata: { promptTokenCount: 1, candidatesTokenCount: 1, totalTokenCount: 2 },
-      });
-    }) as typeof globalThis.fetch;
-    const models = createModels(
-      { AI_PROVIDER: "google", GOOGLE_GENERATIVE_AI_API_KEY: FAKE_GOOGLE_KEY },
-      { fetch },
-    );
-    return { models, calls };
-  }
-
-  it.each([503, 429])("sends the call to the fallback model when Google answers %i", async (status) => {
-    const { models, calls } = fakeGoogle(status);
-    const { text } = await generateText({ model: models.rules, prompt: "Hello", maxRetries: 0 });
-    expect(text).toBe("OK");
-    expect(calls).toEqual(["main", "fallback"]);
-  });
-
-  it("does not hide other errors behind the fallback", async () => {
-    const { models, calls } = fakeGoogle(400);
-    await expect(
-      generateText({ model: models.rules, prompt: "Hello", maxRetries: 0 }),
-    ).rejects.toThrow();
-    expect(calls).toEqual(["main"]);
-  });
-});
-
 describe("MODEL_IDS", () => {
   it("pins exact model versions (no -latest aliases)", () => {
-    const ids = [
-      ...Object.values(MODEL_IDS).flatMap((roles) => Object.values(roles)),
-      GOOGLE_FALLBACK_MODEL_ID,
-    ];
-    for (const id of ids) {
+    for (const id of Object.values(MODEL_IDS).flatMap((roles) => Object.values(roles))) {
       expect(id).not.toMatch(/latest/);
     }
   });
 
-  it("falls back to a different model", () => {
-    expect(GOOGLE_FALLBACK_MODEL_ID).not.toBe(MODEL_IDS.google.rules);
+  it("uses Meta's Standard mode, where Meta does not train on the requests (D-043)", () => {
+    for (const id of Object.values(MODEL_IDS.meta)) {
+      expect(id).not.toMatch(/contributor/);
+    }
   });
 });

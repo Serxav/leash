@@ -29,11 +29,11 @@ const envSchema = z
     }),
     PAYPAL_CLIENT_ID: requiredSecret,
     PAYPAL_CLIENT_SECRET: requiredSecret,
-    AI_PROVIDER: z.enum(["google", "anthropic"], {
-      error: "AI_PROVIDER must be google or anthropic",
+    AI_PROVIDER: z.enum(["meta", "anthropic"], {
+      error: "AI_PROVIDER must be meta or anthropic",
     }),
-    GOOGLE_GENERATIVE_AI_API_KEY: optionalSecret,
     ANTHROPIC_API_KEY: optionalSecret,
+    META_MODEL_API_KEY: optionalSecret,
     // Optional: without it, the app uses the local fallback catalog.
     CHANNEL3_API_KEY: optionalSecret,
     // Public PayPal Merchant ID of the sandbox Business account (not a
@@ -50,11 +50,11 @@ const envSchema = z
   })
   .superRefine((env, ctx) => {
     // Only the keys of the selected AI provider are required.
-    if (env.AI_PROVIDER === "google" && !env.GOOGLE_GENERATIVE_AI_API_KEY) {
+    if (env.AI_PROVIDER === "meta" && !env.META_MODEL_API_KEY) {
       ctx.addIssue({
         code: "custom",
-        path: ["GOOGLE_GENERATIVE_AI_API_KEY"],
-        message: "is required when AI_PROVIDER=google",
+        path: ["META_MODEL_API_KEY"],
+        message: "is required when AI_PROVIDER=meta",
       });
     }
     if (env.AI_PROVIDER === "anthropic" && !env.ANTHROPIC_API_KEY) {
