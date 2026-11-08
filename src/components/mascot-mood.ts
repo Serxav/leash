@@ -36,7 +36,7 @@ export const MOOD_STATUS: Record<RestingMood, string> = {
   idle: "Ready to fetch",
   listening: "Ears up, listening…",
   happy: "Fetched!",
-  waiting: "Sitting, waiting for you",
+  waiting: "Sitting patiently",
   stopped: "Held back by the leash",
 };
 
