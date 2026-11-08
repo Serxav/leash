@@ -1,4 +1,6 @@
-import type { ReactNode } from "react";
+"use client";
+
+import { useState, type ReactNode } from "react";
 import type { ProposalCardData } from "@/app/labels";
 import { AnswerButtons } from "./answer-buttons";
 
@@ -13,7 +15,8 @@ const MARKS: Record<ProposalCardData["outcome"], { symbol: string; className: st
  * One proposal and Leash's decision, as a permission card in Muse's style
  * (D-042): a question or result on top, the details in a grey box, and
  * Approve or Reject when Leash waits for the user. The chat and the inbox
- * show the same card.
+ * show the same card. Once the user answers on the card, its mark and
+ * headline follow the answer.
  */
 export function ProposalCard({
   card,
@@ -25,17 +28,23 @@ export function ProposalCard({
   /** Buttons of the page's own, in place of the card's Approve and Reject. */
   actions?: ReactNode;
 }) {
-  const mark = MARKS[card.outcome];
+  const [answer, setAnswer] = useState<boolean | null>(null);
+  const outcome = answer === null ? card.outcome : answer ? "APPROVE" : "BLOCK";
+  const headline =
+    answer === null ? card.headline : answer ? "You approved this purchase" : "You rejected this purchase";
+  const mark = MARKS[outcome];
   return (
     <article className="card rise-in flex flex-col gap-3 p-4 text-sm">
       <div className="flex items-center gap-2">
         <span
           aria-hidden="true"
-          className={`grid size-5 shrink-0 place-items-center rounded-full text-[11px] font-bold ${mark.className}`}
+          className={`grid size-5 shrink-0 place-items-center rounded-full text-[11px] font-bold transition-colors ${mark.className}`}
         >
           {mark.symbol}
         </span>
-        <p className="flex-1 font-medium">{card.headline}</p>
+        <p key={headline} className="rise-in flex-1 font-medium">
+          {headline}
+        </p>
         {card.orderTotal && <p className="shrink-0 font-semibold tabular-nums">€{card.orderTotal}</p>}
       </div>
       <div className="card-muted flex flex-col gap-1 px-3.5 py-3">
@@ -69,7 +78,10 @@ export function ProposalCard({
           intentId={card.intentId}
           title={card.title}
           orderTotal={card.orderTotal}
-          onAnswered={onAnswered}
+          onAnswered={(approved) => {
+            setAnswer(approved);
+            onAnswered?.(approved);
+          }}
         />
         ))}
     </article>

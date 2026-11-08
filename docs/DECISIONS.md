@@ -1243,7 +1243,9 @@ main page, the sponsor detail pages for Channel3 and APIMatic, the FAQ and the u
   status stays on one line; every proposal card shows its amount at the top right, like the
   history; and Rex's summary is one plain sentence per purchase ("charged", "waiting for
   your OK", "blocked"), without the engine's codes or IDs. The prompt-injection test passes
-  on Meta with the new instructions.
+  on Meta with the new instructions. After the user answers on a card, its mark and headline
+  follow the answer (✓ "You approved this purchase", ✕ "You rejected this purchase") instead
+  of still asking "Approve this purchase?".
 - **Status:** accepted (Sergi chose the puppy and the chat; then "algo así" with the Muse
   screenshot; then the name Rex; the second pass follows his session 8 list).
 
