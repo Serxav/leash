@@ -694,3 +694,11 @@ One entry per session: date, what was done, what is left, blockers.
 **Next**
 - Sergi reviews the new design; then push, PR and merge with green CI.
 - Render setup, README for judges and the judges' sandbox account.
+
+## 2026-11-08 · Session 8 – rule conversion speed on Meta
+
+- Branch `fix/f5-rules-timeout` (local, not pushed): rule conversion sends Meta
+  `reasoning_effort: low` and may take 60 s (D-043). Before, it sometimes timed out at 30 s
+  and even 60 s. Lint, typecheck, 564 unit tests, build and the full real sandbox suite
+  (18 tests: PayPal vault, charge, `INSTRUMENT_DECLINED`, refund, toolkit, Channel3, Meta
+  rules and prompt injection) pass.
