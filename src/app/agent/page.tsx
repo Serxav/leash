@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Suspense, type ReactNode } from "react";
 import { isAgentPaused } from "@/account/settings";
 import { currentUserId } from "@/account/visitor";
+import { PageTransition } from "@/components/page";
 import { ProposalCard } from "@/components/proposal-card";
 import { getDb } from "@/db/client";
 import { getMandateView } from "@/payments/mandate";
@@ -25,11 +26,13 @@ const STAGE_LABELS: Record<SecurityEventView["stage"], string> = {
 
 export default function AgentPage() {
   return (
-    <main className="flex flex-1 flex-col">
-      <Suspense fallback={<p className="p-6 text-center text-sm text-muted">Loading…</p>}>
-        <AgentState />
-      </Suspense>
-    </main>
+    <PageTransition>
+      <main className="flex flex-1 flex-col">
+        <Suspense fallback={<p className="p-6 text-center text-sm text-muted">Waking Rex up…</p>}>
+          <AgentState />
+        </Suspense>
+      </main>
+    </PageTransition>
   );
 }
 

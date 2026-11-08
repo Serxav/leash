@@ -1207,5 +1207,35 @@ main page, the sponsor detail pages for Channel3 and APIMatic, the FAQ and the u
     line ("AI shopping agent" at rest, the dog's step while it works);
   - shorter notes on the home page. The AI notice stays: CLAUDE.md requires a visible notice
     that purchases are proposed by an AI agent.
+- **Second design pass (session 8).** Sergi wanted it more fluid, easier to understand on
+  every page, a better Rex, the settings icon clear of the corner, and a home page like a
+  real product:
+  - **Same frame on every page** (`src/components/page.tsx`): a title, one sentence on what
+    the page is for, and numbered "how it works" steps where a page needs them (rules,
+    inbox, home). The grey explanation boxes and the "Back to the shopping agent" links are
+    gone; the nav already does that job;
+  - **Empty lists explain themselves**: a small Rex, why the list is empty and a button to
+    the next step ("Chat with Rex"). Grey placeholder cards replace "Loading…";
+  - **The inbox shows the same card as the chat** (`ProposalCard`), with the inbox's own
+    Approve and Reject. The **history** gives each purchase a coloured mark (paid, waiting,
+    blocked or rejected, refunded) and the amount on the right; the words still say it;
+  - **Permissions** is grouped like iOS Settings: Shopping agent, PayPal (sandbox), Demo and
+    Your data, each with a green or grey state ("Rex is active", "Connected") and its
+    button. "Revoke the mandate" is now "Disconnect"; the sentence under it still says it
+    revokes the mandate;
+  - **Motion**: pages fade and rise a little on navigation with React's `<ViewTransition>`
+    (Next.js guide "View transitions"); new messages, cards and Rex's status rise in.
+    Everything is short (about 0.3 s) and off with reduced motion;
+  - **Rex redrawn**: soft shading, shiny eyes, eyebrows that show the mood (focused while
+    working, worried while waiting), floppy ears, and a cleaner leash: slack on the ground,
+    or pulled taut from outside the picture when Leash holds Rex back. The small avatar is
+    Rex's head and chest, like an app icon, without the leash;
+  - **Nav**: the Permissions icon sits under the others, after a thin line, instead of in
+    the bottom corner, where the dev-only Next.js button covered it. That button now sits
+    top right (`devIndicators` in `next.config.ts`; it never shows in production);
+  - **Home page as a real product**: no "under construction for the hackathon" line. The
+    official rules ask nothing of the app itself (only of the README, video and Devpost
+    text), so the page keeps only what Leash's own rules need: the AI notice (CLAUDE.md,
+    transparency) and the sandbox / demo note (no real money, Marta's invented rules).
 - **Status:** accepted (Sergi chose the puppy and the chat; then "algo así" with the Muse
-  screenshot; then the name Rex).
+  screenshot; then the name Rex; the second pass follows his session 8 list).

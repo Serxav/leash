@@ -677,3 +677,20 @@ One entry per session: date, what was done, what is left, blockers.
 3. README for judges and the judges' sandbox account.
 - Small idea: when the user rejects on a card, Rex's line says "1 blocked"; "1 rejected by
   you" would be clearer.
+
+## 2026-10-20 · Session 8 – second design pass
+
+**Done**
+- On `feat/f5-design-pass` (D-042, "Second design pass"): the same page frame everywhere
+  (title, one-line purpose, "how it works" steps), empty states with a next step, loading
+  placeholders, the inbox on the chat's cards, a history with coloured marks and amounts,
+  Permissions grouped like iOS Settings, page transitions and rise-in motion, Rex redrawn,
+  the Permissions icon moved up, and a home page without the hackathon line.
+- Tried in the browser: toner €24 → "Approve this purchase?" in the chat and in the inbox;
+  rejected in the inbox → "Rejected. Nothing was charged.", empty inbox state, ✕ in the
+  history. Desktop and phone, light and dark. Lint, typecheck, 561 unit tests and build
+  pass.
+
+**Next**
+- Sergi reviews the new design; then push, PR and merge with green CI.
+- Render setup, README for judges and the judges' sandbox account.

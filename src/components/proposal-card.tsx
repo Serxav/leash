@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import type { ProposalCardData } from "@/app/labels";
 import { AnswerButtons } from "./answer-buttons";
 
@@ -11,18 +12,22 @@ const MARKS: Record<ProposalCardData["outcome"], { symbol: string; className: st
 /**
  * One proposal and Leash's decision, as a permission card in Muse's style
  * (D-042): a question or result on top, the details in a grey box, and
- * Approve or Reject when Leash waits for the user.
+ * Approve or Reject when Leash waits for the user. The chat and the inbox
+ * show the same card.
  */
 export function ProposalCard({
   card,
   onAnswered,
+  actions,
 }: {
   card: ProposalCardData;
   onAnswered?: (approved: boolean) => void;
+  /** Buttons of the page's own, in place of the card's Approve and Reject. */
+  actions?: ReactNode;
 }) {
   const mark = MARKS[card.outcome];
   return (
-    <article className="card flex flex-col gap-3 p-4 text-sm">
+    <article className="card rise-in flex flex-col gap-3 p-4 text-sm">
       <p className="flex items-center gap-2 font-medium">
         <span
           aria-hidden="true"
@@ -57,14 +62,15 @@ export function ProposalCard({
           <p className="mt-1 text-xs">{card.agentReason}</p>
         </details>
       </div>
-      {card.needsAnswer && (
+      {actions ??
+        (card.needsAnswer && (
         <AnswerButtons
           intentId={card.intentId}
           title={card.title}
           orderTotal={card.orderTotal}
           onAnswered={onAnswered}
         />
-      )}
+        ))}
     </article>
   );
 }

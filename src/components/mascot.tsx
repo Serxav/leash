@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type Ref } from "react";
+import { useEffect, useId, useRef, useState, type Ref } from "react";
 import { MASCOT_NAME, type MascotMood } from "./mascot-mood";
 
 /**
@@ -64,7 +64,8 @@ export function Mascot({
     return () => clearTimeout(timer);
   }, [patted, pats]);
 
-  const [x, y, width, height] = framing === "tile" ? [22, 14, 170, 184] : [0, 0, 220, 200];
+  // The tile is Rex's head and chest, like an app icon; no leash there.
+  const [x, y, width, height] = framing === "tile" ? [28, 30, 134, 134] : [0, 0, 220, 200];
   const picture = (
     <svg
       ref={svgRef}
@@ -77,12 +78,12 @@ export function Mascot({
       data-mood={mood}
       data-patted={patted || undefined}
     >
-      <Puppy mood={patted ? "happy" : mood} pupilsRef={pupilsRef} />
+      <Puppy mood={patted ? "happy" : mood} pupilsRef={pupilsRef} leash={framing === "full"} />
       {patted && (
         <path
           key={pats}
           className="mascot-heart"
-          d="M160 44c-4-8-16-6-16 3 0 7 9 12 16 18 7-6 16-11 16-18 0-9-12-11-16-3z"
+          d="M146 48c-4-8-16-6-16 3 0 7 9 12 16 18 7-6 16-11 16-18 0-9-12-11-16-3z"
           fill="#ff6b81"
         />
       )}
@@ -112,14 +113,24 @@ export function Mascot({
 }
 
 const INK = "#3a2a22";
-const FUR = "#f3c07b";
 const FUR_DARK = "#d9934a";
-const EAR = "#a86a3d";
-const SNOUT = "#fff1dc";
 const CHEEK = "#f4a3a3";
 const TONGUE = "#ef7d8c";
 
-function Puppy({ mood, pupilsRef }: { mood: MascotMood; pupilsRef: Ref<SVGGElement> }) {
+/** Gradient ids, unique per drawing: one page can show Rex twice. */
+type Paint = { fur: string; ear: string; snout: string };
+
+function Puppy({
+  mood,
+  pupilsRef,
+  leash,
+}: {
+  mood: MascotMood;
+  pupilsRef: Ref<SVGGElement>;
+  leash: boolean;
+}) {
+  const id = useId().replace(/[^a-zA-Z0-9_-]/g, "");
+  const paint: Paint = { fur: `url(#${id}-fur)`, ear: `url(#${id}-ear)`, snout: `url(#${id}-snout)` };
   const held = mood === "stopped";
   const perked = mood === "listening";
   const headTilt =
@@ -131,29 +142,45 @@ function Puppy({ mood, pupilsRef }: { mood: MascotMood; pupilsRef: Ref<SVGGEleme
           ? "rotate(-4 95 112)"
           : undefined;
   // Ears: up while listening, down when the leash holds Rex back.
-  const earY = held ? 92 : perked ? 70 : 80;
-  const earTurn = held ? 32 : perked ? 8 : 20;
+  const earTurn = held ? 14 : perked ? -12 : 0;
 
   return (
     <>
-      <ellipse cx="95" cy="190" rx="52" ry="6" fill="#000" opacity="0.08" />
+      <defs>
+        <radialGradient id={`${id}-fur`} cx="38%" cy="30%" r="80%">
+          <stop offset="0" stopColor="#fcdcaa" />
+          <stop offset="1" stopColor="#eeae63" />
+        </radialGradient>
+        <linearGradient id={`${id}-ear`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#b97b4a" />
+          <stop offset="1" stopColor="#8a5330" />
+        </linearGradient>
+        <radialGradient id={`${id}-snout`} cx="50%" cy="35%" r="70%">
+          <stop offset="0" stopColor="#fffbf4" />
+          <stop offset="1" stopColor="#fbe3c4" />
+        </radialGradient>
+      </defs>
+
+      <ellipse cx="95" cy="190" rx="50" ry="5" fill="#000" opacity="0.08" />
 
       {/* The lean is an attribute; the animation moves the inner group. */}
       <g transform={held ? "translate(-6 0) rotate(-5 95 186)" : undefined}>
-        {/* The leash: slack while Rex may go on, taut when Leash holds it back. */}
-        <path
-          d={held ? "M100 128 L218 30" : "M100 128 C150 160 186 34 218 30"}
-          fill="none"
-          stroke="var(--leash-color)"
-          strokeWidth="4"
-          strokeLinecap="round"
-        />
-        <rect x="208" y="22" width="12" height="18" rx="4" fill="var(--leash-color)" />
+        {/* The leash: slack on the ground while Rex may go on, pulled taut
+            from outside the picture when Leash holds Rex back. */}
+        {leash &&
+          (held ? (
+            <path d="M98 134 L220 56" fill="none" stroke="var(--leash-color)" strokeWidth="4" strokeLinecap="round" />
+          ) : (
+            <g fill="none" stroke="var(--leash-color)" strokeWidth="4" strokeLinecap="round">
+              <path d="M98 135 C108 162 128 186 156 186 C168 186 176 184 182 181" />
+              <ellipse cx="192" cy="178" rx="11" ry="6" />
+            </g>
+          ))}
 
         <g className="mascot-all">
           <path
             className="mascot-tail"
-            d={held ? "M128 166 C142 176 150 180 160 182" : "M128 160 C150 152 160 136 156 120"}
+            d={held ? "M126 166 C140 176 148 180 158 182" : "M126 160 C148 152 158 136 154 120"}
             fill="none"
             stroke={FUR_DARK}
             strokeWidth="11"
@@ -161,41 +188,51 @@ function Puppy({ mood, pupilsRef }: { mood: MascotMood; pupilsRef: Ref<SVGGEleme
           />
 
           <g className="mascot-body">
-            <ellipse cx="95" cy="152" rx="42" ry="36" fill={FUR} />
-            <ellipse cx="95" cy="160" rx="24" ry="22" fill={SNOUT} />
-            <ellipse cx="77" cy="185" rx="13" ry="7" fill={FUR_DARK} />
-            <ellipse cx="113" cy="185" rx="13" ry="7" fill={FUR_DARK} />
+            <path d="M58 160 C58 130 76 118 95 118 C114 118 132 130 132 160 C132 178 118 188 95 188 C72 188 58 178 58 160Z" fill={paint.fur} />
+            <ellipse cx="95" cy="162" rx="22" ry="21" fill={paint.snout} />
+            <ellipse cx="78" cy="185" rx="12" ry="6.5" fill={paint.snout} />
+            <ellipse cx="112" cy="185" rx="12" ry="6.5" fill={paint.snout} />
           </g>
 
           <g transform={headTilt}>
             <g className="mascot-head">
-              <ellipse cx="55" cy={earY} rx="15" ry="28" fill={EAR} transform={`rotate(${earTurn} 55 ${earY})`} />
-              <ellipse cx="135" cy={earY} rx="15" ry="28" fill={EAR} transform={`rotate(${-earTurn} 135 ${earY})`} />
-              <circle cx="95" cy="84" r="44" fill={FUR} />
-              <ellipse cx="114" cy="60" rx="13" ry="10" fill={FUR_DARK} opacity="0.55" />
+              <path
+                d="M64 54 C42 50 30 78 35 104 C38 120 56 120 61 104 C66 88 72 64 64 54Z"
+                fill={paint.ear}
+                transform={`rotate(${earTurn} 64 56)`}
+              />
+              <path
+                d="M126 54 C148 50 160 78 155 104 C152 120 134 120 129 104 C124 88 118 64 126 54Z"
+                fill={paint.ear}
+                transform={`rotate(${-earTurn} 126 56)`}
+              />
+              <ellipse cx="95" cy="86" rx="47" ry="42" fill={paint.fur} />
+              <ellipse cx="95" cy="50" rx="12" ry="7" fill={FUR_DARK} opacity="0.35" />
 
+              <Brows mood={mood} />
               <Eyes mood={mood} pupilsRef={pupilsRef} />
 
-              <circle cx="66" cy="98" r="7" fill={CHEEK} opacity="0.7" />
-              <circle cx="124" cy="98" r="7" fill={CHEEK} opacity="0.7" />
+              <ellipse cx="65" cy="100" rx="8" ry="5" fill={CHEEK} opacity="0.55" />
+              <ellipse cx="125" cy="100" rx="8" ry="5" fill={CHEEK} opacity="0.55" />
 
               <g className="mascot-snout">
-                <ellipse cx="95" cy="102" rx="20" ry="14" fill={SNOUT} />
-                <path d="M88 94 Q95 89 102 94 Q99 101 95 101 Q91 101 88 94 Z" fill={INK} />
+                <ellipse cx="95" cy="104" rx="21" ry="15" fill={paint.snout} />
+                <path d="M87 95 Q95 90 103 95 Q101 103 95 103 Q89 103 87 95 Z" fill={INK} />
+                <ellipse cx="92" cy="94.5" rx="3" ry="1.6" fill="#fff" opacity="0.6" />
                 <Mouth mood={mood} />
               </g>
             </g>
           </g>
 
-          <rect x="67" y="119" width="56" height="9" rx="4.5" fill="var(--leash-color)" />
-          <circle cx="100" cy="131" r="5" fill="#fbbf24" stroke={INK} strokeOpacity="0.3" />
+          <path d="M66 121 Q95 136 124 121" fill="none" stroke="var(--leash-color)" strokeWidth="8" strokeLinecap="round" />
+          <circle cx="97" cy="133" r="5" fill="#fbbf24" stroke={INK} strokeOpacity="0.25" />
 
           {mood === "working" && <Laptop />}
         </g>
       </g>
 
       {mood === "waiting" && (
-        <text x="150" y="50" fontSize="30" fontWeight="700" fill="currentColor" opacity="0.7">
+        <text x="144" y="60" fontSize="28" fontWeight="700" fill="currentColor" opacity="0.7">
           ?
         </text>
       )}
@@ -207,11 +244,29 @@ function Puppy({ mood, pupilsRef }: { mood: MascotMood; pupilsRef: Ref<SVGGEleme
 function Laptop() {
   return (
     <g>
-      <rect x="60" y="132" width="70" height="42" rx="7" fill="#d1d1d6" stroke="#aeaeb2" strokeWidth="1.5" />
-      <circle cx="95" cy="152" r="5" fill="var(--leash-color)" />
-      <rect x="52" y="172" width="86" height="8" rx="4" fill="#aeaeb2" />
-      <ellipse className="mascot-tap" cx="70" cy="172" rx="10" ry="6" fill={FUR_DARK} />
-      <ellipse className="mascot-tap mascot-tap-late" cx="120" cy="172" rx="10" ry="6" fill={FUR_DARK} />
+      <rect x="61" y="134" width="68" height="42" rx="8" fill="#e5e5ea" stroke="#c7c7cc" strokeWidth="1.5" />
+      <circle cx="95" cy="155" r="4.5" fill="var(--leash-color)" />
+      <rect x="53" y="173" width="84" height="7" rx="3.5" fill="#c7c7cc" />
+      <ellipse className="mascot-tap" cx="71" cy="172" rx="10" ry="6" fill="#fbe3c4" />
+      <ellipse className="mascot-tap mascot-tap-late" cx="119" cy="172" rx="10" ry="6" fill="#fbe3c4" />
+    </g>
+  );
+}
+
+/** Eyebrows carry most of the feeling: focused, worried, raised. */
+function Brows({ mood }: { mood: MascotMood }) {
+  const [left, right] =
+    mood === "working"
+      ? ["M70 66 L84 69", "M106 69 L120 66"]
+      : mood === "waiting" || mood === "stopped"
+        ? ["M70 68 L84 64", "M106 64 L120 68"]
+        : mood === "listening" || mood === "happy"
+          ? ["M70 63 Q77 59 84 62", "M106 62 Q113 59 120 63"]
+          : ["M70 66 Q77 63 84 65", "M106 65 Q113 63 120 66"];
+  return (
+    <g fill="none" stroke={INK} strokeOpacity="0.55" strokeWidth="2.5" strokeLinecap="round">
+      <path d={left} />
+      <path d={right} />
     </g>
   );
 }
@@ -220,28 +275,30 @@ function Eyes({ mood, pupilsRef }: { mood: MascotMood; pupilsRef: Ref<SVGGElemen
   if (mood === "happy") {
     return (
       <g fill="none" stroke={INK} strokeWidth="4" strokeLinecap="round">
-        <path d="M70 84 Q78 74 86 84" />
-        <path d="M104 84 Q112 74 120 84" />
+        <path d="M70 84 Q77 75 84 84" />
+        <path d="M106 84 Q113 75 120 84" />
       </g>
     );
   }
   if (mood === "stopped") {
     return (
       <g fill="none" stroke={INK} strokeWidth="4" strokeLinecap="round">
-        <path d="M70 80 L86 84" />
-        <path d="M104 84 L120 80" />
+        <path d="M70 82 Q77 86 84 82" />
+        <path d="M106 82 Q113 86 120 82" />
       </g>
     );
   }
-  // Round eyes, looking down at the keys or at the message while busy.
+  // Round, shiny eyes, looking down at the keys or at the message while busy.
   const down = mood === "working" ? "translate(0 4)" : mood === "listening" ? "translate(1 3)" : undefined;
   return (
     <g className="mascot-eyes">
       <g ref={pupilsRef} transform={down}>
-        <circle cx="78" cy="80" r="7" fill={INK} />
-        <circle cx="112" cy="80" r="7" fill={INK} />
-        <circle cx="80.5" cy="77.5" r="2.2" fill="#fff" />
-        <circle cx="114.5" cy="77.5" r="2.2" fill="#fff" />
+        <circle cx="77" cy="81" r="8" fill={INK} />
+        <circle cx="113" cy="81" r="8" fill={INK} />
+        <circle cx="80" cy="77.5" r="3" fill="#fff" />
+        <circle cx="116" cy="77.5" r="3" fill="#fff" />
+        <circle cx="74.5" cy="84.5" r="1.3" fill="#fff" opacity="0.8" />
+        <circle cx="110.5" cy="84.5" r="1.3" fill="#fff" opacity="0.8" />
       </g>
     </g>
   );
@@ -251,16 +308,16 @@ function Mouth({ mood }: { mood: MascotMood }) {
   if (mood === "happy") {
     return (
       <>
-        <path d="M85 106 Q95 120 105 106 Z" fill={INK} />
-        <ellipse cx="95" cy="113" rx="5" ry="4" fill={TONGUE} />
+        <path d="M86 108 Q95 122 104 108 Z" fill={INK} />
+        <ellipse cx="95" cy="115" rx="5" ry="4" fill={TONGUE} />
       </>
     );
   }
   const d =
     mood === "stopped"
-      ? "M87 110 Q95 104 103 110"
+      ? "M88 112 Q95 106 102 112"
       : mood === "working"
-        ? "M91 107 Q95 109 99 107"
-        : "M87 106 Q95 112 103 106";
+        ? "M91 109 Q95 111 99 109"
+        : "M87 108 Q95 114 103 108";
   return <path d={d} fill="none" stroke={INK} strokeWidth="3" strokeLinecap="round" />;
 }

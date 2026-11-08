@@ -4,6 +4,7 @@ import { getDb } from "@/db/client";
 import { currentUserId } from "@/account/visitor";
 import { describeRules } from "@/rules/describe";
 import { getActivePolicy, listPolicyVersions } from "@/rules/policies";
+import { LoadingCards, Page, Steps } from "@/components/page";
 import { RuleList } from "./rule-list";
 import { RulesForm } from "./rules-form";
 
@@ -39,40 +40,17 @@ function first(value: string | string[] | undefined): string | undefined {
 
 export default function RulesPage({ searchParams }: PageProps<"/rules">) {
   return (
-    <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-8 px-4 py-10 sm:px-6">
-      <header className="flex flex-col gap-2">
-        <h1 className="text-3xl font-semibold">Spending rules</h1>
-        <p className="text-muted">
-          Your rules are Rex&apos;s leash: they decide what the AI shopping agent may buy, how much
-          and when it must ask you first.
-        </p>
-      </header>
-
-      <ol
-        aria-label="How it works"
-        className="card grid divide-y divide-[var(--border)] sm:grid-cols-3 sm:divide-x sm:divide-y-0"
-      >
-        {STEPS.map((step, index) => (
-          <li key={step.title} className="flex gap-3 p-4 sm:flex-col sm:gap-1">
-            <span
-              aria-hidden="true"
-              className="grid size-6 shrink-0 place-items-center rounded-full bg-[var(--accent-fill)] text-xs font-semibold text-white"
-            >
-              {index + 1}
-            </span>
-            <span className="flex flex-col gap-0.5">
-              <span className="font-medium">{step.title}</span>
-              <span className="text-sm leading-5 text-muted">{step.text}</span>
-            </span>
-          </li>
-        ))}
-      </ol>
+    <Page
+      title="Spending rules"
+      intro="Your rules are Rex's leash: they decide what the AI shopping agent may buy, how much and when it must ask you first."
+    >
+      <Steps label="How it works" steps={STEPS} />
 
       {/* Static shell above; request-time data streams in below (Cache Components). */}
-      <Suspense fallback={<p className="text-sm text-muted">Loading your rules…</p>}>
+      <Suspense fallback={<LoadingCards label="Loading your rules…" />}>
         <RulesState searchParams={searchParams} />
       </Suspense>
-    </main>
+    </Page>
   );
 }
 

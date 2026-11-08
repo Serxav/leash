@@ -120,7 +120,7 @@ export function AgentChat({ activity, notices }: { activity: ReactNode; notices:
             <span className="hidden sm:inline">Rules &amp; activity</span>
             <span className="sm:hidden">Rules</span>
           </summary>
-          <div className="glass absolute top-12 left-0 z-30 flex max-h-[calc(100dvh-12rem)] w-[min(24rem,calc(100vw-2rem))] flex-col gap-5 overflow-y-auto rounded-3xl p-4">
+          <div className="glass rise-in absolute top-12 left-0 z-30 flex max-h-[calc(100dvh-12rem)] w-[min(24rem,calc(100vw-2rem))] flex-col gap-5 overflow-y-auto rounded-3xl p-4">
             {activity}
           </div>
         </details>
@@ -131,16 +131,21 @@ export function AgentChat({ activity, notices }: { activity: ReactNode; notices:
             <Mascot mood={mood} framing="tile" size={40} interactive />
           </div>
           <p className="text-xs font-semibold">{MASCOT_NAME}</p>
-          <p className="max-w-52 text-[11px] leading-4 text-muted">{status}</p>
+          <p key={status} className="rise-in max-w-52 text-[11px] leading-4 text-muted">
+            {status}
+          </p>
         </div>
       </header>
 
       {pending && !headerVisible && (
         <div aria-hidden="true" className="pointer-events-none fixed inset-x-0 top-3 z-30 flex justify-center md:left-20">
-          <div className="glass flex items-center gap-2 rounded-full py-1 pr-4 pl-1.5">
+          <div className="glass rise-in flex items-center gap-2 rounded-full py-1 pr-4 pl-1.5">
             <Mascot mood="working" framing="tile" size={30} />
             <span className="text-xs">
-              <span className="font-semibold">{MASCOT_NAME}</span> <span className="text-muted">{step.dog}</span>
+              <span className="font-semibold">{MASCOT_NAME}</span>{" "}
+              <span key={step.dog} className="rise-in inline-block text-muted">
+                {step.dog}
+              </span>
             </span>
           </div>
         </div>
@@ -185,7 +190,7 @@ export function AgentChat({ activity, notices }: { activity: ReactNode; notices:
         {pending && (
           <div className="flex flex-col gap-3">
             <Timestamp at={sending.at} />
-            <UserBubble text={sending.text} />
+            <UserBubble text={sending.text} arriving />
             <AgentBubble>
               <span className="sr-only">{MASCOT_NAME} is working. This can take up to a minute.</span>
               {/* What the agent is doing now; not announced at every change. */}
@@ -195,7 +200,9 @@ export function AgentChat({ activity, notices }: { activity: ReactNode; notices:
                   <span className="typing-dot size-1.5 rounded-full bg-current" />
                   <span className="typing-dot size-1.5 rounded-full bg-current" />
                 </span>
-                <span className="text-muted">{step.agent}</span>
+                <span key={step.agent} className="rise-in text-muted">
+                  {step.agent}
+                </span>
               </span>
             </AgentBubble>
           </div>
@@ -216,7 +223,7 @@ export function AgentChat({ activity, notices }: { activity: ReactNode; notices:
                       setHasText(true);
                       inputRef.current.focus();
                     }}
-                    className="glass rounded-full px-3.5 py-2 text-left text-xs whitespace-nowrap"
+                    className="glass rounded-full px-3.5 py-2 text-left text-xs whitespace-nowrap transition-transform active:scale-95"
                   >
                     {suggestion}
                   </button>
@@ -294,9 +301,10 @@ function Timestamp({ at }: { at: Date }) {
   return <p className="pt-2 text-center text-[11px] text-muted">{clock.format(at)}</p>;
 }
 
-function UserBubble({ text }: { text: string }) {
+/** "arriving" animates the bubble in once, when it is sent. */
+function UserBubble({ text, arriving = false }: { text: string; arriving?: boolean }) {
   return (
-    <div className="flex justify-end">
+    <div className={`flex justify-end ${arriving ? "rise-in" : ""}`}>
       <p className="max-w-[80%] rounded-[20px] bg-[var(--bubble-user)] px-4 py-2.5 text-[15px] leading-6 whitespace-pre-line">
         <span className="sr-only">You: </span>
         {text}
@@ -307,7 +315,7 @@ function UserBubble({ text }: { text: string }) {
 
 function AgentBubble({ error = false, children }: { error?: boolean; children: ReactNode }) {
   return (
-    <div className="flex">
+    <div className="rise-in flex">
       <div
         className={`max-w-[85%] rounded-[20px] px-4 py-2.5 text-[15px] leading-6 ${
           error ? "bg-red-50 text-red-900 dark:bg-red-950 dark:text-red-100" : "bg-[var(--bubble-agent)]"

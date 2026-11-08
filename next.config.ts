@@ -4,6 +4,8 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   /* config options here */
   cacheComponents: true,
+  // The dev-only Next.js button sat on top of the nav's last icon.
+  devIndicators: { position: "top-right" },
   partialPrefetching: true,
   turbopack: {
     // The project folder is the root. Without this, Next.js may pick a

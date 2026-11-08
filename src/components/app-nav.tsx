@@ -54,6 +54,27 @@ const ITEMS: Array<{ href: string; label: string; icon: ReactNode }> = [
   },
 ];
 
+/** A page's icon from the nav, for links to it elsewhere (the home page). */
+export function NavIcon({ href, size = 24 }: { href: string; size?: number }) {
+  const item = ITEMS.find((candidate) => candidate.href === href);
+  if (!item) return null;
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      width={size}
+      height={size}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      {item.icon}
+    </svg>
+  );
+}
+
 export function AppNav() {
   const pathname = usePathname();
   return (
@@ -65,30 +86,23 @@ export function AppNav() {
         {ITEMS.map((item) => {
           const current = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
           return (
-            <li key={item.href} className={item.href === "/permissions" ? "md:mt-auto" : undefined}>
+            <li
+              key={item.href}
+              // Settings sit a little apart, but high enough to stay clear of
+              // anything in the bottom corner.
+              className={item.href === "/permissions" ? "md:mt-2 md:border-t md:border-[var(--border)] md:pt-4" : undefined}
+            >
               <Link
                 href={item.href}
                 title={item.label}
                 aria-current={current ? "page" : undefined}
-                className={`flex min-w-12 flex-col items-center gap-0.5 rounded-2xl px-1.5 py-1.5 text-[10px] font-medium md:size-11 md:justify-center md:p-0 ${
+                className={`flex min-w-12 flex-col items-center gap-0.5 rounded-2xl px-1.5 py-1.5 text-[10px] font-medium transition-colors duration-200 active:scale-95 md:size-11 md:justify-center md:p-0 ${
                   current
                     ? "text-accent md:bg-surface-muted"
                     : "text-muted hover:text-foreground md:hover:bg-surface-muted"
                 }`}
               >
-                <svg
-                  viewBox="0 0 24 24"
-                  width="24"
-                  height="24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.7"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  {item.icon}
-                </svg>
+                <NavIcon href={item.href} />
                 <span className="md:sr-only">{item.label}</span>
               </Link>
             </li>
