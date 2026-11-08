@@ -59,7 +59,7 @@ describe("parseServerEnv", () => {
     ).toHaveLength(1);
   });
 
-  it("requires the Meta key when AI_PROVIDER=meta (D-043)", () => {
+  it("requires the Meta key when AI_PROVIDER=meta", () => {
     expect(problemsOf({ ...validEnv, META_MODEL_API_KEY: "" })).toEqual([
       "META_MODEL_API_KEY is required when AI_PROVIDER=meta",
     ]);
@@ -81,7 +81,7 @@ describe("parseServerEnv", () => {
     expect(env.AI_PROVIDER).toBe("anthropic");
   });
 
-  it("rejects google, which Leash no longer uses (D-043)", () => {
+  it("rejects google, which Leash no longer uses", () => {
     expect(problemsOf({ ...validEnv, AI_PROVIDER: "google" })).toEqual([
       "AI_PROVIDER must be meta or anthropic",
     ]);
@@ -147,23 +147,3 @@ describe("assertSandboxApiBase", () => {
   });
 });
 
-describe("PAYPAL_MERCHANT_ID", () => {
-  it("is optional", () => {
-    expect(parseServerEnv(validEnv).PAYPAL_MERCHANT_ID).toBeUndefined();
-  });
-
-  it("accepts a PayPal Merchant ID", () => {
-    expect(
-      parseServerEnv({ ...validEnv, PAYPAL_MERCHANT_ID: "ABCDEFGH12345" })
-        .PAYPAL_MERCHANT_ID,
-    ).toBe("ABCDEFGH12345");
-  });
-
-  it("rejects values that are not a Merchant ID", () => {
-    expect(
-      problemsOf({ ...validEnv, PAYPAL_MERCHANT_ID: "sb-xyz@business.example.com" }),
-    ).toEqual([
-      "PAYPAL_MERCHANT_ID must be the PayPal Merchant ID (letters and digits)",
-    ]);
-  });
-});

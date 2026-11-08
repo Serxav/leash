@@ -9,7 +9,7 @@ import { answerPurchase } from "./actions";
 import type { InboxFormState } from "./state";
 
 /**
- * The pending purchases with one-tap Approve and Reject (US5), on the same
+ * The pending purchases with one-tap Approve and Reject, on the same
  * cards as the chat. One form state for the whole list: an answered
  * purchase leaves the inbox, so its answer is shown above the list.
  */

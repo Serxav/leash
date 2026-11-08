@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { parseRules, RULE_IDS, rulesSchema, type SpendingRules } from "./schema";
 
-/** The brief's example: "Max 40 € per order, 150 € per month, only office
+/** Marta's example: "Max 40 € per order, 150 € per month, only office
  * supplies, ask me before anything over 15 €, max 5 units of the same item,
  * never buy from marketplace X". */
 const example = {
@@ -25,7 +25,7 @@ function problemsOf(input: unknown): string[] {
 }
 
 describe("rulesSchema", () => {
-  it("accepts the brief's example unchanged", () => {
+  it("accepts Marta's example unchanged", () => {
     expect(parseRules(example)).toEqual({ ok: true, rules: example });
   });
 
@@ -195,7 +195,7 @@ describe("rulesSchema", () => {
 });
 
 describe("RULE_IDS", () => {
-  it("lists the brief's evaluation order: state, hard blocks, threshold", () => {
+  it("lists the evaluation order: state, hard blocks, threshold", () => {
     expect(RULE_IDS.indexOf("agent_active")).toBeLessThan(RULE_IDS.indexOf("allowed_categories"));
     expect(RULE_IDS.indexOf("monthly_budget")).toBeLessThan(RULE_IDS.indexOf("approval_threshold"));
     expect(RULE_IDS.at(-1)).toBe("approval_threshold");

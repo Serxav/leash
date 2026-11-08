@@ -6,7 +6,7 @@ import type { ReactNode } from "react";
 import { MASCOT_NAME } from "./mascot-mood";
 
 /**
- * The app's navigation (D-042): a slim glass rail of icons on the left on
+ * The app's navigation: a slim glass rail of icons on the left on
  * wide screens, like Muse's sidebar, and a glass tab bar at the bottom on
  * phones. Icons are drawn for Leash; every one has a text label.
  */

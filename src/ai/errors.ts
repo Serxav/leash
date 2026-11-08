@@ -6,7 +6,7 @@ import { APICallError, RetryError } from "ai";
  * code (401 key, 402/403 credits or access, 429 rate limit, 5xx provider).
  *
  * It never includes the error message, the request or the response body:
- * those can carry prompts, product text or provider details (CLAUDE.md).
+ * those can carry prompts, product text or provider details.
  */
 export function describeAiError(error: unknown): string {
   const last = RetryError.isInstance(error) ? error.lastError : error;

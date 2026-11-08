@@ -8,7 +8,7 @@
 - No copyrighted music: none at all, or royalty-free music with a licence.
 - No third-party brands or logos: only the demo shops (`*-demo.example`, invented). If a
   Channel3 offer with a real shop name appears, cut it, unless Channel3 confirms on Discord
-  that it is fine (ROADMAP F3).
+  that it is fine.
 - Upload to YouTube as **public**, not unlisted.
 
 **Before recording**

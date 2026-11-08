@@ -11,7 +11,7 @@ import { callPayPal } from "@/paypal/errors";
 import { getPayPalClient } from "@/paypal/sdk";
 
 // Real sandbox charge of €1.00 and its full refund (fake money), for the
-// demo user. Needs an ACTIVE mandate: connect PayPal once in /lab/payments first.
+// demo user. Needs an ACTIVE mandate for the demo user in the local database.
 const db = existsSync(DEFAULT_DB_PATH) ? createDb(DEFAULT_DB_PATH) : undefined;
 const hasMandate = Boolean(db && getActiveVaultToken(db, DEMO_USER_ID));
 

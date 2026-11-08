@@ -12,7 +12,7 @@ import { listProposals, listProposalsByIds, proposePurchase, type ProposalInput 
 const USER = "user-1";
 const NOW = new Date("2026-10-20T10:00:00Z");
 
-/** Marta's rules from the brief. */
+/** Marta's rules (the demo persona). */
 const rules: SpendingRules = {
   formatVersion: 1,
   currency: "EUR",
@@ -157,7 +157,7 @@ describe("proposePurchase", () => {
     expect(charged).toEqual([]);
   });
 
-  it("blocks the trap product even when it fits every rule, and logs it (US8)", async () => {
+  it("blocks the trap product even when it fits every rule, and logs it", async () => {
     setup();
     // 2 × €3.99 is inside every one of Marta's rules: only the text check stops it.
     const result = await propose({ productId: TRAP_PRODUCT_ID, merchantDomain: "deals-hub.example", quantity: 2 });
@@ -244,7 +244,7 @@ describe("proposePurchase", () => {
     expect(results.filter((result) => result.outcome === "BLOCK")).toHaveLength(2);
   });
 
-  it("blocks everything while the user has paused the agent (US7)", async () => {
+  it("blocks everything while the user has paused the agent", async () => {
     setup();
     setAgentPaused(db, USER, true, NOW);
     expect(await propose()).toMatchObject({ outcome: "BLOCK", explanation: "Blocked: you paused the agent." });
@@ -301,7 +301,7 @@ describe("listProposals", () => {
     expect(listProposals(db, "someone-else")).toEqual([]);
   });
 
-  it("marks a Channel3 offer as such, for the page (D-035)", async () => {
+  it("marks a Channel3 offer as such, for the page", async () => {
     setup();
     const offer: CatalogProduct = {
       id: "c3Organiser",
@@ -318,7 +318,7 @@ describe("listProposals", () => {
 });
 
 describe("listProposalsByIds", () => {
-  it("returns one run's proposals in the agent's order, only for this user (D-042)", async () => {
+  it("returns one run's proposals in the agent's order, only for this user", async () => {
     setup();
     const first = await propose();
     const second = await propose({ quantity: 3 });

@@ -6,9 +6,6 @@ import { stubPayPalClient, type StubReply, type StubRequest } from "@/paypal/tes
 import {
   ChargeError,
   chargeWithMandate,
-  isSandboxMockIssue,
-  listPayments,
-  newClientMetadataId,
   RETURN_WINDOW_DAYS,
 } from "./charge";
 
@@ -226,23 +223,7 @@ describe("chargeWithMandate", () => {
 
   it("never exposes the vault token in payment views", async () => {
     const { orders } = setup(completedOrder);
-    await chargeWithMandate({ db, orders }, customerCharge);
-    expect(JSON.stringify(listPayments(db, USER))).not.toContain("VAULTTOKEN1");
-  });
-});
-
-describe("newClientMetadataId", () => {
-  it("is 32 lowercase hex characters and unique", () => {
-    const a = newClientMetadataId();
-    expect(a).toMatch(/^[0-9a-f]{32}$/);
-    expect(newClientMetadataId()).not.toBe(a);
-  });
-});
-
-describe("isSandboxMockIssue", () => {
-  it("accepts only the supported negative-testing issues", () => {
-    expect(isSandboxMockIssue("INSTRUMENT_DECLINED")).toBe(true);
-    expect(isSandboxMockIssue("DUPLICATE_INVOICE_ID")).toBe(false);
-    expect(isSandboxMockIssue(null)).toBe(false);
+    const view = await chargeWithMandate({ db, orders }, customerCharge);
+    expect(JSON.stringify(view)).not.toContain("VAULTTOKEN1");
   });
 });

@@ -8,8 +8,8 @@ import { getActiveVaultToken } from "@/payments/mandate";
 import { getPayPalClient } from "@/paypal/sdk";
 
 // Real €1.00 sandbox charge with the demo user's saved PayPal (fake money).
-// Needs an ACTIVE mandate: connect PayPal once in /lab/payments first.
-// The €1.00 counts toward the demo user's budget, like a charge from the lab.
+// Needs an ACTIVE mandate for the demo user in the local database.
+// The €1.00 counts toward the demo user's budget.
 const db = existsSync(DEFAULT_DB_PATH) ? createDb(DEFAULT_DB_PATH) : undefined;
 const hasMandate = Boolean(db && getActiveVaultToken(db, DEMO_USER_ID));
 

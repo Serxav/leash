@@ -11,7 +11,7 @@ import { rateLimitMessage, rulesConversions } from "@/security/rate-limit";
 import { RULES_PATH, type RulesFormState } from "./state";
 
 /**
- * US2 step 1: the AI turns the text into exact rules, or asks questions.
+ * Step 1: the AI turns the text into exact rules, or asks questions.
  * The rules stay on the server as a draft; the browser gets readable tags
  * and a random draft ID. Nothing applies yet. Every new attempt first drops
  * the previous draft, so only the last rules shown can be confirmed.
@@ -27,7 +27,7 @@ export async function proposeRules(
 
   const db = getDb();
   const userId = await currentUserId();
-  // Before the AI call; a refused attempt keeps the current draft (D-041).
+  // Before the AI call; a refused attempt keeps the current draft.
   const limit = rulesConversions.take(userId, Date.now());
   if (!limit.ok) {
     return { kind: "error", text: shown, message: rateLimitMessage(limit) };
@@ -58,7 +58,7 @@ export async function proposeRules(
   }
 }
 
-/** US2 step 2: the user confirms their draft; it becomes the next version. */
+/** Step 2: the user confirms their draft; it becomes the next version. */
 export async function confirmRules(formData: FormData): Promise<void> {
   const draftId = formData.get("draftId");
 

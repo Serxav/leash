@@ -7,7 +7,7 @@ import type { ToolkitRunner } from "@/paypal/agent-toolkit";
 
 /**
  * Leashed tools: PayPal Agent Toolkit tools behind Leash's permission
- * layer (brief §5, D-034). The model never receives a toolkit tool. It
+ * layer. The model never receives a toolkit tool. It
  * gets a Leash tool that:
  * 1. checks permission first: only the current user's own purchases, only
  *    read actions, a limited number of calls per run (in the agent);
@@ -22,7 +22,7 @@ import type { ToolkitRunner } from "@/paypal/agent-toolkit";
  * - check_purchase_status: read one of its purchases at PayPal through the
  *   Agent Toolkit's get_order (this file).
  * Refunds also use the toolkit (create_refund), but only when the user asks
- * for one in the history page (src/purchases/history.ts, D-037): the agent
+ * for one in the history page (src/purchases/history.ts): the agent
  * never gets them.
  */
 

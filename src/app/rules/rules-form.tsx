@@ -9,7 +9,7 @@ import type { RulesFormState } from "./state";
 
 /**
  * What good rules say, in the order Leash checks them. Each tip adds an
- * example sentence the user then edits (D-042). Shops are optional.
+ * example sentence the user then edits. Shops are optional.
  */
 const TIPS = [
   { title: "Most per order", hint: "A bigger order is always blocked.", phrase: "Max €40 per order." },
@@ -44,7 +44,7 @@ const EXAMPLES = [
   },
 ] as const;
 
-/** Write rules → see questions or the exact rules → confirm (US2). */
+/** Write rules → see questions or the exact rules → confirm. */
 export function RulesForm({ initialText }: { initialText: string }) {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [state, formAction, pending] = useActionState<RulesFormState, FormData>(proposeRules, {

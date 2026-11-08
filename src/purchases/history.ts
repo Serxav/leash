@@ -7,13 +7,13 @@ import type { ToolkitRunner } from "@/paypal/agent-toolkit";
 import { listProposals, oneAtATime, type ProposalView } from "./propose";
 
 /**
- * Purchase history and refunds (US6, D-037).
+ * Purchase history and refunds.
  *
  * Every purchase the agent proposed, with its decision, the rule applied,
- * the PayPal reference, the "14-day return window" (D-008) and a refund
+ * the PayPal reference, the "14-day return window" and a refund
  * button while the window is open.
  *
- * Refunds are leashed Agent Toolkit calls (`create_refund`, D-034): only
+ * Refunds are leashed Agent Toolkit calls (`create_refund`): only
  * the user starts one, from the history page, never the agent. Leash checks
  * first that the purchase is the user's, charged and still inside its
  * return window, and refunds it in full with a PayPal-Request-Id derived

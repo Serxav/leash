@@ -95,11 +95,9 @@ Context Plugin for PayPal**. The server refuses to start unless `PAYPAL_ENVIRONM
 | **Orders v2** (intent CAPTURE, `payment_source.paypal.vault_id`, stored credential) | Charges only the purchases the engine or you approved | [`src/payments/charge.ts`](src/payments/charge.ts) |
 | **Payments v2: refunds** | Full refunds, one per payment | [`src/payments/refund.ts`](src/payments/refund.ts) |
 | **Agent Toolkit** (`@paypal/agent-toolkit`, `sandbox: true`) | "Leashed tools": `get_order` lets Rex check a purchase against Leash's records; `create_refund` runs only when you ask, inside the return window. Rex never gets a refund tool | [`src/paypal/agent-toolkit.ts`](src/paypal/agent-toolkit.ts), [`src/agent/leashed-tools.ts`](src/agent/leashed-tools.ts) |
-| **FraudNet** | Risk data on every charge you start (`PayPal-Client-Metadata-Id`) | [`src/components/fraudnet.tsx`](src/components/fraudnet.tsx) |
 
 Failed payments are stored with PayPal's issue code and `debug_id`
-([`src/paypal/errors.ts`](src/paypal/errors.ts)), and you see a plain sentence
-([`src/payments/messages.ts`](src/payments/messages.ts)).
+([`src/paypal/errors.ts`](src/paypal/errors.ts)), and you see a plain sentence.
 
 ## How it uses AI
 
@@ -115,7 +113,7 @@ through the Vercel AI SDK.
 server re-reads price, shop and category from the catalog and runs the engine itself
 ([`src/purchases/propose.ts`](src/purchases/propose.ts)). The model never sees credentials,
 tokens or emails, every structured output is checked with Zod, and Standard mode means Meta
-does not train on the requests ([D-043](docs/DECISIONS.md)).
+does not train on the requests.
 
 ## How it works
 
@@ -146,8 +144,8 @@ you ─► "restock paper" ─► Rex (Meta) ─► Channel3 search ─► propo
 | Anonymous demo spaces (no sign-up) | [`src/account/`](src/account/), [`src/proxy.ts`](src/proxy.ts) |
 | Pages: home, Rex, rules, inbox, history, permissions | [`src/app/`](src/app/) |
 
-Next.js 16 (App Router) + TypeScript, Tailwind CSS, SQLite with Drizzle ORM, Vitest. Every
-decision and why, in plain words: [docs/DECISIONS.md](docs/DECISIONS.md).
+Next.js 16 (App Router) + TypeScript, Tailwind CSS, SQLite with Drizzle ORM, Vitest. More detail:
+[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ## Sponsor tools
 
@@ -187,7 +185,6 @@ Open `.env.local` and fill it in (never commit it):
 |---|---|
 | `PAYPAL_ENVIRONMENT` | `SANDBOX` (anything else is refused) |
 | `PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET` | Your PayPal **sandbox** REST app (developer.paypal.com → Apps & Credentials → Sandbox) |
-| `PAYPAL_MERCHANT_ID` | Your sandbox Business account's Account ID (for FraudNet) |
 | `AI_PROVIDER` | `meta` |
 | `META_MODEL_API_KEY` | Your key from dev.meta.ai |
 | `CHANNEL3_API_KEY` | Optional. Without it, Leash uses only its demo shops |
@@ -203,11 +200,8 @@ is created on start. Tests: `npm test` (unit, also in CI), `npm run lint`,
 
 ## Project docs
 
-- [docs/TRY_IT.md](docs/TRY_IT.md): step-by-step for judges
-- [docs/PROJECT_BRIEF.md](docs/PROJECT_BRIEF.md): full product specification
-- [docs/DECISIONS.md](docs/DECISIONS.md): every technical decision and why
-- [docs/ROADMAP.md](docs/ROADMAP.md) and [docs/PROGRESS.md](docs/PROGRESS.md): plan and log
-- [docs/HACKATHON_RULES.md](docs/HACKATHON_RULES.md): official rules and compliance checklist
+All docs are listed in [docs/README.md](docs/README.md): architecture, deploy, the demo
+script, step by step for judges, the submission text and the hackathon brief.
 
 ## License
 

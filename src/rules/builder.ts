@@ -5,7 +5,7 @@ import { MAX_RULES_TEXT_LENGTH } from "./limits";
 import { MAX_ALLOWED_CATEGORIES, MAX_BLOCKED_MERCHANTS, parseRules, RULES_FORMAT_VERSION, type SpendingRules } from "./schema";
 
 /**
- * Plain language → exact spending rules (US2).
+ * Plain language → exact spending rules.
  *
  * The AI only extracts: it returns a loose draft (amounts as written, null
  * for anything not mentioned, questions for anything ambiguous). The code
@@ -17,7 +17,7 @@ import { MAX_ALLOWED_CATEGORIES, MAX_BLOCKED_MERCHANTS, parseRules, RULES_FORMAT
 
 /**
  * How long one rules conversion may take. Meta's structured output
- * sometimes needs more than 30 s (seen on Nov 8, D-043), so 60 s.
+ * sometimes needs more than 30 s (seen on Nov 8), so 60 s.
  */
 const RULES_TIMEOUT_MS = 60_000;
 

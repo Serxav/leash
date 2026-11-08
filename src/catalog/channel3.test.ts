@@ -47,7 +47,7 @@ describe("Channel3 search", () => {
     });
   });
 
-  it("narrows the search to the given categories and price limit (D-035)", async () => {
+  it("narrows the search to the given categories and price limit", async () => {
     const { client, sent } = fakeChannel3(() => Response.json({ products: [product], next_page_token: null }));
     await client.search("stapler", 10, { categoryIds: ["office-supplies", "paper"], maxPrice: "12.99" });
 

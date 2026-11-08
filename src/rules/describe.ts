@@ -1,7 +1,7 @@
 import type { RuleId, SpendingRules } from "./schema";
 
 /**
- * Exact rules → short readable tags for the confirmation screen (US2).
+ * Exact rules → short readable tags for the confirmation screen.
  * Plain code, no AI: the user confirms exactly what the engine will check.
  */
 

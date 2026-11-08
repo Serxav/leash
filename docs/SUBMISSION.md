@@ -52,7 +52,7 @@ Leash is a control layer between an AI shopping agent and your PayPal.
   Orders v2 to charge with the vaulted token (`src/payments/charge.ts`), Payments v2 refunds
   (`src/payments/refund.ts`), and the PayPal Agent Toolkit wrapped in "leashed tools": the agent
   may check its own orders with `get_order`, and `create_refund` runs only when the user asks
-  (`src/agent/leashed-tools.ts`). FraudNet risk data on customer-initiated charges. All calls use
+  (`src/agent/leashed-tools.ts`). All calls use
   the official PayPal Server SDK, built with the APIMatic Context Plugin for PayPal.
 - **AI:** Meta `muse-spark-1.3` through the Meta Model API (Standard mode, no training on our
   requests), via the Vercel AI SDK (`src/ai/models.ts`), for the agent (`src/agent/agent.ts`)
@@ -63,7 +63,7 @@ Leash is a control layer between an AI shopping agent and your PayPal.
 - **Channel3:** product search through its REST API, Spain and EUR, filtered by the user's
   categories and price, with a 6-hour cache and a monthly cap (`src/catalog/`).
 - **Render:** the live demo, from a Blueprint (`render.yaml`).
-- **App:** Next.js 16 and TypeScript, Tailwind CSS, SQLite with Drizzle, Vitest (563 unit
+- **App:** Next.js 16 and TypeScript, Tailwind CSS, SQLite with Drizzle, Vitest (546 unit
   tests in CI, plus real sandbox tests run locally).
 
 ## Challenges we ran into

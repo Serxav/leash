@@ -22,9 +22,9 @@ import { proposalCard } from "../labels";
 import type { AgentReply } from "./state";
 
 /**
- * US3: the user asks the agent to restock. The agent searches and
+ * The user asks the agent to restock. The agent searches and
  * proposes; every proposal is decided by the engine on the server. The
- * reply carries this run's proposals for the chat (D-042).
+ * reply carries this run's proposals for the chat.
  */
 export async function runAgent(formData: FormData): Promise<AgentReply> {
   const raw = formData.get("request");
@@ -45,13 +45,13 @@ export async function runAgent(formData: FormData): Promise<AgentReply> {
     return refusal("Connect PayPal in Permissions first, so Leash can pay approved purchases.");
   }
 
-  // Last check before spending AI calls and Channel3 credits (D-041).
+  // Last check before spending AI calls and Channel3 credits.
   const limit = agentRuns.take(userId, Date.now());
   if (!limit.ok) {
     return refusal(rateLimitMessage(limit));
   }
 
-  // Channel3 searches only what these rules could allow (D-035).
+  // Channel3 searches only what these rules could allow.
   const catalog = getCatalog();
   const scope = searchScopeFromRules(policy.rules);
   const propose = proposeForUser(userId);

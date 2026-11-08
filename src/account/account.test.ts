@@ -89,7 +89,7 @@ beforeEach(() => {
   vi.spyOn(console, "error").mockImplementation(() => {});
 });
 
-describe("pause the agent (US7)", () => {
+describe("pause the agent", () => {
   it("is active by default and can be paused and resumed", () => {
     expect(isAgentPaused(db, USER)).toBe(false);
     setAgentPaused(db, USER, true, NOW);
@@ -100,7 +100,7 @@ describe("pause the agent (US7)", () => {
   });
 });
 
-describe("delete my account and data (US7, D-038)", () => {
+describe("delete my account and data", () => {
   it("deletes every row about the user, in every table, and the saved PayPal at PayPal", async () => {
     await fullUser(USER);
     await fullUser(OTHER);

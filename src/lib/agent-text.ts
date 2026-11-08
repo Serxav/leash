@@ -2,7 +2,7 @@
  * The agent's summary is model text that often uses a little Markdown
  * (`**bold**`, lists, headings). Showing it raw prints the marks; rendering
  * it as HTML would trust model text. This reads only that small subset into
- * plain pieces that React renders as escaped text (D-042).
+ * plain pieces that React renders as escaped text.
  */
 
 export type Inline = { text: string; strong: boolean };

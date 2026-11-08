@@ -33,7 +33,7 @@ const MARKS: Record<HistoryTone, { symbol: string; className: string }> = {
   refunded: { symbol: "↩", className: "bg-zinc-500 text-white" },
 };
 
-/** The purchase history with a refund button inside the return window (US6). */
+/** The purchase history with a refund button inside the return window. */
 export function HistoryList({ rows }: { rows: HistoryRow[] }) {
   const [state, formAction, pending] = useActionState<HistoryFormState, FormData>(refundPurchaseAction, {
     kind: "idle",

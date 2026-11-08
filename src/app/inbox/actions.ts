@@ -6,7 +6,7 @@ import { answerForUser } from "@/purchases/server";
 import type { InboxFormState } from "./state";
 
 /**
- * US5: the user approves or rejects one pending purchase. The user comes
+ * The user approves or rejects one pending purchase. The user comes
  * from the server, never from the form; the purchase must be theirs and
  * still waiting (checked in answerApproval).
  */

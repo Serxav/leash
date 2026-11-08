@@ -5,7 +5,7 @@ import { getMandateView, PAYPAL_SANDBOX_APPROVAL_HOST, startMandate } from "@/pa
 import { getPayPalClient } from "@/paypal/sdk";
 
 // Real call to the PayPal sandbox vault (Spain account). Local only.
-// The payer approval itself is manual: open /lab/payments and connect.
+// The payer approval itself is manual, on PayPal's sandbox page.
 describe("PayPal sandbox vault", () => {
   it("creates a setup token with an approval link on PayPal sandbox", async () => {
     const db = createDb(":memory:");
@@ -15,8 +15,8 @@ describe("PayPal sandbox vault", () => {
       { db, vault },
       {
         userId: "sandbox-test-user",
-        returnUrl: "http://localhost:3000/lab/payments/return",
-        cancelUrl: "http://localhost:3000/lab/payments/cancel",
+        returnUrl: "http://localhost:3000/permissions/paypal/return",
+        cancelUrl: "http://localhost:3000/permissions/paypal/cancel",
       },
     );
 

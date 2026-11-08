@@ -145,7 +145,7 @@ describe("runShoppingAgent", () => {
     expect(toolResult).toContain("title_untrusted");
   });
 
-  it("hides the trap product from the model and reports it once (US8)", async () => {
+  it("hides the trap product from the model and reports it once", async () => {
     const search = { tool: "search_catalog", input: { query: "sticky notes mega pack" } };
     const { model, prompts } = scriptedModel([search, search, { text: "Done." }]);
     const reports: Array<{ id: string; signals: string[] }> = [];

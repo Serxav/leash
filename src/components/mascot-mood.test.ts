@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { moodForOutcomes, outcomeSummary } from "./mascot-mood";
 
-describe("Rex's mood follows the engine (D-042)", () => {
+describe("Rex's mood follows the engine", () => {
   it("is idle when nothing was proposed", () => {
     expect(moodForOutcomes([])).toBe("idle");
   });

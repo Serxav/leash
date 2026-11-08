@@ -1,5 +1,5 @@
 /**
- * The anonymous visitor cookie (D-040). It holds only a random ID that
+ * The anonymous visitor cookie. It holds only a random ID that
  * names the visitor's demo user: no name, email or password. httpOnly, so
  * page scripts cannot read it; SameSite=Lax, so it comes back when PayPal
  * sends the payer back to Leash after approving.

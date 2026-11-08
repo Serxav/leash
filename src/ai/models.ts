@@ -5,9 +5,9 @@ import { defaultSettingsMiddleware, wrapLanguageModel, type LanguageModel } from
 import { getServerEnv, type ServerEnv } from "@/config/env";
 
 /**
- * The only place where Leash chooses the AI provider and models (CLAUDE.md).
+ * The only place where Leash chooses the AI provider and models.
  *
- * - AI_PROVIDER=meta (D-043): Meta's muse-spark-1.3 through Meta's Model
+ * - AI_PROVIDER=meta: Meta's muse-spark-1.3 through Meta's Model
  *   API, in Standard mode (Meta does not train on the requests), paid with
  *   Sergi's Meta credits. Model API speaks the OpenAI Chat Completions
  *   protocol at https://api.meta.ai/v1.

@@ -1,7 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { EnvConfigError, PAYPAL_SANDBOX_API_BASE } from "@/config/env";
 import {
-  createTokenProvider,
   PayPalAuthError,
   requestAccessToken,
   type PayPalCredentials,
@@ -106,54 +105,5 @@ describe("requestAccessToken", () => {
     await expect(
       requestAccessToken(credentials, fetchMock),
     ).rejects.toMatchObject({ status: 503 });
-  });
-});
-
-describe("createTokenProvider", () => {
-  it("reuses a valid token instead of asking PayPal again", async () => {
-    const fetchMock = vi.fn().mockImplementation(async () => okResponse(3_600));
-    let clock = 0;
-    const getToken = createTokenProvider(credentials, fetchMock, () => clock);
-
-    expect(await getToken()).toBe("test-access-token");
-    clock = 30 * 60_000; // 30 minutes later, still valid
-    expect(await getToken()).toBe("test-access-token");
-    expect(fetchMock).toHaveBeenCalledOnce();
-  });
-
-  it("renews the token shortly before it expires", async () => {
-    const fetchMock = vi
-      .fn()
-      .mockImplementationOnce(async () => okResponse(3_600, "first-token"))
-      .mockImplementationOnce(async () => okResponse(3_600, "second-token"));
-    let clock = 0;
-    const getToken = createTokenProvider(credentials, fetchMock, () => clock);
-
-    expect(await getToken()).toBe("first-token");
-    clock = 3_600_000 - 30_000; // 30 s before expiry: inside the renewal margin
-    expect(await getToken()).toBe("second-token");
-    expect(fetchMock).toHaveBeenCalledTimes(2);
-  });
-
-  it("shares one request between concurrent callers", async () => {
-    const fetchMock = vi.fn().mockImplementation(async () => okResponse());
-    const getToken = createTokenProvider(credentials, fetchMock, () => 0);
-
-    const tokens = await Promise.all([getToken(), getToken(), getToken()]);
-    expect(new Set(tokens)).toEqual(new Set(["test-access-token"]));
-    expect(fetchMock).toHaveBeenCalledOnce();
-  });
-
-  it("retries after a failure instead of caching the error", async () => {
-    const fetchMock = vi
-      .fn()
-      .mockImplementationOnce(
-        async () => new Response("{}", { status: 500 }),
-      )
-      .mockImplementationOnce(async () => okResponse());
-    const getToken = createTokenProvider(credentials, fetchMock, () => 0);
-
-    await expect(getToken()).rejects.toThrow(PayPalAuthError);
-    expect(await getToken()).toBe("test-access-token");
   });
 });

@@ -9,7 +9,7 @@ import { injectionEvent, logInjection } from "@/security/events";
 import { latestDecisions, oneAtATime, reviewPurchase, type ProposeDeps } from "./propose";
 
 /**
- * The approval inbox (US5, D-036): the user answers a purchase the engine
+ * The approval inbox: the user answers a purchase the engine
  * sent to them (NEEDS_APPROVAL). Only the user can do this, from the inbox
  * page; the agent has no tool for it.
  *

@@ -6,7 +6,7 @@ import { securityEvents, type SecurityEventRow } from "@/db/schema";
 import { INJECTION_SIGNALS, type InjectionSignal } from "./untrusted-text";
 
 /**
- * The security log (US8): products Leash refused because their shop text
+ * The security log: products Leash refused because their shop text
  * carried instructions for AI agents. The injected text is never stored or
  * logged, only which signals were found.
  */

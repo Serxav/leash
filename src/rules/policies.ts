@@ -6,7 +6,7 @@ import { MAX_RULES_TEXT_LENGTH } from "./limits";
 import { parseRules, type SpendingRules } from "./schema";
 
 /**
- * Versioned spending rules (US2): "nothing applies until I confirm it".
+ * Versioned spending rules: "nothing applies until I confirm it".
  *
  * 1. `saveDraft` keeps what the AI turned the user's text into, on the
  *    server. The browser only gets a random draft ID and readable tags, so

@@ -1,5 +1,5 @@
 /**
- * The address PayPal sends the payer back to after saving PayPal (D-041).
+ * The address PayPal sends the payer back to after saving PayPal.
  *
  * The request's Host header is set by the client, so a deployed app never
  * builds its PayPal return URL from it. In order:

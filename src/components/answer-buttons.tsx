@@ -7,7 +7,7 @@ import { SubmitButton, useFocusOnAnswer } from "./submit-button";
 
 /**
  * Approve or reject a waiting purchase right on its card, like Muse's
- * Allow and Deny (D-042). Same server action as the inbox (US5): Leash
+ * Allow and Deny. Same server action as the inbox: Leash
  * checks the price and the rules again before PayPal charges anything.
  */
 export function AnswerButtons({

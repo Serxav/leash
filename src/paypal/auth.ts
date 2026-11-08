@@ -41,9 +41,6 @@ export class PayPalAuthError extends Error {
 
 type FetchFn = typeof fetch;
 
-/** Renew this long before expiry so a request never carries a stale token. */
-const EXPIRY_MARGIN_MS = 60_000;
-
 function credentialsFromEnv(): PayPalCredentials {
   const env = getServerEnv();
   return {
@@ -107,28 +104,3 @@ export async function requestAccessToken(
     expiresAt: now() + body.expires_in * 1000,
   };
 }
-
-/** Caches one token per process and renews it shortly before it expires. */
-export function createTokenProvider(
-  credentials?: PayPalCredentials,
-  fetchImpl: FetchFn = fetch,
-  now: () => number = Date.now,
-) {
-  let cached: PayPalAccessToken | undefined;
-  let pending: Promise<PayPalAccessToken> | undefined;
-
-  return async function getAccessToken(): Promise<string> {
-    if (cached && now() < cached.expiresAt - EXPIRY_MARGIN_MS) {
-      return cached.accessToken;
-    }
-    // Concurrent callers share one in-flight request.
-    pending ??= requestAccessToken(credentials, fetchImpl, now).finally(() => {
-      pending = undefined;
-    });
-    cached = await pending;
-    return cached.accessToken;
-  };
-}
-
-/** Process-wide token provider for server code. */
-export const getPayPalAccessToken = createTokenProvider();

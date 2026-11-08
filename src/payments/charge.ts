@@ -7,7 +7,7 @@ import {
   UsagePattern,
   type OrdersController,
 } from "@paypal/paypal-server-sdk";
-import { desc, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import type { Db } from "@/db/client";
 import { isMoney } from "@/lib/money";
 import { payments, type Payment, type PaymentStatus } from "@/db/schema";
@@ -21,10 +21,10 @@ import { getActiveVaultToken } from "./mandate";
  * Docs: https://developer.paypal.com/api/payment-tokens/save-without-purchase/paypal (step 4)
  */
 
-/** Leash only charges euros and never converts currencies (brief §5). */
+/** Leash only charges euros and never converts currencies. */
 export const CHARGE_CURRENCY = "EUR";
 
-/** The 14-day return window shown on every purchase (D-008). */
+/** The 14-day return window shown on every purchase. */
 export const RETURN_WINDOW_DAYS = 14;
 
 /** FraudNet session id: 32 lowercase hex characters (max length 32). */
@@ -37,10 +37,6 @@ const CLIENT_METADATA_ID_PATTERN = /^[0-9a-f]{32}$/;
  */
 export const SANDBOX_MOCK_ISSUES = ["INSTRUMENT_DECLINED"] as const;
 export type SandboxMockIssue = (typeof SANDBOX_MOCK_ISSUES)[number];
-
-export function isSandboxMockIssue(value: unknown): value is SandboxMockIssue {
-  return SANDBOX_MOCK_ISSUES.includes(value as SandboxMockIssue);
-}
 
 export type ChargeDeps = {
   db: Db;
@@ -109,21 +105,6 @@ export function toPaymentView(payment: Payment): PaymentView {
     id, amount, currency, initiator, status, paypalOrderId, captureId,
     refundId, failureIssue, debugId, withdrawalDeadline, createdAt,
   };
-}
-
-export function listPayments(db: Db, userId: string): PaymentView[] {
-  return db
-    .select()
-    .from(payments)
-    .where(eq(payments.userId, userId))
-    .orderBy(desc(payments.createdAt))
-    .all()
-    .map(toPaymentView);
-}
-
-/** A new random FraudNet session id for a page that can start a charge. */
-export function newClientMetadataId(): string {
-  return randomUUID().replaceAll("-", "");
 }
 
 function statusFromCapture(status: CaptureStatus | undefined): PaymentStatus {

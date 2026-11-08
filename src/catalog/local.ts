@@ -2,7 +2,7 @@ import localCatalog from "./local-catalog.json";
 import { toCatalogProduct, type CatalogProduct, type RawProduct } from "./product";
 
 /**
- * The local fallback catalog (brief §5): generic office products from
+ * The local fallback catalog: generic office products from
  * invented shops (".example" domains, no brands). Used for tests, without a
  * Channel3 key, when Channel3 fails, and after the monthly search cap.
  *
@@ -10,7 +10,7 @@ import { toCatalogProduct, type CatalogProduct, type RawProduct } from "./produc
  * - an offer from marketplace-x.example (blocked in Marta's rules);
  * - a toner above Marta's approval amount and a chair outside her categories;
  * - the trap product "local-sticky-notes-deal", whose description carries
- *   injected instructions for AI agents (US8).
+ *   injected instructions for AI agents.
  */
 export const LOCAL_PRODUCTS: readonly CatalogProduct[] = (localCatalog as RawProduct[]).map(
   (raw) => {

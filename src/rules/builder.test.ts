@@ -8,7 +8,7 @@ import {
   type RulesDraft,
 } from "./builder";
 
-/** What a well-behaved model returns for the brief's example. */
+/** What a well-behaved model returns for Marta's example. */
 const martaDraft: RulesDraft = {
   understood: true,
   questions: [],
@@ -55,7 +55,7 @@ async function build(reply: unknown, text = MARTA_TEXT) {
 }
 
 describe("buildRules", () => {
-  it("turns the brief's example into exact rules", async () => {
+  it("turns Marta's example into exact rules", async () => {
     expect(await build(martaDraft)).toEqual({
       kind: "rules",
       rules: {

@@ -1,6 +1,6 @@
 import type { ProposalView } from "@/purchases/propose";
 
-/** Where a proposed product came from (D-035). */
+/** Where a proposed product came from. */
 export const SOURCE_LABELS: Record<ProposalView["source"], string> = {
   channel3: "Channel3 offer",
   local: "Demo shop",
@@ -12,7 +12,7 @@ export const OUTCOME_LABELS: Record<ProposalView["outcome"], string> = {
   BLOCK: "Blocked",
 };
 
-/** The outcome, saying when it was the user's own answer (D-036). */
+/** The outcome, saying when it was the user's own answer. */
 export function outcomeLabel(proposal: Pick<ProposalView, "outcome" | "decidedBy">): string {
   if (proposal.decidedBy === "USER") {
     return proposal.outcome === "APPROVE" ? "Approved by you" : "Rejected by you";
@@ -47,7 +47,7 @@ export const dateTime = new Intl.DateTimeFormat("en-GB", {
   timeZone: "Europe/Madrid",
 });
 
-/** One proposal card, as plain text for the agent page and its chat (D-042). */
+/** One proposal card, as plain text for the agent page and its chat. */
 export type ProposalCardData = {
   intentId: string;
   /** The card's question or result, like Muse's "Allow Muse to…?". */

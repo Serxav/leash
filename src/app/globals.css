@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /*
- * Leash's look (D-042): Apple-style, white and rounded, with soft shadows.
+ * Leash's look: Apple-style, white and rounded, with soft shadows.
  * Floating bars use "liquid glass" (translucent, blurred), and fall back to
  * solid surfaces for people who ask the system for less transparency.
  */
@@ -171,7 +171,7 @@
   }
 }
 
-/* Rex, the agent's mascot (D-042). */
+/* Rex, the agent's mascot. */
 :root {
   --leash-color: #0071e3;
 }
@@ -303,7 +303,7 @@
 }
 
 /*
- * Motion (D-042): pages fade and rise a little when you move between them,
+ * Motion: pages fade and rise a little when you move between them,
  * and new things (messages, cards) rise in. Short and soft, like iOS, and
  * off for people who ask the system for reduced motion.
  */

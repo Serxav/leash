@@ -6,7 +6,7 @@ import { getServerEnv } from "@/config/env";
  * PayPal Agent Toolkit (`@paypal/agent-toolkit`, pinned), sandbox only.
  *
  * The toolkit builds tools for an older AI SDK (v4) and returns raw PayPal
- * JSON, so the model never receives its tools directly (D-014, D-034).
+ * JSON, so the model never receives its tools directly.
  * Leash calls one toolkit tool at a time from its own leashed tools
  * (src/agent/leashed-tools.ts), which check permissions first and pass on
  * only whitelisted fields.
@@ -14,7 +14,7 @@ import { getServerEnv } from "@/config/env";
  * Safety around the toolkit:
  * - only the actions Leash needs are enabled, one per call: read an order
  *   (the agent's status check) and refund a capture in full (only after
- *   the user confirms in the history page, D-037);
+ *   the user confirms in the history page);
  * - `sandbox: true` always, and the toolkit's API host is checked: it
  *   must be a PayPal sandbox host;
  * - a new toolkit per call, because it keeps its OAuth token forever and

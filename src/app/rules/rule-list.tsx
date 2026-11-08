@@ -12,7 +12,7 @@ const RULE_LABELS: Record<RuleTag["id"], string> = {
 };
 
 /**
- * The exact rules as a settings-style list (D-042): one row per rule, the
+ * The exact rules as a settings-style list: one row per rule, the
  * same text the engine's checks are described with.
  */
 export function RuleList({ tags, label }: { tags: RuleTag[]; label: string }) {
