@@ -1237,6 +1237,15 @@ main page, the sponsor detail pages for Channel3 and APIMatic, the FAQ and the u
     official rules ask nothing of the app itself (only of the README, video and Devpost
     text), so the page keeps only what Leash's own rules need: the AI notice (CLAUDE.md,
     transparency) and the sandbox / demo note (no real money, Marta's invented rules).
+- **Polish on Nov 8** (Sergi: "te pones con el diseño de la app, mejorar"): "Rules &
+  activity" is a side sheet (a native `<dialog>`: Esc and the backdrop close it, the focus
+  stays inside and returns to the button) instead of a narrow popover over Rex; Rex's
+  status stays on one line; every proposal card shows its amount at the top right, like the
+  history; and Rex's summary is one plain sentence per purchase ("charged", "waiting for
+  your OK", "blocked"), without the engine's codes or IDs. The prompt-injection test passes
+  on Meta with the new instructions. After the user answers on a card, its mark and headline
+  follow the answer (✓ "You approved this purchase", ✕ "You rejected this purchase") instead
+  of still asking "Approve this purchase?".
 - **Status:** accepted (Sergi chose the puppy and the chat; then "algo así" with the Muse
   screenshot; then the name Rex; the second pass follows his session 8 list).
 
@@ -1270,4 +1279,12 @@ main page, the sponsor detail pages for Channel3 and APIMatic, the FAQ and the u
   the `google` provider, the busy-model fallback (D-027), `GOOGLE_GENERATIVE_AI_API_KEY`
   and the `@ai-sdk/google` package. Development uses Meta too. D-023 and D-027 are
   superseded. `anthropic` stays in the code but is not planned.
+- **Speed (later on Nov 8).** At Meta's default reasoning effort, rule conversion sometimes
+  took more than 30 s, and even more than 60 s for the "hidden instructions" test, so users
+  would see "The AI could not read your rules". Meta's Chat Completions accept
+  `reasoning_effort` (`minimal` to `xhigh`; `none` is refused by Muse Spark). Rule conversion
+  only extracts values, so it now sends `low` (`META_REASONING_EFFORT` in
+  `src/ai/models.ts`), and its time limit is 60 s. The agent keeps Meta's default. With
+  `low`, the four real rules tests passed three runs in a row in about 30 s each (before:
+  48–91 s, with timeouts), and the whole real sandbox suite passes (18 tests).
 - **Status:** accepted ("tengo créditos de Meta, los usaremos para esto").

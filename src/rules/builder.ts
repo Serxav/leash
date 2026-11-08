@@ -15,6 +15,12 @@ import { MAX_ALLOWED_CATEGORIES, MAX_BLOCKED_MERCHANTS, parseRules, RULES_FORMAT
  * nothing applies until the user confirms the result.
  */
 
+/**
+ * How long one rules conversion may take. Meta's structured output
+ * sometimes needs more than 30 s (seen on Nov 8, D-043), so 60 s.
+ */
+const RULES_TIMEOUT_MS = 60_000;
+
 export { MAX_RULES_TEXT_LENGTH };
 const MAX_QUESTIONS = 5;
 const MAX_QUESTION_LENGTH = 200;
@@ -228,7 +234,7 @@ export async function buildRules(
       output: Output.object({ schema: draftSchema }),
       temperature: 0,
       maxRetries: 1,
-      abortSignal: deps.abortSignal ?? AbortSignal.timeout(30_000),
+      abortSignal: deps.abortSignal ?? AbortSignal.timeout(RULES_TIMEOUT_MS),
     });
     draft = result.output;
   } catch (error) {

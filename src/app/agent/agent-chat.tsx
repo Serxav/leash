@@ -49,6 +49,7 @@ export function AgentChat({ activity, notices }: { activity: ReactNode; notices:
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const typingTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const headerRef = useRef<HTMLElement>(null);
+  const panelRef = useRef<HTMLDialogElement>(null);
   const [typing, setTyping] = useState(false);
   const [hasText, setHasText] = useState(false);
   const [headerVisible, setHeaderVisible] = useState(true);
@@ -112,18 +113,46 @@ export function AgentChat({ activity, notices }: { activity: ReactNode; notices:
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col px-4">
       <header ref={headerRef} className="relative z-30 grid grid-cols-[1fr_auto_1fr] items-start pt-4 pb-4">
-        <details className="relative justify-self-start">
-          <summary className="card btn cursor-pointer list-none px-3.5 text-sm [&::-webkit-details-marker]:hidden">
-            <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
-              <path d="M2.5 4.5h11M2.5 8h11M2.5 11.5h11" strokeLinecap="round" />
-            </svg>
-            <span className="hidden sm:inline">Rules &amp; activity</span>
-            <span className="sm:hidden">Rules</span>
-          </summary>
-          <div className="glass rise-in absolute top-12 left-0 z-30 flex max-h-[calc(100dvh-12rem)] w-[min(24rem,calc(100vw-2rem))] flex-col gap-5 overflow-y-auto rounded-3xl p-4">
-            {activity}
+        <button
+          type="button"
+          onClick={() => panelRef.current?.showModal()}
+          aria-haspopup="dialog"
+          className="card btn justify-self-start px-3.5 text-sm"
+        >
+          <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+            <path d="M2.5 4.5h11M2.5 8h11M2.5 11.5h11" strokeLinecap="round" />
+          </svg>
+          <span className="hidden sm:inline">Rules &amp; activity</span>
+          <span className="sm:hidden">Rules</span>
+        </button>
+        {/* A side sheet, like Apple's inspectors: Esc and the backdrop close it. */}
+        <dialog
+          ref={panelRef}
+          aria-labelledby="activity-title"
+          onClick={(event) => {
+            if (event.target === event.currentTarget) event.currentTarget.close();
+          }}
+          className="sheet glass m-0 ml-auto h-dvh max-h-dvh w-[min(26rem,100vw)] max-w-none rounded-none rounded-l-3xl p-0 text-foreground"
+        >
+          <div className="flex h-full flex-col">
+            <div className="flex items-center justify-between px-5 pt-5 pb-3">
+              <h2 id="activity-title" className="text-lg font-semibold">
+                Rules &amp; activity
+              </h2>
+              <button
+                type="button"
+                onClick={() => panelRef.current?.close()}
+                aria-label="Close"
+                className="grid size-8 place-items-center rounded-full bg-[var(--surface-muted)] text-muted hover:bg-[var(--surface-pressed)]"
+              >
+                <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                  <path d="M4 4l8 8M12 4l-8 8" strokeLinecap="round" />
+                </svg>
+              </button>
+            </div>
+            <div className="flex flex-1 flex-col gap-6 overflow-y-auto px-5 pb-8">{activity}</div>
           </div>
-        </details>
+        </dialog>
 
         {/* Like Muse: a small avatar tile and the name; one quiet line under it. */}
         <div className="flex flex-col items-center gap-1 text-center">
@@ -131,7 +160,7 @@ export function AgentChat({ activity, notices }: { activity: ReactNode; notices:
             <Mascot mood={mood} framing="tile" size={40} interactive />
           </div>
           <p className="text-xs font-semibold">{MASCOT_NAME}</p>
-          <p key={status} className="rise-in max-w-52 text-[11px] leading-4 text-muted">
+          <p key={status} title={status} className="rise-in max-w-64 truncate text-[11px] leading-4 text-muted">
             {status}
           </p>
         </div>

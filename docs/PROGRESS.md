@@ -733,3 +733,17 @@ One entry per session: date, what was done, what is left, blockers.
   "Nothing was charged"). The approved path goes through the same code.
 - Local demo data only: my local space's monthly budget was raised to €500 to test that
   card after €150 had been spent in recordings.
+## 2026-11-08 · Session 8 – rule conversion speed on Meta
+
+- Branch `fix/f5-rules-timeout` (local, not pushed): rule conversion sends Meta
+  `reasoning_effort: low` and may take 60 s (D-043). Before, it sometimes timed out at 30 s
+  and even 60 s. Lint, typecheck, 564 unit tests, build and the full real sandbox suite
+  (18 tests: PayPal vault, charge, `INSTRUMENT_DECLINED`, refund, toolkit, Channel3, Meta
+  rules and prompt injection) pass.
+## 2026-11-08 · Session 8 – design polish
+
+- Branch `feat/f5-design-polish` (local, not pushed): "Rules & activity" as a side sheet,
+  one-line status under Rex, amounts on proposal cards, plain-language summaries from Rex
+  (D-042). Lint, typecheck, 563 unit tests and build pass; the real prompt-injection test
+  passes on Meta; tried in the browser: paper €10.98 and sticky notes €6.90 charged, the
+  summary in plain words, the sheet on desktop and phone, light and dark, Esc closes it.
