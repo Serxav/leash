@@ -14,16 +14,12 @@ Render. No real money ever moves.
 <a href="docs/TRY_IT.md"><b>Step-by-step for judges</b></a>
 </p>
 
-<table>
-<tr>
-<td width="50%"><img src="docs/media/chat.jpg" alt="Rex, the AI shopping agent, answering a request in the chat"><br><sub><b>Ask Rex</b> · the AI agent searches and proposes; it cannot pay</sub></td>
-<td width="50%"><img src="docs/media/cards.jpg" alt="The €24 toner card waiting for approval, with Approve and Reject"><br><sub><b>The code decides</b> · paper and notes were charged at once; the €24 toner waits for your tap</sub></td>
-</tr>
-<tr>
-<td width="50%"><img src="docs/media/rules.jpg" alt="The confirmed spending rules as a list"><br><sub><b>Your rules</b> · written in plain words, confirmed as exact rules</sub></td>
-<td width="50%"><img src="docs/media/security-log.jpg" alt="Security log listing a product hidden from the agent"><br><sub><b>Trap product</b> · shop text that gives orders to AI is hidden from Rex and logged</sub></td>
-</tr>
-</table>
+<table><tr>
+<td width="25%"><img src="docs/media/chat.jpg" alt="Rex, the AI shopping agent, answering a request in the chat"><br><sub><b>Ask Rex</b> · the AI agent searches and proposes; it cannot pay</sub></td>
+<td width="25%"><img src="docs/media/approval.jpg" alt="The €24 toner card waiting for approval, with Approve and Reject"><br><sub><b>The code decides</b> · the €24 toner waits for your tap</sub></td>
+<td width="25%"><img src="docs/media/rules.jpg" alt="The confirmed spending rules as a list"><br><sub><b>Your rules</b> · written in plain words, confirmed as exact rules</sub></td>
+<td width="25%"><img src="docs/media/security-log.jpg" alt="Security log listing a product hidden from the agent"><br><sub><b>Trap product</b> · shop text that gives orders to AI is hidden and logged</sub></td>
+</tr></table>
 
 <sub>Screenshots of the app itself. Every person and shop in them is invented.</sub>
 
@@ -49,9 +45,8 @@ with a fresh demo space. Rex answers in 10 to 30 seconds and shows what it is do
 ## See it move
 
 <table><tr>
-<td width="40%"><img src="docs/media/rex-at-work.gif" alt="Rex receives a request, shows each step, and Leash approves two purchases and asks about the toner"><br><sub><b>Rex at work.</b> One request; while Rex works, the chat says what it is doing (Channel3 search, Leash's checks, PayPal). Paper and sticky notes are charged at once; the €24 toner waits for one tap.</sub></td>
-<td width="33%"><img src="docs/media/rules-in-plain-words.gif" alt="The user writes rules in plain words, Leash asks what is missing, then shows the exact rules to confirm"><br><sub><b>Rules in plain words.</b> Leash asks what is missing instead of guessing, then shows the exact rules; nothing changes until you confirm.</sub></td>
-<td width="27%"><img src="docs/media/phone-approval.gif" alt="On a phone: Rex proposes the toner, the user approves it in the inbox, and it appears in the history"><br><sub><b>On the phone.</b> One tap in the inbox; Leash re-checks, PayPal charges, the history shows it.</sub></td>
+<td width="62%"><img src="docs/media/rex-at-work.gif" alt="Rex receives a request, shows each step, and Leash approves two purchases and asks about the toner"><br><sub><b>Rex at work.</b> While Rex works, the chat says what it is doing (Channel3 search, Leash's checks, PayPal). Paper and sticky notes are charged at once; the €24 toner waits for one tap.</sub></td>
+<td width="38%"><img src="docs/media/phone-approval.gif" alt="On a phone: Rex proposes the toner, the user approves it in the inbox, and it appears in the history"><br><sub><b>On the phone.</b> One tap in the inbox; Leash re-checks, PayPal charges, the history shows it.</sub></td>
 </tr></table>
 
 <sub>Recorded on the app itself and sped up; the waiting is shorter than in real life.</sub>
@@ -76,12 +71,6 @@ stays in charge of every purchase that matters, and the agent does the shopping.
 | **5. History and refunds** | Every decision with its rule, the PayPal transaction ID and a 14-day return window with a refund button. Only you can refund; Rex cannot. |
 | **6. You stay in control** | Pause Rex, disconnect PayPal (the saved payment token is deleted at PayPal), reset the demo, delete everything. |
 | **7. Visible security** | Shop text that gives orders to AI agents is found by plain code, hidden from Rex, never bought and logged. A declined payment shows a clear message. |
-
-<table><tr>
-<td width="50%"><img src="docs/media/history.jpg" alt="Purchase history with transaction IDs and refund buttons"><br><sub><b>History</b> · every decision, its reason, the PayPal transaction ID and the return window</sub></td>
-<td width="22%"><img src="docs/media/phone-inbox.jpg" alt="The approval inbox on a phone"><br><sub><b>On the phone</b> · approve or reject with one tap</sub></td>
-<td width="28%"><img src="docs/media/home.jpg" alt="Leash home page with Rex"><br><sub><b>Home</b> · how it works in three steps</sub></td>
-</tr></table>
 
 ## How it uses PayPal
 
