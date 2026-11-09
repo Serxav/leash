@@ -154,6 +154,9 @@ Next.js 16 (App Router) + TypeScript, Tailwind CSS, SQLite with Drizzle ORM, Vit
 - AI calls are limited: 10 agent runs and 20 rule conversions per visitor per hour, 100 and
   200 in total ([`src/security/rate-limit.ts`](src/security/rate-limit.ts)).
 - Only invented people and shops. No credit scoring, no financing.
+- The app has a **Privacy** page ([`/privacy`](src/app/privacy/page.tsx), linked from Home and
+  Permissions): what Leash stores, what it never stores, what Meta, Channel3, PayPal and Render
+  see, and how to delete it all.
 
 ## Run it locally
 

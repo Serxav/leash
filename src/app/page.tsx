@@ -78,6 +78,10 @@ export default function Home() {
             <Link href="/permissions" className="text-accent">
               Reset demo
             </Link>
+            {" · "}
+            <Link href="/privacy" className="text-accent">
+              Privacy
+            </Link>
           </p>
         </footer>
       </main>
