@@ -17,7 +17,7 @@ on the card in the chat, and the PayPal sandbox account pages are not shown.
 - Upload to YouTube as **public**, not unlisted.
 
 **Before recording**
-- Record on the live app (https://leash-crcx.onrender.com): open it a minute before, so it is
+- Record on the live app (https://leash-51ew.onrender.com): open it a minute before, so it is
   awake. Press **Reset demo** for a clean space, then connect PayPal with the judges' sandbox
   Personal account.
 - Desktop at 1280 × 800, light mode; phone in light mode.

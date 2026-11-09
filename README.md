@@ -9,7 +9,7 @@ Render. No real money ever moves.
 
 <p>
 <a href="https://youtu.be/U66DzesEET8"><b>▶ Watch the 2:42 video</b></a> ·
-<a href="https://leash-crcx.onrender.com"><b>Open the live app</b></a> ·
+<a href="https://leash-51ew.onrender.com"><b>Open the live app</b></a> ·
 <a href="#see-it-move"><b>See it move</b></a> ·
 <a href="docs/TRY_IT.md"><b>Step-by-step for judges</b></a>
 </p>
@@ -28,7 +28,7 @@ Render. No real money ever moves.
 | What | Where | Time |
 |---|---|---|
 | Watch what it does | [2:42 video on YouTube](https://youtu.be/U66DzesEET8) | 3 min |
-| Connect PayPal with the judges' sandbox buyer account | [live app](https://leash-crcx.onrender.com) → **Permissions** → **Connect PayPal** | 1 min |
+| Connect PayPal with the judges' sandbox buyer account | [live app](https://leash-51ew.onrender.com) → **Permissions** → **Connect PayPal** | 1 min |
 | Ask Rex to restock paper and sticky notes: two purchases are charged, a blocked shop is skipped, the trap product is hidden | **Rex** → tap the first suggestion | 1 min |
 | Ask for a €24 toner: above the "ask me first" amount, so it waits for your one tap | **Rex** → *"Our laser printer needs a new black toner cartridge."* | 1 min |
 | See every decision, its reason, the PayPal transaction ID, and refund one | **History** → **Refund** | 1 min |
