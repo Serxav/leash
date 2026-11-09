@@ -88,6 +88,17 @@ Context Plugin for PayPal**. The server refuses to start unless `PAYPAL_ENVIRONM
 Failed payments are stored with PayPal's issue code and `debug_id`
 ([`src/paypal/errors.ts`](src/paypal/errors.ts)), and you see a plain sentence.
 
+### Built with the APIMatic Context Plugin for PayPal
+
+Leash was written with Claude Code, with the APIMatic Context Plugin for PayPal installed. A project
+rule makes the coding agent load the matching `paypal:typescript-*` skills before writing any PayPal
+Server SDK code: `getting-started` first, then `client-initialization`, `authentication`,
+`calling-endpoints`, `models` and `error-handling` as needed. That gave it version-specific context for
+`@paypal/paypal-server-sdk` instead of guessed APIs. It covered the sandbox client with client
+credentials ([`src/paypal/sdk.ts`](src/paypal/sdk.ts)), Orders v2 with a vaulted
+`payment_source.paypal.vault_id` and capture, Payments v2 refunds, and turning SDK errors into plain
+reasons ([`src/paypal/errors.ts`](src/paypal/errors.ts)).
+
 ## How it uses AI
 
 The provider and models are chosen in one place, [`src/ai/models.ts`](src/ai/models.ts),
