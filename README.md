@@ -1,4 +1,4 @@
-# Leash (UNDER CONSTRUCTION)
+# Leash
 
 **Give your AI agent a budget, not your wallet. You write spending rules in plain words, an AI
 shopping agent proposes purchases, and Leash's own code decides each one before PayPal pays.**
