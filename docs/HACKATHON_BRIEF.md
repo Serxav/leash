@@ -27,7 +27,7 @@ The official rules always win over this file.
 - Public repository with an open source licence (MIT).
 - Video under 3 minutes, public on YouTube, no third-party trademarks or copyrighted music.
 - Everything in English.
-- Sponsor tools used under their terms and named: Channel3, Render, APIMatic.
+- Sponsor tools used under their terms and named: Channel3, Render.
 
 ## Dates (Madrid)
 

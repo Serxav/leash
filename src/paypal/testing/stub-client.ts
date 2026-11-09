@@ -3,8 +3,7 @@ import { Client, Environment } from "@paypal/paypal-server-sdk";
 /**
  * Test-only PayPal client that never touches the network.
  *
- * Follows the APIMatic Context Plugin "typescript-testing" skill: a stub
- * axios adapter through `unstable_httpClientOptions`, and a seeded,
+ * It uses a stub axios adapter through `unstable_httpClientOptions`, and a seeded,
  * unexpired OAuth token so no token request is made.
  */
 export type StubReply = {

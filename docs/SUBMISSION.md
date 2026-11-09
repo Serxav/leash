@@ -14,7 +14,7 @@ and read every line once more against the live app.
 - **Demo URL:** https://leash-51ew.onrender.com
 - **Video:** https://youtu.be/U66DzesEET8 (2:42; AI narration with Kokoro text-to-speech, music generated in code)
 - **Prize categories:** Best Use of Agentic Commerce (or Best Use of PayPal + AI). Sponsor
-  tools used: Channel3, Render, APIMatic.
+  tools used: Channel3, Render.
 - **Built with:** Next.js, TypeScript, Tailwind CSS, SQLite, Drizzle ORM, Vercel AI SDK, Meta
   Model API (Muse Spark), PayPal Server SDK, PayPal Agent Toolkit, Channel3, Render, Vitest.
 
@@ -53,7 +53,7 @@ Leash is a control layer between an AI shopping agent and your PayPal.
   (`src/payments/refund.ts`), and the PayPal Agent Toolkit wrapped in "leashed tools": the agent
   may check its own orders with `get_order`, and `create_refund` runs only when the user asks
   (`src/agent/leashed-tools.ts`). All calls use
-  the official PayPal Server SDK, built with the APIMatic Context Plugin for PayPal.
+  the official PayPal Server SDK.
 - **AI:** Meta `muse-spark-1.3` through the Meta Model API (Standard mode, no training on our
   requests), via the Vercel AI SDK (`src/ai/models.ts`), for the agent (`src/agent/agent.ts`)
   and the rules converter (`src/rules/builder.ts`). Its only purchase tool is
@@ -111,21 +111,3 @@ never guessed. The AI still never sees the address.
   PayPal's page.
 - Step by step: https://github.com/Serxav/leash/blob/main/docs/TRY_IT.md
 - Run it locally: README → "Run it locally".
-
-## APIMatic free subscription claim
-
-Optional form on https://paypalaihackathon.devpost.com/details/apimatic.
-
-- **Company domain:** `leash-51ew.onrender.com`
-- **Link that shows the Context Plugin usage:**
-  https://github.com/Serxav/leash#built-with-the-apimatic-context-plugin-for-paypal
-- **Description of Context Plugin usage:**
-
-  > I built Leash with Claude Code, with the APIMatic Context Plugin for PayPal installed. A
-  > project rule says the agent must load the matching `paypal:typescript-*` skills before writing
-  > any PayPal Server SDK code, starting with getting-started. It then loaded client-initialization,
-  > authentication, calling-endpoints, models and error-handling as needed. This gave the agent
-  > correct, version-specific context for `@paypal/paypal-server-sdk` instead of guessed APIs. It
-  > covered building the sandbox client with client credentials (`src/paypal/sdk.ts`), creating
-  > Orders v2 with a vaulted `payment_source.paypal.vault_id`, capturing, and Payments v2 refunds.
-  > It also covered turning SDK errors into clear user-facing reasons (`src/paypal/errors.ts`).

@@ -3,9 +3,9 @@ import { Client, Environment } from "@paypal/paypal-server-sdk";
 import { getServerEnv } from "@/config/env";
 
 /**
- * PayPal Server SDK client (APIMatic-generated), sandbox only.
+ * PayPal Server SDK client, sandbox only.
  *
- * Built following the APIMatic Context Plugin skills for this SDK:
+ * How it is set up:
  * - one long-lived client per process (it caches the OAuth token);
  * - credentials as the `clientCredentialsAuthCredentials` object;
  * - an explicit timeout (the SDK default is none);
