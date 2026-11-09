@@ -96,6 +96,12 @@ prompt injection, and about building a full product in four weeks.)_
 Team roles and shared budgets, an open "leashed tools" library for the PayPal Agent Toolkit,
 and live payments only after PayPal validation and a legal review (GDPR, PSD2).
 
+Real shops and delivery. Today the demo pays a sandbox demo store and collects no address
+(`NO_SHIPPING`). With real shops, Leash would pay each shop directly through PayPal Orders v2,
+with the buyer's shipping address from their PayPal account, so they need no account at the
+shop. A shop that does not accept PayPal or cannot deliver there is blocked or asked about,
+never guessed. The AI still never sees the address.
+
 ## Testing instructions for judges
 
 - Live app: https://leash-crcx.onrender.com (free plan: the first visit after 15 quiet
