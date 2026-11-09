@@ -8,7 +8,10 @@ https://leash-crcx.onrender.com
 - Region Frankfurt (EU), branch `main`, deployed only after the GitHub checks pass.
 - `npm ci && npm run build`, then `npm start`. Node comes from `.nvmrc` (24).
 - Health check: `/api/health` answers `{ "status": "ok" }` and nothing else.
-- Free plan: it sleeps after 15 minutes without visits and wakes in about a minute.
+- Free plan: it sleeps after 15 minutes without visits and wakes in about a minute. From the
+  submission deadline to the end of judging (Nov 12 – Dec 15, 2026), the `Keep demo awake`
+  workflow pings `/api/health` every 10 minutes so judges find it awake. It does nothing on
+  other dates, to stay inside Render's 750 free hours a month.
 - No persistent disk: the SQLite database is created again on every start. Each visitor gets
   a fresh demo space, so nothing depends on old data.
 
