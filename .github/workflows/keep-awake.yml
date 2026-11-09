@@ -1,0 +1,29 @@
+name: Keep demo awake
+
+# Render Free puts the demo to sleep after 15 minutes without visits, and the
+# first visit then waits about a minute. From the submission deadline
+# (Nov 12, 2026), when screening may start, to the end of judging (Dec 15, 2026,
+# 8:00 am PT), this pings the health check so judges find it awake. Outside
+# those dates it does nothing, to stay inside Render's 750 free hours a month.
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  ping:
+    name: Ping /api/health
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Ping from deadline to end of judging
+        run: |
+          today=$(date -u +%Y-%m-%d)
+          if [[ "$today" < "2026-11-12" || "$today" > "2026-12-15" ]]; then
+            echo "Outside the judging window ($today), nothing to do."
+            exit 0
+          fi
+          curl --fail --silent --show-error --max-time 120 --retry 2 \
+            https://leash-crcx.onrender.com/api/health
