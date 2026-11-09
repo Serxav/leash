@@ -8,8 +8,9 @@ demo is invented.
 ## Before you start
 
 - **The judges' sandbox buyer account** (PayPal sandbox, Personal):
-  - Email: _(added at submission)_
-  - Password: _(added at submission)_
+  - Email: `leash-judges@personal.example.com`
+  - Password: in the **Testing instructions** of the Devpost submission (kept out of this
+    public repository so nobody can change it)
 - Use this **Personal** account on PayPal's page. The demo's Business account is the shop, and
   PayPal does not let a shop pay itself (*"You are logging in to the seller's account"*). If
   your browser is already logged in to another sandbox account, log out at

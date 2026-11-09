@@ -100,7 +100,8 @@ and live payments only after PayPal validation and a legal review (GDPR, PSD2).
 
 - Live app: https://leash-crcx.onrender.com (free plan: the first visit after 15 quiet
   minutes takes about a minute).
-- PayPal sandbox buyer account: _(email)_ / _(password)_. Use this Personal account on
+- PayPal sandbox buyer account: `leash-judges@personal.example.com` / _(password: paste it
+  here in the Devpost form only, never in the repository)_. Use this Personal account on
   PayPal's page.
 - Step by step: https://github.com/Serxav/leash/blob/main/docs/TRY_IT.md
 - Run it locally: README → "Run it locally".
