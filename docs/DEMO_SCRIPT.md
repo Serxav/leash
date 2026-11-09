@@ -1,5 +1,10 @@
 # Demo video script
 
+**Final video (2:42): https://youtu.be/U66DzesEET8.** It follows this plan, and adds Marta's
+problem before Leash (ordering by hand, or an agent holding her card with no limits, and shop
+text that talks to the agent) and a closing part on how Leash is built. The phone approval is
+on the card in the chat, and the PayPal sandbox account pages are not shown.
+
 **Target: 2:45, never 3:00 or more.** Judges may stop at 3:00.
 
 **Rules for the video**
