@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState, type ReactNode } from "react";
 import { SubmitButton, useFocusOnAnswer } from "@/components/submit-button";
 import { connectPayPal, updatePermissions } from "./actions";
@@ -152,7 +153,10 @@ export function PermissionsForms({ view }: { view: PermissionsView }) {
           <p className="text-muted">
             Deletes your rules, Rex&apos;s proposals and decisions, your payments history, the security log and your
             saved PayPal (deleted at PayPal first). PayPal keeps its own records of past payments. This cannot be
-            undone.
+            undone.{" "}
+            <Link href="/privacy" className="text-accent">
+              How Leash treats your data
+            </Link>
           </p>
           <input type="hidden" name="action" value="delete" />
           <label className="flex items-start gap-2">
