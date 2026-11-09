@@ -8,7 +8,7 @@ refunds, Agent Toolkit) · Meta `muse-spark-1.3` through the Meta Model API · C
 Render. No real money ever moves.
 
 <p>
-<a href="#"><b>▶ Watch the 3-minute video</b></a> <sub>(link added at submission)</sub> ·
+<a href="https://youtu.be/U66DzesEET8"><b>▶ Watch the 2:42 video</b></a> ·
 <a href="https://leash-crcx.onrender.com"><b>Open the live app</b></a> ·
 <a href="#see-it-move"><b>See it move</b></a> ·
 <a href="docs/TRY_IT.md"><b>Step-by-step for judges</b></a>
@@ -27,7 +27,7 @@ Render. No real money ever moves.
 
 | What | Where | Time |
 |---|---|---|
-| Watch what it does | 3-minute video _(link added at submission)_ | 3 min |
+| Watch what it does | [2:42 video on YouTube](https://youtu.be/U66DzesEET8) | 3 min |
 | Connect PayPal with the judges' sandbox buyer account | [live app](https://leash-crcx.onrender.com) → **Permissions** → **Connect PayPal** | 1 min |
 | Ask Rex to restock paper and sticky notes: two purchases are charged, a blocked shop is skipped, the trap product is hidden | **Rex** → tap the first suggestion | 1 min |
 | Ask for a €24 toner: above the "ask me first" amount, so it waits for your one tap | **Rex** → *"Our laser printer needs a new black toner cartridge."* | 1 min |
@@ -192,6 +192,14 @@ is created on start. Tests: `npm test` (unit, also in CI), `npm run lint`,
 All docs are listed in [docs/README.md](docs/README.md): architecture, deploy, the demo
 script, step by step for judges, the submission text and the hackathon brief.
 
-## License
+## License and credits
 
-[MIT](LICENSE)
+[MIT](LICENSE).
+
+The [demo video](https://youtu.be/U66DzesEET8) shows the real app, recorded live (Meta Muse Spark, Channel3 and
+PayPal sandbox). It was made in code with [Remotion](https://github.com/remotion-dev/remotion),
+on a project template from [OpenMontage](https://github.com/calesthio/OpenMontage) (AGPL-3.0).
+The narration is an AI voice: [Kokoro-82M](https://huggingface.co/hexgrad/Kokoro-82M)
+(Apache-2.0), run offline with [sherpa-onnx](https://github.com/k2-fsa/sherpa-onnx)
+(Apache-2.0). The music is generated in code, with no samples. Font: Space Grotesk (SIL OFL).
+None of these tools is part of the app.

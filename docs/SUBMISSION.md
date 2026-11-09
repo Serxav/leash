@@ -12,7 +12,7 @@ and read every line once more against the live app.
 - **Built:** from scratch during the submission period (repository created Oct 15, 2026)
 - **Repository:** https://github.com/Serxav/leash (MIT)
 - **Demo URL:** https://leash-crcx.onrender.com
-- **Video:** _(YouTube, public)_
+- **Video:** https://youtu.be/U66DzesEET8 (2:42; AI narration with Kokoro text-to-speech, music generated in code)
 - **Prize categories:** Best Use of Agentic Commerce (or Best Use of PayPal + AI). Sponsor
   tools used: Channel3, Render, APIMatic.
 - **Built with:** Next.js, TypeScript, Tailwind CSS, SQLite, Drizzle ORM, Vercel AI SDK, Meta
