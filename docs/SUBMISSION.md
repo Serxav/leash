@@ -111,3 +111,21 @@ never guessed. The AI still never sees the address.
   PayPal's page.
 - Step by step: https://github.com/Serxav/leash/blob/main/docs/TRY_IT.md
 - Run it locally: README → "Run it locally".
+
+## APIMatic free subscription claim
+
+Optional form on https://paypalaihackathon.devpost.com/details/apimatic.
+
+- **Company domain:** `leash-51ew.onrender.com`
+- **Link that shows the Context Plugin usage:**
+  https://github.com/Serxav/leash#built-with-the-apimatic-context-plugin-for-paypal
+- **Description of Context Plugin usage:**
+
+  > I built Leash with Claude Code, with the APIMatic Context Plugin for PayPal installed. A
+  > project rule says the agent must load the matching `paypal:typescript-*` skills before writing
+  > any PayPal Server SDK code, starting with getting-started. It then loaded client-initialization,
+  > authentication, calling-endpoints, models and error-handling as needed. This gave the agent
+  > correct, version-specific context for `@paypal/paypal-server-sdk` instead of guessed APIs. It
+  > covered building the sandbox client with client credentials (`src/paypal/sdk.ts`), creating
+  > Orders v2 with a vaulted `payment_source.paypal.vault_id`, capturing, and Payments v2 refunds.
+  > It also covered turning SDK errors into clear user-facing reasons (`src/paypal/errors.ts`).
