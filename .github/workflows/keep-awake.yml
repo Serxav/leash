@@ -26,4 +26,4 @@ jobs:
             exit 0
           fi
           curl --fail --silent --show-error --max-time 120 --retry 2 \
-            https://leash-crcx.onrender.com/api/health
+            https://leash-51ew.onrender.com/api/health

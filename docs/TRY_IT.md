@@ -3,7 +3,7 @@
 Everything runs on the **PayPal sandbox**: no real money moves. Every person and shop in the
 demo is invented.
 
-**Live app:** https://leash-crcx.onrender.com
+**Live app:** https://leash-51ew.onrender.com
 
 ## Before you start
 

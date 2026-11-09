@@ -1,7 +1,7 @@
 # Deploy
 
 The live demo runs on **Render Free** from the Blueprint in [`render.yaml`](../render.yaml):
-https://leash-crcx.onrender.com
+https://leash-51ew.onrender.com
 
 ## How it runs
 

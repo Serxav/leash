@@ -11,7 +11,7 @@ and read every line once more against the live app.
 - **Platform:** web application for desktop and mobile
 - **Built:** from scratch during the submission period (repository created Oct 15, 2026)
 - **Repository:** https://github.com/Serxav/leash (MIT)
-- **Demo URL:** https://leash-crcx.onrender.com
+- **Demo URL:** https://leash-51ew.onrender.com
 - **Video:** https://youtu.be/U66DzesEET8 (2:42; AI narration with Kokoro text-to-speech, music generated in code)
 - **Prize categories:** Best Use of Agentic Commerce (or Best Use of PayPal + AI). Sponsor
   tools used: Channel3, Render, APIMatic.
@@ -104,7 +104,7 @@ never guessed. The AI still never sees the address.
 
 ## Testing instructions for judges
 
-- Live app: https://leash-crcx.onrender.com (free plan: the first visit after 15 quiet
+- Live app: https://leash-51ew.onrender.com (free plan: the first visit after 15 quiet
   minutes takes about a minute).
 - PayPal sandbox buyer account: `leash-judges@personal.example.com` / _(password: paste it
   here in the Devpost form only, never in the repository)_. Use this Personal account on
