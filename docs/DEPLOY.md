@@ -5,7 +5,8 @@ https://leash-crcx.onrender.com
 
 ## How it runs
 
-- Region Frankfurt (EU), branch `main`, deployed only after the GitHub checks pass.
+- Region Oregon (US): from Frankfurt, Meta's Model API answered `404 model_not_found` for
+  `muse-spark-1.3`. Branch `main`, deployed only after the GitHub checks pass.
 - `npm ci && npm run build`, then `npm start`. Node comes from `.nvmrc` (24).
 - Health check: `/api/health` answers `{ "status": "ok", "time": "<ISO date>" }`, never cached,
   with no configuration or secrets.
